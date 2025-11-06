@@ -13,7 +13,7 @@ export const AuthLayout = () => {
       <Stack.Screen
         name="login"
         options={{
-          title: "Login",
+          title: "Sign In",
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
@@ -23,6 +23,24 @@ export const AuthLayout = () => {
         name="signup"
         options={{
           title: "Sign Up",
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitleAlign: "left",
+        }}
+      />
+      <Stack.Screen
+        name="forgotPassword"
+        options={{
+          title: "Forgot Password",
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitleAlign: "left",
+        }}
+      />
+      <Stack.Screen
+        name="otpVerification"
+        options={{
+          title: "OTP Verification",
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
