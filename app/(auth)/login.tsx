@@ -6,7 +6,7 @@ export const Login = () => {
   const { login } = useContext(AuthContext);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Text>Login Screen</Text>
       <Button title="Login" onPress={() => login("fake_token_123")} />
     </View>

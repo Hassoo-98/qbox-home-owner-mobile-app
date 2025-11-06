@@ -1,3 +1,5 @@
+import { HapticTab } from "@/components";
+import { Colors } from "@/constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 
@@ -6,7 +8,8 @@ export const AppTabLayout = () => {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#007AFF",
+        tabBarActiveTintColor: Colors.primary,
+        tabBarButton: HapticTab,
         tabBarStyle: {
           borderTopWidth: 0,
           elevation: 0,
