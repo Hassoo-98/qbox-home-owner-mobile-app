@@ -1,25 +1,33 @@
 import { AuthContext } from "@/context/AuthContext";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useContext, useEffect } from "react";
 
+SplashScreen.preventAutoHideAsync();
+
 export const AppNavigation = () => {
-  const { userToken } = useContext(AuthContext);
-  const segments = useSegments();
-  const router = useRouter();
+  const { userToken, isLoading } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!segments?.[0]) return;
-
-    const inAuthGroup = segments[0] === "(auth)";
-
-    if (!userToken && !inAuthGroup) {
-      router.replace("/(auth)");
-    } else if (userToken && inAuthGroup) {
-      router.replace("/(app)/home");
+    if (!isLoading) {
+      SplashScreen.hideAsync();
     }
-  }, [userToken, segments, router]);
+  }, [isLoading]);
 
-  return <Slot />;
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <Stack>
+      <Stack.Protected guard={Boolean(userToken)}>
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={!Boolean(userToken)}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
+  );
 };
 
 export default AppNavigation;

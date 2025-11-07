@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import React from "react";
 import { Pressable } from "react-native";
 import { useData } from "./hooks";
@@ -7,6 +8,7 @@ export const HapticPressable = ({
   hapticFeedback = "light",
   enableHaptic = true,
   onPressIn,
+  href,
   children,
   ...props
 }: HapticPressableProps) => {
@@ -17,9 +19,17 @@ export const HapticPressable = ({
   });
 
   return (
-    <Pressable onPressIn={handlePressIn} {...props}>
-      {children}
-    </Pressable>
+    <>
+      {href ? (
+        <Link onPressIn={handlePressIn} href={href}>
+          {children as React.ReactNode}
+        </Link>
+      ) : (
+        <Pressable onPressIn={handlePressIn} {...props}>
+          {children}
+        </Pressable>
+      )}
+    </>
   );
 };
 

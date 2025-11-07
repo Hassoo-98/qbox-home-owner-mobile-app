@@ -11,8 +11,13 @@ const secondaryColor = "#777E90";
 export const Colors = {
   text: "#1C1E24",
   secondaryText: secondaryColor,
+  transparent: "transparent",
   background: "#FCFCFD",
+  inActive: "#E6E8EC",
+  white: "#fff",
   danger: "#c70000",
+  warning: "#FCEAC8",
+  warningText: "#7B5D24",
   primary: primaryColor,
   secondary: secondaryColor,
   icon: secondaryColor,
@@ -65,6 +70,7 @@ export type ElementVariant =
   | "danger"
   | "transparent"
   | "outline"
+  | "warning"
   | "default";
 
 export type FontVariants = "sans" | "serif" | "rounded" | "mono" | "default";

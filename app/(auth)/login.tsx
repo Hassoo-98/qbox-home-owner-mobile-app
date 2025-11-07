@@ -9,8 +9,10 @@ import {
   Text,
   TextInput,
 } from "@/components";
-import { Spacing } from "@/constants";
+import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
 import { AuthContext } from "@/context";
+import { LoginFormValues } from "@/types";
+import { LoginFormResolver } from "@/utils";
 import { router } from "expo-router";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,21 +20,38 @@ import { View } from "react-native";
 
 export const Login = () => {
   const { login } = useContext(AuthContext);
-  const [selectedLoginOption, setSelectedLoginOption] =
-    useState<string>("phone");
+  const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
+    AUTH_PROVIDERS.PHONE
+  );
 
-  const loginOptions = [
-    { label: "Phone Number", value: "phone" },
-    { label: "Email Address", value: "email" },
-  ];
+  const defaultFormValues = {
+    email: "",
+    password: "",
+    phone: "",
+  };
 
-  const { control } = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-      phone: "",
-    },
+  const {
+    control,
+    formState: { isDirty },
+    reset,
+    handleSubmit,
+  } = useForm<LoginFormValues>({
+    defaultValues: defaultFormValues,
+    resolver: LoginFormResolver,
+    mode: "onChange",
   });
+
+  const isFormValid = isDirty;
+
+  const onSubmit = (data: LoginFormValues) => {
+    console.log("login submission: ", JSON.stringify(data, null, 4));
+    login("fake_token_123");
+  };
+
+  const handleAuthProviderChange = (option: string) => {
+    setSelectedAuthProvider(option);
+    reset(defaultFormValues);
+  };
 
   return (
     <AuthScreenLayout
@@ -40,26 +59,28 @@ export const Login = () => {
       description="Sign in to your Qbox account."
       headerContent={
         <SegmentedControl
-          options={loginOptions}
+          options={AUTH_PROVIDER_OPTIONS}
           style={{ marginVertical: Spacing.md }}
-          onChange={(option) => setSelectedLoginOption(option)}
-          value={selectedLoginOption}
+          onChange={handleAuthProviderChange}
+          value={selectedAuthProvider}
         />
       }
     >
       <Form>
-        {selectedLoginOption === "email" ? (
+        {selectedAuthProvider === AUTH_PROVIDERS.EMAIL ? (
           <TextInput
             name="email"
             inputMode="email"
             control={control}
+            autoCapitalize="none"
+            autoComplete="email"
             label="Email Address"
             keyboardType="email-address"
             placeholder="Enter email address"
           />
         ) : (
           <PhoneNumberInput
-            name="phoneNumber"
+            name="phone"
             control={control}
             label="Phone Number"
             placeholder="+966 XX XXX XXXX"
@@ -69,14 +90,13 @@ export const Login = () => {
         <PasswordInput
           name="password"
           control={control}
+          autoComplete="password"
           label="Password"
           placeholder="Enter password"
         />
 
         <View style={{ alignItems: "flex-end" }}>
-          <HapticPressable
-            onPress={() => router.navigate("/(auth)/forgotPassword")}
-          >
+          <HapticPressable href={"/forgotPassword"}>
             <Text size="sm">Forgot Password?</Text>
           </HapticPressable>
         </View>
@@ -84,7 +104,8 @@ export const Login = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Sign in"
-          onPress={() => login("fake_token_123")}
+          disabled={!isFormValid}
+          onPress={handleSubmit(onSubmit)}
         />
 
         <Text style={{ textAlign: "center", marginTop: Spacing.md }}>

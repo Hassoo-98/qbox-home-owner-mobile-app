@@ -1,4 +1,4 @@
-import { Text } from "@/components";
+import { Stepper, Text } from "@/components";
 import { Spacing } from "@/constants";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,11 +9,25 @@ export const AuthScreenLayout = ({
   description,
   children,
   headerContent,
+  currentStep,
+  totalSteps,
   style,
+  stepperStyle,
 }: AuthScreenLayoutProps) => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ paddingHorizontal: Spacing.xl }}>
+    <SafeAreaView
+      edges={{ top: "off", bottom: "additive" }}
+      style={{ flex: 1 }}
+    >
+      <View style={{ paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl }}>
+        {currentStep && totalSteps && (
+          <Stepper
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+            height={6}
+            style={stepperStyle ? stepperStyle : {}}
+          />
+        )}
         <Text size="xl" style={{ fontWeight: "bold" }}>
           {title}
         </Text>

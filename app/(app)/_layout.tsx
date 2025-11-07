@@ -1,6 +1,5 @@
 import { HapticTab } from "@/components";
-import { Colors } from "@/constants";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { BOTTOM_TABS, Colors } from "@/constants";
 import { Tabs } from "expo-router";
 
 export const AppTabLayout = () => {
@@ -9,6 +8,7 @@ export const AppTabLayout = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.secondary,
         tabBarButton: HapticTab,
         tabBarStyle: {
           borderTopWidth: 0,
@@ -18,42 +18,25 @@ export const AppTabLayout = () => {
         },
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="myqbox"
-        options={{
-          title: "MyQBox",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="package"
-        options={{
-          title: "Package",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
-        }}
-      />
+      {BOTTOM_TABS &&
+        BOTTOM_TABS?.length > 0 &&
+        BOTTOM_TABS?.map((tab) => (
+          <Tabs.Screen
+            key={tab.id}
+            name={tab.name}
+            options={{
+              title: tab.title,
+              tabBarIcon: ({ focused }) => {
+                const { Icon, IconOutline } = tab;
+                return focused ? (
+                  <Icon width={24} height={24} />
+                ) : (
+                  <IconOutline width={24} height={24} />
+                );
+              },
+            }}
+          />
+        ))}
     </Tabs>
   );
 };

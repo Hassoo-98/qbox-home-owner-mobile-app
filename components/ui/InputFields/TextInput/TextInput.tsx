@@ -1,4 +1,4 @@
-import { Text } from "@/components";
+import { Button, Text } from "@/components";
 import React from "react";
 import { Controller } from "react-hook-form";
 import {
@@ -81,15 +81,20 @@ export const TextInput = ({
               )}
 
               {endButtonText && (
-                <TouchableOpacity
+                <Button
                   onPress={onEndButtonClick}
-                  style={styles.endButton}
-                  activeOpacity={0.8}
-                >
-                  <Text size="md" style={styles.endButtonText}>
-                    {endButtonText}
-                  </Text>
-                </TouchableOpacity>
+                  size="sm"
+                  title={endButtonText}
+                />
+                // <TouchableOpacity
+                //   onPress={onEndButtonClick}
+                //   style={styles.endButton}
+                //   // activeOpacity={0.8}
+                // >
+                //   <Text size="md" style={styles.endButtonText}>
+                //     {endButtonText}
+                //   </Text>
+                // </TouchableOpacity>
               )}
             </View>
 

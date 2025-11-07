@@ -28,6 +28,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FCFCFD",
     borderWidth: 1.5,
+    paddingRight: Spacing.xs,
     borderColor: "#E6E8EC",
     borderRadius: BorderRadius.md,
     minHeight: 46,
@@ -65,10 +66,12 @@ export const styles = StyleSheet.create({
 
   endButton: {
     backgroundColor: "#6B7A8F",
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm + 2, // 10px
-    borderRadius: BorderRadius.sm,
+    // paddingHorizontal: Spacing.lg,
+    // maxHeight: 40,
+    // paddingVertical: Spacing.sm + 2, // 10px
+    // borderRadius: BorderRadius.sm,
     marginLeft: Spacing.sm,
+    marginRight: Spacing.sm,
   },
 
   endButtonText: {

@@ -44,6 +44,16 @@ export const AuthLayout = () => {
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="resetPassword"
+        options={{
+          title: "Reset Password",
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitleAlign: "left",
         }}
       />
     </Stack>

@@ -65,7 +65,8 @@ export const Button = ({
             style={[
               styles.text,
               styles[`${variant}Text` as keyof typeof styles],
-              isDisabled && styles.disabledText,
+              isDisabled &&
+                styles[`${variant}DisabledText` as keyof typeof styles],
               textStyle,
             ]}
           >

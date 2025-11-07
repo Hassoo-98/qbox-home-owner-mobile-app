@@ -60,6 +60,9 @@ export const styles = StyleSheet.create({
   danger: {
     backgroundColor: Colors.danger,
   },
+  warning: {
+    backgroundColor: Colors.warning,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -75,10 +78,10 @@ export const styles = StyleSheet.create({
     color: Colors.text,
   },
   primaryText: {
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   secondaryText: {
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   outlineText: {
     color: Colors.primary,
@@ -87,10 +90,10 @@ export const styles = StyleSheet.create({
     color: Colors.primary,
   },
   dangerText: {
-    color: "#FFFFFF",
+    color: Colors.white,
   },
-  disabledText: {
-    color: Colors.secondaryText,
+  warningText: {
+    color: Colors.warningText,
   },
 
   // States
@@ -116,6 +119,26 @@ export const styles = StyleSheet.create({
   transparentDisabled: {},
   dangerDisabled: {
     backgroundColor: "#FF9F9A",
+  },
+
+  // Disabled text colors for each variant
+  defaultDisabledText: {
+    color: Colors.secondaryText,
+  },
+  primaryDisabledText: {
+    color: Colors.white,
+  },
+  secondaryDisabledText: {
+    color: Colors.white,
+  },
+  outlineDisabledText: {
+    color: Colors.secondaryText,
+  },
+  transparentDisabledText: {
+    color: Colors.secondaryText,
+  },
+  dangerDisabledText: {
+    color: Colors.white,
   },
 
   // Content container for proper centering

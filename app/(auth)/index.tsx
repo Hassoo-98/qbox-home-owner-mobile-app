@@ -2,10 +2,11 @@ import { Button, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { router } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const Welcome = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.backgroundCircle} />
 
       <Image
@@ -42,7 +43,7 @@ export const Welcome = () => {
           </Text>
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

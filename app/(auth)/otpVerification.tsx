@@ -1,23 +1,41 @@
 import { AuthScreenLayout, Button, Form, OTPInput, Text } from "@/components";
-import { Spacing } from "@/constants";
-import { router } from "expo-router";
+import { AUTH_PROVIDERS, Spacing } from "@/constants";
+import { router, useLocalSearchParams } from "expo-router";
 import { useForm } from "react-hook-form";
 
-export const ForgotPassword = () => {
+export const OtpVerification = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       otp: "",
     },
   });
 
+  const { authOption, authValue, origin } = useLocalSearchParams();
+
+  console.log("origin", origin);
+
   const onSubmit = (data: any) => {
     console.log("otp submission: ", data);
+    if (origin === "signup") {
+      router.dismissTo({
+        pathname: "/signup",
+        params: {
+          origin: "otpVerification",
+        },
+      });
+      return;
+    }
+    router.navigate("/resetPassword");
   };
+
+  const isPhone = authOption === AUTH_PROVIDERS.PHONE;
 
   return (
     <AuthScreenLayout
       title="Enter Verification Code"
-      description="Enter the 5 digit otp code send on your phone number +966 XX XXX XX33"
+      description={`Enter the 5 digit otp code send on your ${
+        isPhone ? "phone number" : "email address"
+      } ${authValue}`}
     >
       <Form style={{ paddingTop: Spacing.lg }}>
         <OTPInput
@@ -26,10 +44,6 @@ export const ForgotPassword = () => {
           numberOfDigits={5}
           rules={{
             required: "OTP is required",
-            minLength: {
-              value: 6,
-              message: "Please enter complete OTP",
-            },
           }}
         />
 
@@ -40,11 +54,7 @@ export const ForgotPassword = () => {
           }}
         >
           Didn’t receive code?{" "}
-          <Text
-            variant="primary"
-            style={{ fontWeight: "bold" }}
-            // onPress={() => router.back()}
-          >
+          <Text variant="primary" style={{ fontWeight: "bold" }}>
             Resend again
           </Text>
         </Text>
@@ -52,7 +62,7 @@ export const ForgotPassword = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Confirm"
-          onPress={() => handleSubmit(onSubmit)}
+          onPress={handleSubmit(onSubmit)}
         />
 
         <Text
@@ -75,4 +85,4 @@ export const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default OtpVerification;

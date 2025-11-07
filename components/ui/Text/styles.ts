@@ -42,6 +42,9 @@ export const styles = StyleSheet.create({
   danger: {
     color: Colors.danger,
   },
+  warning: {
+    color: Colors.warningText,
+  },
   transparent: {
     color: "transparent",
   },

@@ -7,49 +7,70 @@ import {
   Text,
   TextInput,
 } from "@/components";
-import { Spacing } from "@/constants";
+import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
+import { ForgotPasswordFormValues } from "@/types";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export const ForgotPassword = () => {
-  const [selectedAuthOption, setSelectedAuthOption] = useState<string>("phone");
+  const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
+    AUTH_PROVIDERS.PHONE
+  );
 
-  const authOptions = [
-    {
-      label: "Phone Number",
-      value: "phone",
-    },
-    {
-      label: "Email Address",
-      value: "email",
-    },
-  ];
+  const defaultFormValues = {
+    email: "",
+    phone: "",
+  };
 
-  const { control } = useForm({
-    defaultValues: {
-      email: "",
-      phone: "",
-    },
+  const {
+    control,
+    formState: { isDirty },
+    reset,
+    handleSubmit,
+  } = useForm<ForgotPasswordFormValues>({
+    defaultValues: defaultFormValues,
+    mode: "onChange",
   });
+
+  const isFormValid = isDirty;
+
+  const onSubmit = (data: ForgotPasswordFormValues) => {
+    console.log("forgot password submission: ", data);
+    router.navigate({
+      pathname: "/(auth)/otpVerification",
+      params: {
+        authOption: selectedAuthProvider,
+        authValue:
+          selectedAuthProvider === AUTH_PROVIDERS.PHONE
+            ? data.phone
+            : data.email,
+      },
+    });
+  };
+
+  const handleAuthProviderChange = (option: string) => {
+    setSelectedAuthProvider(option);
+    reset(defaultFormValues);
+  };
 
   return (
     <AuthScreenLayout
       title="Forgot Password?"
       description={`Enter your ${
-        selectedAuthOption === "phone" ? "phone number" : "email address"
+        selectedAuthProvider === "phone" ? "phone number" : "email address"
       } and we'll send you instructions to reset your password.`}
       headerContent={
         <SegmentedControl
-          options={authOptions}
+          options={AUTH_PROVIDER_OPTIONS}
           style={{ marginVertical: Spacing.md }}
-          onChange={(option) => setSelectedAuthOption(option)}
-          value={selectedAuthOption}
+          onChange={handleAuthProviderChange}
+          value={selectedAuthProvider}
         />
       }
     >
       <Form>
-        {selectedAuthOption === "email" ? (
+        {selectedAuthProvider === "email" ? (
           <TextInput
             name="email"
             inputMode="email"
@@ -60,7 +81,7 @@ export const ForgotPassword = () => {
           />
         ) : (
           <PhoneNumberInput
-            name="phoneNumber"
+            name="phone"
             control={control}
             label="Phone Number"
             placeholder="+966 XX XXX XXXX"
@@ -71,7 +92,8 @@ export const ForgotPassword = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Reset Password"
-          onPress={() => router.navigate("/(auth)/otpVerification")}
+          disabled={!isFormValid}
+          onPress={handleSubmit(onSubmit)}
         />
 
         <Text

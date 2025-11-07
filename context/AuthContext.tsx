@@ -5,19 +5,28 @@ export const AuthContext = createContext<{
   userToken?: string | null;
   login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
+  isLoading: boolean;
 }>({
   userToken: null,
   login: async (token: string) => {},
   logout: async () => {},
+  isLoading: true,
 });
 
 export const AuthProvider = ({ children }: any) => {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const token = await SecureStore.getItemAsync("token");
-      setUserToken(token);
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        setUserToken(token);
+      } catch (e) {
+        console.log("error while getting token", e);
+      } finally {
+        setIsLoading(false);
+      }
     })();
   }, []);
 
@@ -32,7 +41,7 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, login, logout }}>
+    <AuthContext.Provider value={{ userToken, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
