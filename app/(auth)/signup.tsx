@@ -2,7 +2,6 @@ import { WarningIconOutline } from "@/assets/icons";
 import {
   AuthScreenLayout,
   Button,
-  Form,
   PasswordInput,
   PhoneNumberInput,
   Text,
@@ -65,7 +64,7 @@ export const SignUp = () => {
       totalSteps={4}
       stepperStyle={{ marginBottom: Spacing.md }}
     >
-      <Form style={{ marginTop: Spacing.md }}>
+      <View style={{ marginTop: Spacing.md, paddingHorizontal: Spacing.xl }}>
         {currentStep === 1 ? (
           <>
             <TextInput
@@ -148,7 +147,7 @@ export const SignUp = () => {
             }
           />
         </View>
-      </Form>
+      </View>
       <View
         style={{
           backgroundColor: Colors.warning,

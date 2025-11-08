@@ -1,3 +1,4 @@
+export * from "./appData";
 export * from "./bottomTabs";
 export * from "./enums";
 export * from "./errorTypes";

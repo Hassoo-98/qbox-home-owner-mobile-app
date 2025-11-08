@@ -41,8 +41,6 @@ export const Login = () => {
     mode: "onChange",
   });
 
-  const isFormValid = isDirty;
-
   const onSubmit = (data: LoginFormValues) => {
     console.log("login submission: ", JSON.stringify(data, null, 4));
     login("fake_token_123");
@@ -104,7 +102,7 @@ export const Login = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Sign in"
-          disabled={!isFormValid}
+          disabled={!isDirty}
           onPress={handleSubmit(onSubmit)}
         />
 

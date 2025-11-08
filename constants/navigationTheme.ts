@@ -6,7 +6,7 @@ export const CustomNavigationTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: Colors.primary, // #28475C
-    background: Colors.background, // #fff
+    background: Colors.white, // #fff
     card: Colors.background, // #fff - for headers, tab bars
     text: Colors.text, // #1C1E24
     border: "#E5E5E5", // Light border color
