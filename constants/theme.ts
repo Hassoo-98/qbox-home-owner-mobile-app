@@ -20,6 +20,8 @@ export const Colors = {
   white: "#fff",
   danger: "#c70000",
   warning: "#FCEAC8",
+  success: "#2FA766",
+  successBackground: "#C5EFD8",
   warningText: "#7B5D24",
   primary: primaryColor,
   secondary: secondaryColor,
@@ -71,6 +73,7 @@ export type ElementVariant =
   | "primary"
   | "secondary"
   | "danger"
+  | "success"
   | "transparent"
   | "outline"
   | "warning"

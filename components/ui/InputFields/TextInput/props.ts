@@ -1,11 +1,15 @@
 import { Control } from "react-hook-form";
-import { TextInputProps as RNTextInputProps } from "react-native";
+import {
+  DimensionValue,
+  TextInputProps as RNTextInputProps,
+} from "react-native";
 
 export interface TextInputProps extends RNTextInputProps {
   name: string;
   label?: string;
   iconPath?: string;
   required?: boolean;
+  width?: DimensionValue;
   endIconPath?: any;
   startIconPath?: any;
   control: Control<any>;

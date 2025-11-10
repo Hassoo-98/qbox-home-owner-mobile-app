@@ -1,13 +1,72 @@
-import { BoxInfo, Offer, QRSetting } from "@/components";
-import { OFFERS, Spacing } from "@/constants";
+import { BoxInfo, Offer, QRSetting, Text } from "@/components";
+import {
+  Colors,
+  OFFERS,
+  QR_VALIDITY_DURATION_TYPE,
+  Spacing,
+} from "@/constants";
+import { QRGenerationFormValues } from "@/types";
+import { QRGenerationFormResolver } from "@/utils";
+import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
 
 export const Home = () => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
+
+  const defaultFormValues = {
+    qrName: "",
+    maxUsers: "0",
+    validityDuration: "",
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
+  };
+
+  const { control, handleSubmit, reset } = useForm<QRGenerationFormValues>({
+    defaultValues: defaultFormValues,
+    resolver: QRGenerationFormResolver,
+  });
+
+  const handleGenerateQR = handleSubmit(
+    async (data: QRGenerationFormValues) => {
+      console.log("QR Generation Form Data:", JSON.stringify(data, null, 4));
+      setIsGenerating(true);
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        setIsGenerating(false);
+        setShowSuccess(true);
+        setIsQrCodeGenerated(true);
+
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 3000);
+
+        console.log("QR Code generated:", data);
+      } catch (error) {
+        setIsGenerating(false);
+        console.error("QR generation failed:", error);
+      }
+    }
+  );
+
+  const resetForm = () => {
+    reset(defaultFormValues);
+    setIsQrCodeGenerated(false);
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -15,36 +74,100 @@ export const Home = () => {
         flex: 1,
       }}
     >
-      <HomeContent />
+      <ScrollView
+        style={{
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          padding: Spacing.md,
+          paddingBottom: Spacing.xxxl + Spacing.lg,
+        }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <BoxInfo />
+        <FlatList
+          data={OFFERS}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal={true}
+          style={{
+            flexGrow: 0,
+          }}
+          renderItem={({ item }) => <Offer item={item} />}
+        />
+        <QRSetting
+          isGenerating={isGenerating}
+          resetForm={resetForm}
+          control={control}
+          onGenerateQR={handleGenerateQR}
+          isQrCodeGenerated={isQrCodeGenerated}
+        />
+      </ScrollView>
+
+      <Modal animationType="fade" transparent={true} visible={showSuccess}>
+        <BlurView
+          intensity={Platform.OS === "ios" ? 30 : 80}
+          tint="dark"
+          style={styles.blurContainer}
+        >
+          <View style={styles.successCard}>
+            <Ionicons
+              name="checkmark-circle"
+              size={25}
+              color={Colors.success}
+            />
+            <Text style={styles.successTitle}>QR Code generated!</Text>
+          </View>
+        </BlurView>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
 
-const HomeContent = () => {
-  return (
-    <ScrollView
-      style={{
-        // flex: 1,
-        padding: Spacing.md,
-      }}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      <BoxInfo />
-      <FlatList
-        data={OFFERS}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        horizontal={true}
-        style={{
-          flexGrow: 0, // Prevent FlatList from expanding
-        }}
-        renderItem={({ item }) => <Offer item={item} />}
-      />
-      <QRSetting />
-    </ScrollView>
-  );
-};
+const styles = StyleSheet.create({
+  blurContainer: {
+    flex: 1,
+    padding: Spacing.md,
+  },
+  successCard: {
+    backgroundColor: Colors.white,
+    borderRadius: Spacing.md,
+    marginTop: Spacing.lg,
+    padding: Spacing.md,
+    alignItems: "center",
+    flexDirection: "row",
+    minWidth: 280,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  checkmarkContainer: {
+    marginBottom: Spacing.md,
+  },
+  checkmarkCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.success || "#4CAF50",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkmark: {
+    fontSize: 32,
+    color: Colors.white,
+    fontWeight: "bold",
+  },
+  successTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});
 
 export default Home;

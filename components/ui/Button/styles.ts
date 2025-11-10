@@ -60,6 +60,9 @@ export const styles = StyleSheet.create({
   danger: {
     backgroundColor: Colors.danger,
   },
+  success: {
+    backgroundColor: Colors.successBackground,
+  },
   warning: {
     backgroundColor: Colors.warning,
   },
@@ -91,6 +94,9 @@ export const styles = StyleSheet.create({
   },
   dangerText: {
     color: Colors.white,
+  },
+  successText: {
+    color: Colors.success,
   },
   warningText: {
     color: Colors.warningText,

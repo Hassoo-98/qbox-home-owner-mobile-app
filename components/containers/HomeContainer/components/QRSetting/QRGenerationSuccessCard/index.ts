@@ -1,0 +1,1 @@
+export { QRGenerationSuccessCard } from "./QRGenerationSuccessCard";

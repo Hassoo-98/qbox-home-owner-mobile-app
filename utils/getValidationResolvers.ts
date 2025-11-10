@@ -1,5 +1,14 @@
-import { emailPattern, ERROR_MESSAGES, passwordPattern } from "@/constants";
-import { ForgotPasswordFormValues, LoginFormValues } from "@/types";
+import {
+  emailPattern,
+  ERROR_MESSAGES,
+  passwordPattern,
+  QR_VALIDITY_DURATION_TYPE,
+} from "@/constants";
+import {
+  ForgotPasswordFormValues,
+  LoginFormValues,
+  QRGenerationFormValues,
+} from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   isValidPhoneNumber,
@@ -121,4 +130,31 @@ export const ForgotPasswordFormResolver = yupResolver(
     },
     [["email", "phone"]]
   ) as yup.ObjectSchema<ForgotPasswordFormValues>
+);
+
+export const QRGenerationFormResolver = yupResolver(
+  yup.object().shape({
+    qrName: yup.string().optional().max(20, ERROR_MESSAGES.MAX_LENGTH),
+    maxUsers: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(/^[0-9]+$/, "Please enter a valid number")
+      .test("is-positive", "Must be greater than 0", (value) =>
+        value ? parseInt(value) > 0 : false
+      ),
+    validityDuration: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(/^[0-9]+$/, "Please enter a valid number")
+      .test("is-positive", "Must be greater than 0", (value) =>
+        value ? parseInt(value) > 0 : false
+      ),
+    validityDurationType: yup
+      .string()
+      .oneOf(
+        Object.values(QR_VALIDITY_DURATION_TYPE),
+        ERROR_MESSAGES.REQUIRED_FIELD
+      )
+      .required(ERROR_MESSAGES.REQUIRED_FIELD),
+  }) as yup.ObjectSchema<QRGenerationFormValues>
 );

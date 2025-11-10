@@ -16,7 +16,7 @@ export const chipVariants: Record<string, ChipVariantConfig> = {
     textColor: "#6155F5",
   },
   success: {
-    backgroundColor: "#2FA766",
+    backgroundColor: Colors.success,
     textColor: Colors.white,
   },
   error: {

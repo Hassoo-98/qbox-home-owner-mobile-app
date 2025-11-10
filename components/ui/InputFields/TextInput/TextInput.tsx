@@ -22,10 +22,11 @@ export const TextInput = ({
   endButtonText,
   onEndButtonClick,
   placeholder,
+  width,
   ...restProps
 }: TextInputProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width: width ? width : "100%" }]}>
       {label && (
         <View style={styles.labelContainer}>
           {iconPath && (

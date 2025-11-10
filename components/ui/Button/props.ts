@@ -3,7 +3,7 @@ import { ElementSize, ElementVariant } from "@/constants";
 import { TextStyle, ViewStyle } from "react-native";
 
 export interface ButtonProps extends Omit<HapticPressableProps, "children"> {
-  title: string;
+  title?: string;
   variant?: ElementVariant;
   size?: ElementSize;
   disabled?: boolean;

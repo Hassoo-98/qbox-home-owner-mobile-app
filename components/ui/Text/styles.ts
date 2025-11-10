@@ -42,6 +42,9 @@ export const styles = StyleSheet.create({
   danger: {
     color: Colors.danger,
   },
+  success: {
+    color: Colors.success,
+  },
   warning: {
     color: Colors.warningText,
   },

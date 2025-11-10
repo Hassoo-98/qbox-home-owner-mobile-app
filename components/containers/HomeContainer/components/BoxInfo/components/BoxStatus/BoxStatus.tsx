@@ -35,7 +35,7 @@ export const BoxStatus = ({ status }: BoxStatusProps) => {
           width: imageWidth,
           height: imageWidth,
           top: 15,
-          right: -5,
+          right: -15,
         }}
         contentFit="cover"
       />

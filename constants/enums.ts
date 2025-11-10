@@ -1,4 +1,4 @@
-export enum QR_VALIDITY {
+export enum QR_VALIDITY_DURATION_TYPE {
   MIN = "min",
   HOUR = "hour",
   DAY = "day",

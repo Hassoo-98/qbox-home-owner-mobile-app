@@ -1,16 +1,23 @@
-import { Button, Card, ItemInfo, Text, TextInput } from "@/components";
-import { Colors, QR_VALIDITY, Spacing } from "@/constants";
-import { useForm } from "react-hook-form";
+import { Card, ItemInfo, Text } from "@/components";
+import { Colors, Spacing } from "@/constants";
+import { useWatch } from "react-hook-form";
 import { View } from "react-native";
+import { QRGenerationForm } from "./components";
+import { QRSettingProps } from "./props";
+import { QRGenerationSuccessCard } from "./QRGenerationSuccessCard";
 
-export const QRSetting = () => {
-  const { control } = useForm({
-    defaultValues: {
-      name: "",
-      maxUsers: 0,
-      validityTime: 0,
-      validityUnit: QR_VALIDITY.MIN,
-    },
+export const QRSetting = ({
+  isGenerating,
+  onGenerateQR,
+  isQrCodeGenerated,
+  control,
+  resetForm,
+}: QRSettingProps) => {
+  const maxUsers = useWatch({ control, name: "maxUsers" });
+  const validityDuration = useWatch({ control, name: "validityDuration" });
+  const validityDurationType = useWatch({
+    control,
+    name: "validityDurationType",
   });
 
   return (
@@ -19,7 +26,7 @@ export const QRSetting = () => {
       variant="filled"
       borderRadius={Spacing.sm + 4}
       style={{
-        marginTop: Spacing.md,
+        marginVertical: Spacing.md,
         padding: 0,
         width: "100%",
       }}
@@ -48,23 +55,17 @@ export const QRSetting = () => {
           </View>
         }
       />
-      <Card
-        backgroundColor={Colors.white}
-        variant="filled"
-        borderRadius={Spacing.sm + 4}
-      >
-        <Text>QR Setting</Text>
-        {/* <Form> */}
-        <TextInput
-          control={control}
-          name="name"
-          placeholder="Enter QR name"
-          label="QR Name (Optional)"
-          required={true}
-        />
-        <Button variant="primary" title="Save" />
-        {/* </Form> */}
-      </Card>
+      <QRGenerationForm
+        control={control}
+        isGenerating={isGenerating}
+        onGenerateQR={onGenerateQR}
+        isQrCodeGenerated={isQrCodeGenerated}
+        resetForm={resetForm}
+        maxUsers={maxUsers}
+        validityDuration={validityDuration}
+        validityDurationType={validityDurationType}
+      />
+      {isQrCodeGenerated && <QRGenerationSuccessCard />}
     </Card>
   );
 };

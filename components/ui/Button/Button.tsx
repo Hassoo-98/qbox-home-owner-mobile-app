@@ -59,19 +59,21 @@ export const Button = ({
           {icon && iconPosition === "left" && (
             <View style={styles.iconLeft}>{icon}</View>
           )}
-          <Text
-            variant={getTextVariant()}
-            size={size}
-            style={[
-              styles.text,
-              styles[`${variant}Text` as keyof typeof styles],
-              isDisabled &&
-                styles[`${variant}DisabledText` as keyof typeof styles],
-              textStyle,
-            ]}
-          >
-            {title}
-          </Text>
+          {title && (
+            <Text
+              variant={getTextVariant()}
+              size={size}
+              style={[
+                styles.text,
+                styles[`${variant}Text` as keyof typeof styles],
+                isDisabled &&
+                  styles[`${variant}DisabledText` as keyof typeof styles],
+                textStyle,
+              ]}
+            >
+              {title}
+            </Text>
+          )}
           {icon && iconPosition === "right" && (
             <View style={styles.iconRight}>{icon}</View>
           )}
