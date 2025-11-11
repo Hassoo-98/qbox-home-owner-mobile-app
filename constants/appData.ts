@@ -1,3 +1,5 @@
+import { QR_VALIDITY_DURATION_TYPE } from "./enums";
+
 export const OFFERS = [
   {
     id: 1,
@@ -14,5 +16,80 @@ export const OFFERS = [
     image: require("@/assets/images/offer.png"),
     buttonText: "Claim Offer",
     buttonColor: "#11A543",
+  },
+];
+
+export const QR_CODE_HISTORY = [
+  {
+    id: 1,
+    title: "Entrance Gate QR",
+    isActive: true,
+    createdAt: new Date("2025-01-10T10:15:00Z").toISOString(),
+    validityDuration: 15,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
+    maxUsers: 20,
+  },
+  {
+    id: 2,
+    title: "Cafeteria Access",
+    isActive: false,
+    createdAt: new Date("2025-01-02T09:00:00Z").toISOString(),
+    validityDuration: 2,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.HOUR,
+    maxUsers: 50,
+  },
+  {
+    id: 3,
+    title: "Conference Room QR",
+    isActive: true,
+    createdAt: new Date("2025-01-11T14:45:00Z").toISOString(),
+    validityDuration: 1,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.DAY,
+    maxUsers: 5,
+  },
+  {
+    id: 4,
+    title: "Event Guest Entry",
+    isActive: true,
+    createdAt: new Date("2025-01-12T18:30:00Z").toISOString(),
+    validityDuration: 30,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
+    maxUsers: 200,
+  },
+  {
+    id: 5,
+    title: "VIP Lounge Access",
+    isActive: false,
+    createdAt: new Date("2025-01-05T11:20:00Z").toISOString(),
+    validityDuration: 12,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.HOUR,
+    maxUsers: 10,
+  },
+  {
+    id: 6,
+    title: "Parking Zone QR",
+    isActive: true,
+    createdAt: new Date("2025-01-09T07:10:00Z").toISOString(),
+    validityDuration: 2,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.DAY,
+    maxUsers: 300,
+  },
+  {
+    id: 7,
+    title: "Temporary Office QR",
+    isActive: true,
+    createdAt: new Date("2025-01-12T09:40:00Z").toISOString(),
+    validityDuration: 45,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
+    maxUsers: 3,
+  },
+  {
+    id: 8,
+    title: "Employee Training Session",
+    isActive: false,
+    createdAt: new Date("2025-01-01T13:00:00Z").toISOString(),
+    validityDuration: 24,
+    validityDurationType: QR_VALIDITY_DURATION_TYPE.HOUR,
+    maxUsers: 50,
   },
 ];

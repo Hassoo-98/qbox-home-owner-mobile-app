@@ -1,13 +1,14 @@
+import { Colors } from "@/constants";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.white,
     overflow: "hidden",
   },
   elevated: {
-    shadowColor: "#000",
+    shadowColor: Colors.dark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -18,7 +19,7 @@ export const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
   },
   filled: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: Colors.gray,
   },
   header: {
     paddingHorizontal: 16,
