@@ -1,9 +1,17 @@
-import { AppHeaderRight, AppHeaderTitle, HapticTab } from "@/components";
-import { BOTTOM_TABS, Colors } from "@/constants";
-import { Tabs } from "expo-router";
+import {
+  AppHeaderLeft,
+  AppHeaderRight,
+  AppHeaderTitle,
+  HapticTab,
+} from "@/components";
+import { BOTTOM_TABS, Colors, NESTED_SCREEN_TITLES } from "@/constants";
+import { router, Tabs, usePathname } from "expo-router";
 
 export const AppTabLayout = () => {
+  const pathname = usePathname();
+
   const handleQRPress = () => {
+    router.navigate("/qrCodeHistory");
     console.log("QR pressed");
   };
 
@@ -11,9 +19,28 @@ export const AppTabLayout = () => {
     console.log("Notification pressed");
   };
 
+  // Check if current pathname is a nested screen
+  const isNestedScreen = Object.keys(NESTED_SCREEN_TITLES).some((path) =>
+    pathname.includes(path)
+  );
+
+  const shouldShowTabBar = ["/", "/myQbox", "/profile", "/package"].includes(
+    pathname
+  );
+
+  // Get dynamic title for nested screens
+  const getScreenTitle = () => {
+    for (const [path, title] of Object.entries(NESTED_SCREEN_TITLES)) {
+      if (pathname.includes(path)) {
+        return title;
+      }
+    }
+    return null;
+  };
+
   return (
     <Tabs
-      screenOptions={({ route }) => ({
+      screenOptions={() => ({
         headerShown: true,
         headerShadowVisible: false,
         headerTitleAlign: "left",
@@ -21,11 +48,13 @@ export const AppTabLayout = () => {
           backgroundColor: Colors.gray,
         },
         headerTitle({ children }) {
-          return <AppHeaderTitle title={children} />;
+          const title = getScreenTitle() || children;
+          return <AppHeaderTitle title={title} />;
         },
+        headerLeft: () => <AppHeaderLeft canGoBack={isNestedScreen} />,
         headerRight: () => (
           <AppHeaderRight
-            activeTab={route.name}
+            activeTab={pathname.split("/")[1]}
             handleQRPress={handleQRPress}
             handleNotificationPress={handleNotificationPress}
           />
@@ -33,22 +62,26 @@ export const AppTabLayout = () => {
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.secondary,
         tabBarButton: HapticTab,
-        tabBarStyle: {
-          borderTopWidth: 0,
-          backgroundColor: Colors.background || "#ffffff",
-          elevation: 8,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: -4,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          ...(process.env.EXPO_OS === "ios" && {
-            height: 60,
-            paddingBottom: 8,
-          }),
-        },
+        tabBarStyle: shouldShowTabBar
+          ? {
+              borderTopWidth: 0,
+              backgroundColor: Colors.background || "#ffffff",
+              elevation: 8,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: -4,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              ...(process.env.EXPO_OS === "ios" && {
+                height: 60,
+                paddingBottom: 8,
+              }),
+            }
+          : {
+              display: "none",
+            },
       })}
     >
       {BOTTOM_TABS &&
@@ -59,14 +92,20 @@ export const AppTabLayout = () => {
             name={tab.name}
             options={{
               title: tab.title,
-              tabBarIcon: ({ focused }) => {
-                const { Icon, IconOutline } = tab;
-                return focused ? (
-                  <Icon width={24} height={24} />
-                ) : (
-                  <IconOutline width={24} height={24} />
-                );
-              },
+              ...(tab?.isBottomTab
+                ? {
+                    tabBarIcon: ({ focused }) => {
+                      const { Icon, IconOutline } = tab;
+                      return focused ? (
+                        <Icon width={24} height={24} />
+                      ) : (
+                        <IconOutline width={24} height={24} />
+                      );
+                    },
+                  }
+                : {
+                    href: null,
+                  }),
             }}
           />
         ))}

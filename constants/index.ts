@@ -5,5 +5,6 @@ export * from "./errorTypes";
 export * from "./formData";
 export * from "./navigationTheme";
 export * from "./patterns";
+export * from "./screenTitles";
 export * from "./theme";
 export * from "./validationMessages";

@@ -1,4 +1,4 @@
-import { Spacing } from "@/constants";
+import { Colors, Spacing } from "@/constants";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -7,10 +7,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     marginRight: Spacing.lg,
-  },
-  headerTitle: {
-    fontWeight: 600,
-    marginLeft: Spacing.md,
   },
   iconButton: {
     position: "relative",
@@ -32,7 +28,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   badgeText: {
-    color: "#fff",
+    color: Colors.white,
     fontSize: 10,
     fontWeight: "bold",
   },

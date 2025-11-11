@@ -1,8 +1,7 @@
 import { NotificationBellIcon, QRHistoryIcon } from "@/assets/icons";
-import { Text } from "@/components";
+import { HapticPressable, Text } from "@/components";
 import { View } from "react-native";
-import { HapticPressable } from "../HapticPressable";
-import { AppHeaderRightProps, AppHeaderTitleProps } from "./props";
+import { AppHeaderRightProps } from "./props";
 import { styles } from "./styles";
 
 export const AppHeaderRight = ({
@@ -13,7 +12,7 @@ export const AppHeaderRight = ({
   const notificationCount = 5;
   return (
     <View style={styles.headerRight}>
-      {activeTab === "home" && (
+      {activeTab === "" && (
         <HapticPressable onPress={handleQRPress}>
           <QRHistoryIcon width={24} height={24} />
         </HapticPressable>
@@ -33,10 +32,4 @@ export const AppHeaderRight = ({
   );
 };
 
-export const AppHeaderTitle = ({ title }: AppHeaderTitleProps) => {
-  return (
-    <Text style={styles.headerTitle} size="lg">
-      {title}
-    </Text>
-  );
-};
+export default AppHeaderRight;

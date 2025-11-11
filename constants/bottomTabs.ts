@@ -12,17 +12,19 @@ import {
 export const BOTTOM_TABS = [
   {
     id: 1,
-    name: "home",
+    name: "(home-screens)",
     title: "Home",
     Icon: HomeIcon,
     IconOutline: HomeIconOutline,
+    isBottomTab: true,
   },
   {
     id: 2,
-    name: "myqbox",
+    name: "myQbox",
     title: "MyQBox",
     Icon: MyQBoxIcon,
     IconOutline: MyQBoxIconOutline,
+    isBottomTab: true,
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ export const BOTTOM_TABS = [
     title: "Package",
     Icon: PackageIcon,
     IconOutline: PackageIconOutline,
+    isBottomTab: true,
   },
   {
     id: 4,
@@ -37,5 +40,6 @@ export const BOTTOM_TABS = [
     title: "Profile",
     Icon: ProfileIcon,
     IconOutline: ProfileIconOutline,
+    isBottomTab: true,
   },
 ];
