@@ -10,6 +10,8 @@ import { router, Tabs, usePathname } from "expo-router";
 export const AppTabLayout = () => {
   const pathname = usePathname();
 
+  console.log("pathname", pathname);
+
   const handleQRPress = () => {
     router.navigate("/qrCodeHistory");
     console.log("QR pressed");

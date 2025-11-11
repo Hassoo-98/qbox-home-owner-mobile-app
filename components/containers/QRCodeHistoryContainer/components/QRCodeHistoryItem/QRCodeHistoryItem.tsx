@@ -2,6 +2,7 @@ import { Card, Chip, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
+import { router } from "expo-router";
 import { View } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { SwipeActions } from "./components";
@@ -20,6 +21,10 @@ export const QRCodeHistoryItem = ({
       onMarkAsExpire,
     });
 
+  const handleCardPress = () => {
+    router.navigate(`/qrCodeDetails/${item.id}`);
+  };
+
   return (
     <Swipeable
       ref={swipeableRef}
@@ -37,6 +42,7 @@ export const QRCodeHistoryItem = ({
         showSideBorder
         sideBorderColor={item.isActive ? Colors.success : Colors.danger}
         style={{ marginBottom: mvs(Spacing.md) }}
+        onPress={handleCardPress}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontWeight: "bold" }}>{item?.title}</Text>

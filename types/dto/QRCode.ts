@@ -8,4 +8,17 @@ export type QRCode = {
   validityDuration: number;
   validityDurationType: QR_VALIDITY_DURATION_TYPE;
   maxUsers: number;
+  usersLeft: number;
+};
+
+export type QRScan = {
+  id: number;
+  qrCodeId: number;
+  qrCodeScanTime: string;
+  qrCodeScanLocation: string;
+  qrCodeScanUser: string;
+  openedAt: string;
+  closedAt: string;
+  status: string;
+  videoUrl: string;
 };

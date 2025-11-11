@@ -8,31 +8,47 @@ export const ItemInfo = ({
   description,
   leftContent,
   rightContent,
+  titleProps,
+  descriptionProps,
   style = {},
 }: ItemInfoProps) => {
+  const { style: titleStyle, ...titleRestProps } = titleProps || {};
+  const { style: descriptionStyle, ...descriptionRestProps } =
+    descriptionProps || {};
+
   return (
     <View
       style={[{ flexDirection: "row", justifyContent: "space-between" }, style]}
     >
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <Text
-          size="xs"
-          style={{
-            color: Colors.secondaryText,
-            marginBottom: 2,
-          }}
-        >
-          {title}
-        </Text>
-        <Text
-          size="xl"
-          style={{
-            fontWeight: "700",
-            marginBottom: Spacing.xs,
-          }}
-        >
-          {description}
-        </Text>
+        <View>
+          <Text
+            size="xs"
+            {...titleRestProps}
+            style={[
+              {
+                color: Colors.secondaryText,
+                marginBottom: 2,
+              },
+              titleStyle,
+            ]}
+          >
+            {title}
+          </Text>
+          <Text
+            size="xl"
+            {...descriptionRestProps}
+            style={[
+              {
+                fontWeight: "700",
+                marginBottom: Spacing.xs,
+              },
+              descriptionStyle,
+            ]}
+          >
+            {description}
+          </Text>
+        </View>
         {leftContent && leftContent}
       </View>
 

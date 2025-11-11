@@ -11,4 +11,5 @@ export { default as PlaceholderQRIcon } from "./placeholder-qr.svg";
 export { default as ProfileIconOutline } from "./profile-icon-outline.svg";
 export { default as ProfileIcon } from "./profile-icon.svg";
 export { default as QRHistoryIcon } from "./qr-history.svg";
+export { default as RecordingIcon } from "./recording-icon.svg";
 export { default as WarningIconOutline } from "./warning-icon.svg";

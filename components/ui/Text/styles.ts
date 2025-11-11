@@ -1,4 +1,5 @@
 import { Colors } from "@/constants";
+import { mvs } from "@/utils/metrices";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -9,24 +10,24 @@ export const styles = StyleSheet.create({
 
   // Size variants
   xs: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: mvs(12),
+    lineHeight: mvs(16),
   },
   sm: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: mvs(14),
+    lineHeight: mvs(20),
   },
   md: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: mvs(16),
+    lineHeight: mvs(24),
   },
   lg: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: mvs(18),
+    lineHeight: mvs(28),
   },
   xl: {
-    fontSize: 20,
-    lineHeight: 32,
+    fontSize: mvs(20),
+    lineHeight: mvs(32),
   },
 
   // Variant styles
