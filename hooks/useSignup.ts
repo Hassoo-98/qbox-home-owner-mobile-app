@@ -1,7 +1,7 @@
 import { SignUpFormValues } from "@/types";
 import { SignUpFormResolver } from "@/utils";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
@@ -14,7 +14,7 @@ export const useSignup=()=>{
     
       const {
         control,
-        formState: { isDirty },
+        formState: { isDirty ,errors},
         reset,
         watch,
         setValue,
@@ -41,6 +41,8 @@ export const useSignup=()=>{
         },
         mode: "onChange",
       });
+
+      console.log('form errors in signup: ',JSON.stringify(errors,null,4))
     
       useEffect(() => {
         console.log("origin in signup====>", params?.origin);
@@ -56,6 +58,7 @@ export const useSignup=()=>{
           "signup form submission submission: ",
           JSON.stringify(data, null, 4)
         );
+        router.navigate('/(auth)/confirmSignup')
       });
     
       const phoneNumber = watch("phone");

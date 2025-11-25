@@ -1,1 +1,2 @@
-export { ViewRecording } from "./ViewRecording";
+export { VedioRecording } from "./ViewRecording";
+

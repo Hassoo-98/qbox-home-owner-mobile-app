@@ -1,4 +1,4 @@
-import { Spacing } from "@/constants";
+import { Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { StyleSheet } from "react-native";
 
@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#2463EB33",
   },
   expireButton: {
-    backgroundColor: "#F9DADB",
+    backgroundColor: Colors.lightRed,
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
   },

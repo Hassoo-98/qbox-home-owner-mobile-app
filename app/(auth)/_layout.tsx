@@ -56,6 +56,13 @@ export const AuthLayout = () => {
           headerTitleAlign: "left",
         }}
       />
+      <Stack.Screen
+        name="confirmSignup"
+        options={{
+          title: "Signup Confirmation",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

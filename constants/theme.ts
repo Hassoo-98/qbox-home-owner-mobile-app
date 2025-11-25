@@ -22,6 +22,7 @@ export const Colors = {
   white: "#fff",
   danger: "#c70000",
   warning: "#FCEAC8",
+  lightRed:'#F9DADB',
   success: "#2FA766",
   successBackground: "#C5EFD8",
   warningText: "#7B5D24",
@@ -34,7 +35,7 @@ export const Colors = {
 
 export const Spacing = {
   xs: 4,
-  sm: 8,
+  sm: 8,   
   md: 16,
   lg: 24,
   xl: 32,

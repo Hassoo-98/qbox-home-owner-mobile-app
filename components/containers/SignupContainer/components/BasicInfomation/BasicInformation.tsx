@@ -7,7 +7,7 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
   return (
     <View>
       <TextInput
-        name="firstName"
+        name="fullName"
         inputMode="text"
         control={control}
         autoCapitalize="words"
