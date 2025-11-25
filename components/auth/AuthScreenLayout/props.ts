@@ -10,4 +10,5 @@ export interface AuthScreenLayoutProps {
   headerContent?: ReactNode;
   style?: ViewStyle;
   stepperStyle?: ViewStyle;
+  footer?: React.ReactNode;
 }

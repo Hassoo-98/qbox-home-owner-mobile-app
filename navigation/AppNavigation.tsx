@@ -1,12 +1,12 @@
-import { AuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/hooks";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
 
 export const AppNavigation = () => {
-  const { userToken, isLoading } = useContext(AuthContext);
+  const { isLoading, userToken } = useAuth();
 
   useEffect(() => {
     if (!isLoading) {

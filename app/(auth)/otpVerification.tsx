@@ -32,7 +32,9 @@ export const OtpVerification = () => {
 
   return (
     <AuthScreenLayout
-      title="Enter Verification Code"
+      title={
+        origin !== "signup" ? "Enter Verification Code" : "OTP Verfication"
+      }
       description={`Enter the 5 digit otp code send on your ${
         isPhone ? "phone number" : "email address"
       } ${authValue}`}
@@ -47,39 +49,55 @@ export const OtpVerification = () => {
           }}
         />
 
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: Spacing.md,
-          }}
-        >
-          Didn’t receive code?{" "}
-          <Text variant="primary" style={{ fontWeight: "bold" }}>
-            Resend again
+        {origin !== "signup" && (
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: Spacing.md,
+            }}
+          >
+            Didn’t receive code?{" "}
+            <Text variant="primary" style={{ fontWeight: "bold" }}>
+              Resend again
+            </Text>
           </Text>
-        </Text>
+        )}
 
         <Button
           style={{ marginTop: Spacing.xl }}
-          title="Confirm"
+          title={origin === "signup" ? "Verify" : "Confirm"}
           onPress={handleSubmit(onSubmit)}
         />
 
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: Spacing.md,
-          }}
-        >
-          Remember Password? Back to{" "}
+        {origin === "signup" ? (
           <Text
-            variant="primary"
-            style={{ fontWeight: "bold" }}
-            onPress={() => router.dismissTo("/login")}
+            style={{
+              textAlign: "center",
+              marginTop: Spacing.md,
+            }}
           >
-            Login
+            Didn’t receive code?{" "}
+            <Text variant="primary" style={{ fontWeight: "bold" }}>
+              Resend again
+            </Text>
           </Text>
-        </Text>
+        ) : (
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: Spacing.md,
+            }}
+          >
+            Remember Password? Back to{" "}
+            <Text
+              variant="primary"
+              style={{ fontWeight: "bold" }}
+              onPress={() => router.dismissTo("/login")}
+            >
+              Login
+            </Text>
+          </Text>
+        )}
       </Form>
     </AuthScreenLayout>
   );

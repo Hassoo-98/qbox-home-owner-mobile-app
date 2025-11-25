@@ -68,6 +68,11 @@ export const TextInput = ({
                   styles.input,
                   startIconPath && styles.inputWithStartIcon,
                   (endIconPath || endButtonText) && styles.inputWithEndIcon,
+                  restProps.multiline && {
+                    height: 120,
+                    textAlignVertical: "top",
+                    paddingTop: 12,
+                  },
                 ]}
               />
 

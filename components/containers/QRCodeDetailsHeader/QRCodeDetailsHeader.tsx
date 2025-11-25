@@ -3,6 +3,7 @@ import { ItemInfo, Text } from "@/components";
 import { Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
+import React from "react";
 import { View } from "react-native";
 import { QRCodeDetailsHeaderProps } from "./props";
 

@@ -10,16 +10,16 @@ import {
   TextInput,
 } from "@/components";
 import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
-import { AuthContext } from "@/context";
+import { useAuth } from "@/hooks";
 import { LoginFormValues } from "@/types";
 import { LoginFormResolver } from "@/utils";
 import { router } from "expo-router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
     AUTH_PROVIDERS.PHONE
   );

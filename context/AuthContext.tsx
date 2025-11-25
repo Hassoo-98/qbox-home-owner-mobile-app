@@ -8,7 +8,7 @@ export const AuthContext = createContext<{
   isLoading: boolean;
 }>({
   userToken: null,
-  login: async (token: string) => {},
+  login: async () => {},
   logout: async () => {},
   isLoading: true,
 });

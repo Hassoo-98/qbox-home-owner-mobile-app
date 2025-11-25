@@ -13,6 +13,7 @@ export const AuthScreenLayout = ({
   totalSteps,
   style,
   stepperStyle,
+  footer,
 }: AuthScreenLayoutProps) => {
   return (
     <SafeAreaView
@@ -23,31 +24,54 @@ export const AuthScreenLayout = ({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View
-            style={{ paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl }}
+        <View style={{ flex: 1 }}>
+          {/* Scrollable Content */}
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 150 }}
           >
-            {currentStep && totalSteps && (
-              <Stepper
-                totalSteps={totalSteps}
-                currentStep={currentStep}
-                height={6}
-                style={stepperStyle ? stepperStyle : {}}
-              />
-            )}
-            <Text size="xl" style={{ fontWeight: "bold" }}>
-              {title}
-            </Text>
-            <Text size="md" variant="secondary">
-              {description}
-            </Text>
-            {headerContent}
-          </View>
-          {children}
-        </ScrollView>
+            <View
+              style={{
+                paddingHorizontal: Spacing.xl,
+                paddingTop: Spacing.xl,
+              }}
+            >
+              {currentStep && totalSteps && (
+                <Stepper
+                  totalSteps={totalSteps}
+                  currentStep={currentStep}
+                  height={6}
+                  style={stepperStyle ? stepperStyle : {}}
+                />
+              )}
+
+              <Text size="xl" style={{ fontWeight: "bold" }}>
+                {title}
+              </Text>
+              <Text size="md" variant="secondary">
+                {description}
+              </Text>
+
+              {headerContent}
+            </View>
+
+            {children}
+          </ScrollView>
+
+          {/* Fixed Footer */}
+          {footer && (
+            <View
+              style={{
+                paddingHorizontal: Spacing.xl,
+                paddingBottom: Spacing.xl,
+                backgroundColor: "white",
+              }}
+            >
+              {footer}
+            </View>
+          )}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
