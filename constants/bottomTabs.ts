@@ -36,7 +36,7 @@ export const BOTTOM_TABS = [
   },
   {
     id: 4,
-    name: "profile",
+    name: "(profile)",
     title: "Profile",
     Icon: ProfileIcon,
     IconOutline: ProfileIconOutline,

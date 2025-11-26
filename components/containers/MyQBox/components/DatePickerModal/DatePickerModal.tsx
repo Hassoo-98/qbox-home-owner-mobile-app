@@ -7,13 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-interface DatePickerModalProps {
-  visible: boolean;
-  date: Date;
-  onClose: () => void;
-  onChange: (event: any, selectedDate?: Date) => void;
-}
+import { DatePickerModalProps } from "./props";
 
 export const DatePickerModal = ({
   visible,

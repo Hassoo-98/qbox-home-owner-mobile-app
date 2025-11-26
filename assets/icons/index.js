@@ -1,7 +1,11 @@
 export { default as ChevronDownIcon } from "./chevron-down.svg";
+export { default as ContactIcon } from "./contact.svg";
 export { default as DummyQRCodeIcon } from "./dummy-qr-code.svg";
 export { default as HomeIconOutline } from "./home-icon-outline.svg";
 export { default as HomeIcon } from "./home-icon.svg";
+export { default as LanguageIcon } from "./language.svg";
+export { default as LocationIcon } from "./location.svg";
+export { default as LogoutIcon } from "./logout.svg";
 export { default as MyQBoxIconOutline } from "./myqbox-icon-outline.svg";
 export { default as MyQBoxIcon } from "./myqbox-icon.svg";
 export { default as NotificationBellIcon } from "./notification-bell.svg";
@@ -12,4 +16,5 @@ export { default as ProfileIconOutline } from "./profile-icon-outline.svg";
 export { default as ProfileIcon } from "./profile-icon.svg";
 export { default as QRHistoryIcon } from "./qr-history.svg";
 export { default as RecordingIcon } from "./recording-icon.svg";
+export { default as SubscriptionHistoryIcon } from "./subscription-History.svg";
 export { default as WarningIconOutline } from "./warning-icon.svg";

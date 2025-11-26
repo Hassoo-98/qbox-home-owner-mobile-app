@@ -2,11 +2,7 @@ import { Card, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { StyleSheet, Switch, View } from "react-native";
-
-interface QBoxAlarmCardProps {
-  isEnabled: boolean;
-  onToggle: () => void;
-}
+import { QBoxAlarmCardProps } from "./prpos";
 
 export const QBoxAlarmCard = ({ isEnabled, onToggle }: QBoxAlarmCardProps) => {
   return (

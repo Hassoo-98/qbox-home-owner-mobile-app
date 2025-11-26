@@ -1,3 +1,11 @@
+import {
+  ContactIcon,
+  LanguageIcon,
+  LocationIcon,
+  LogoutIcon,
+  ProfileIcon,
+  SubscriptionHistoryIcon,
+} from "@/assets/icons";
 import { QR_VALIDITY_DURATION_TYPE } from "./enums";
 import { Colors } from "./theme";
 
@@ -266,5 +274,32 @@ export const STATUS_CARDS_DATA = [
     title: "Power Status",
     statusText: "Plugged",
     statusColor: Colors.primary,
+  },
+];
+
+
+export const MENU_ITEM = [
+  { id: 1, icon: ProfileIcon, title: "Basic Information", path: "/" },
+  {
+    id: 2,
+    icon: LanguageIcon,
+    title: "Language",
+    path: "/",
+    rightText: "English",
+  },
+  { id: 3, icon: LocationIcon, title: "My QBox Location", path: "/" },
+  {
+    id: 4,
+    icon: SubscriptionHistoryIcon,
+    title: "Subscription History",
+    path: "/",
+  },
+  { id: 5, icon: ContactIcon, title: "Contact Us", path: "/" },
+  {
+    id: 6,
+    icon: LogoutIcon,
+    title: "Logout",
+    backgroundColor: Colors.lightRed,
+    textColor: Colors.danger,
   },
 ];
