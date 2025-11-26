@@ -5,7 +5,7 @@ import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
 import { useVideoPlayer } from "expo-video";
 import React, { useState } from "react";
-import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import { QRScanHistoryItemProps } from "./props";
 
 export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
@@ -119,22 +119,19 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            {/* Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {item?.qrCodeScanUser || "Recording"} -{" "}
-                {format(item?.openedAt, "PP")}
-              </Text>
-              <TouchableOpacity onPress={handleCloseModal}>
-                <Text style={styles.closeIcon}>✕</Text>
-              </TouchableOpacity>
-            </View>
-            {/* Video Player */}
             <VedioRecording
               player={player}
               onShare={() => console.log("Share")}
               onDownload={() => console.log("Download")}
               autoPlay={true}
+              header={{
+                title: `${item?.qrCodeScanUser || "Recording"} - ${format(
+                  item?.openedAt,
+                  "PP"
+                )}`,
+                rightIcon: <Text style={styles.closeIcon}>✕</Text>,
+                onRightIconPress: handleCloseModal,
+              }}
             />
           </View>
         </View>
@@ -157,14 +154,11 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 500,
     overflow: "hidden",
-    padding: 20,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
     marginBottom: mvs(8),
   },
   modalTitle: {

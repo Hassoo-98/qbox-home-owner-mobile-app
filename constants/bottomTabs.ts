@@ -20,7 +20,7 @@ export const BOTTOM_TABS = [
   },
   {
     id: 2,
-    name: "myQbox",
+    name: "(myQbox)",
     title: "MyQBox",
     Icon: MyQBoxIcon,
     IconOutline: MyQBoxIconOutline,

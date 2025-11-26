@@ -1,4 +1,5 @@
 import { QR_VALIDITY_DURATION_TYPE } from "./enums";
+import { Colors } from "./theme";
 
 export const OFFERS = [
   {
@@ -234,5 +235,36 @@ export const QR_SCAN_HISTORY = [
     closedAt: new Date("2025-01-21T17:25:45Z").toISOString(),
     status: "success",
     videoUrl: "https://www.youtube.com/watch?v=OPf0YbXqDm0",
+  },
+];
+
+export const STATUS_CARDS_DATA = [
+  {
+    id: "1",
+    icon: "online-prediction",
+    title: "QBox Status",
+    statusText: "Online",
+    statusColor: Colors.success,
+  },
+  {
+    id: "2",
+    icon: "camera-alt",
+    title: "Camera",
+    statusText: "Working",
+    statusColor: Colors.success,
+  },
+  {
+    id: "3",
+    icon: "lightbulb-outline",
+    title: "LED Indicator",
+    statusText: "Red",
+    statusColor: Colors.danger,
+  },
+  {
+    id: "4",
+    icon: "power",
+    title: "Power Status",
+    statusText: "Plugged",
+    statusColor: Colors.primary,
   },
 ];
