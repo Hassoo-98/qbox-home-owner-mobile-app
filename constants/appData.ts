@@ -6,6 +6,7 @@ import {
   ProfileIcon,
   SubscriptionHistoryIcon,
 } from "@/assets/icons";
+import { ProfileItem } from "@/types";
 import { QR_VALIDITY_DURATION_TYPE } from "./enums";
 import { Colors } from "./theme";
 
@@ -278,8 +279,8 @@ export const STATUS_CARDS_DATA = [
 ];
 
 
-export const MENU_ITEM = [
-  { id: 1, icon: ProfileIcon, title: "Basic Information", path: "/" },
+export const MENU_ITEM:ProfileItem[] = [
+  { id: 1, icon: ProfileIcon, title: "Basic Information", path: "/basicInformation" },
   {
     id: 2,
     icon: LanguageIcon,

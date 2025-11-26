@@ -1,8 +1,8 @@
 import React from "react";
 import { MenuItem } from "../MenuItem";
-import { Props } from "./props";
+import { MenuListProps } from "./props";
 
-export const MenuList: React.FC<Props> = ({ menuData }) => {
+export const MenuList = ({ menuData }: MenuListProps) => {
   return (
     <>
       {menuData.map((item) => (
