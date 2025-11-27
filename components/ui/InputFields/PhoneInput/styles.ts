@@ -25,15 +25,23 @@ export const styles = StyleSheet.create({
 
   phoneInputWrapper: {
     width: "100%",
-  },
-
-  phoneInputContainer: {
     backgroundColor: "#FCFCFD",
     borderWidth: 1.5,
     borderColor: "#E6E8EC",
     borderRadius: BorderRadius.md,
-    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
     height: 46,
+    paddingRight: Spacing.xs,
+  },
+
+  phoneInputContainer: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    borderRadius: BorderRadius.md,
+    flex: 1,
+    height: 46,
+    paddingLeft: 0,
   },
 
   phoneInputContainerError: {
@@ -41,15 +49,17 @@ export const styles = StyleSheet.create({
   },
 
   phoneInputTextContainer: {
-    backgroundColor: "#FCFCFD",
+    backgroundColor: "transparent",
     borderRadius: BorderRadius.md,
     paddingVertical: 0,
+    paddingLeft: Spacing.sm,
   },
 
   phoneInputText: {
     fontSize: 14,
     color: Colors.text,
     height: 44,
+    paddingLeft: 0,
   },
 
   phoneInputCodeText: {
@@ -58,9 +68,14 @@ export const styles = StyleSheet.create({
   },
 
   phoneInputCountryPickerButton: {
-    backgroundColor: "#FCFCFD",
+    backgroundColor: "transparent",
     borderTopLeftRadius: BorderRadius.md,
     borderBottomLeftRadius: BorderRadius.md,
+    paddingLeft: Spacing.sm,
+  },
+
+  endButton: {
+    marginLeft: Spacing.xs,
   },
 
   errorText: {

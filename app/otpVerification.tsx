@@ -24,6 +24,14 @@ export const OtpVerification = () => {
         },
       });
       return;
+    } else if (origin === "basicInformation") {
+      router.dismissTo({
+        pathname: "/basicInformation",
+        params: {
+          origin: "otpVerification",
+          verifiedProvider: authOption,
+        },
+      });
     }
     router.navigate("/resetPassword");
   };
@@ -32,9 +40,7 @@ export const OtpVerification = () => {
 
   return (
     <AuthScreenLayout
-      title={
-        origin !== "signup" ? "Enter Verification Code" : "OTP Verfication"
-      }
+      title={origin ? "OTP Verfication" : "Enter Verification Code"}
       description={`Enter the 5 digit otp code send on your ${
         isPhone ? "phone number" : "email address"
       } ${authValue}`}
@@ -49,7 +55,7 @@ export const OtpVerification = () => {
           }}
         />
 
-        {origin !== "signup" && (
+        {!origin && (
           <Text
             style={{
               textAlign: "center",
@@ -65,11 +71,11 @@ export const OtpVerification = () => {
 
         <Button
           style={{ marginTop: Spacing.xl }}
-          title={origin === "signup" ? "Verify" : "Confirm"}
+          title={origin ? "Confirm" : "Verify"}
           onPress={handleSubmit(onSubmit)}
         />
 
-        {origin === "signup" ? (
+        {origin ? (
           <Text
             style={{
               textAlign: "center",

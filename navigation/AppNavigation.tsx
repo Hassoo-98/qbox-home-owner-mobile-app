@@ -26,6 +26,16 @@ export const AppNavigation = () => {
       <Stack.Protected guard={!Boolean(userToken)}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack.Protected>
+      <Stack.Screen
+        name="otpVerification"
+        options={{
+          title: "OTP Verification",
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitleAlign: "left",
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 };

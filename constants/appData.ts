@@ -112,6 +112,109 @@ export const QR_CODE_HISTORY = [
   },
 ];
 
+export const SUBSCRIPTION_HISTORY = [
+  {
+    id: 1,
+    title: "Standard Subscription Plan",
+    startDate: new Date("2025-01-10T10:15:00Z").toISOString(),
+    endDate: new Date("2025-02-10T10:15:00Z").toISOString(),
+    transactionId: "TXN-001",
+    paymentMethod: "Apple Pay",
+    amount: "150",
+    currency: "SAR",
+  },
+  {
+    id: 2,
+    title: "Premium Subscription Plan",
+    startDate: new Date("2025-02-12T14:30:00Z").toISOString(),
+    endDate: new Date("2025-03-12T14:30:00Z").toISOString(),
+    transactionId: "TXN-002",
+    paymentMethod: "Credit Card",
+    amount: "250",
+    currency: "SAR",
+  },
+  {
+    id: 3,
+    title: "Basic Subscription Plan",
+    startDate: new Date("2025-03-05T09:45:00Z").toISOString(),
+    endDate: new Date("2025-04-05T09:45:00Z").toISOString(),
+    transactionId: "TXN-003",
+    paymentMethod: "Mada",
+    amount: "99",
+    currency: "SAR",
+  },
+  {
+    id: 4,
+    title: "Standard Subscription Plan",
+    startDate: new Date("2025-04-01T11:20:00Z").toISOString(),
+    endDate: new Date("2025-05-01T11:20:00Z").toISOString(),
+    transactionId: "TXN-004",
+    paymentMethod: "Apple Pay",
+    amount: "150",
+    currency: "SAR",
+  },
+  {
+    id: 5,
+    title: "Premium Subscription Plan",
+    startDate: new Date("2025-05-15T08:10:00Z").toISOString(),
+    endDate: new Date("2025-06-15T08:10:00Z").toISOString(),
+    transactionId: "TXN-005",
+    paymentMethod: "Credit Card",
+    amount: "250",
+    currency: "SAR",
+  },
+  {
+    id: 6,
+    title: "Basic Subscription Plan",
+    startDate: new Date("2025-06-20T17:50:00Z").toISOString(),
+    endDate: new Date("2025-07-20T17:50:00Z").toISOString(),
+    transactionId: "TXN-006",
+    paymentMethod: "Mada",
+    amount: "99",
+    currency: "SAR",
+  },
+  {
+    id: 7,
+    title: "Standard Subscription Plan",
+    startDate: new Date("2025-07-10T13:15:00Z").toISOString(),
+    endDate: new Date("2025-08-10T13:15:00Z").toISOString(),
+    transactionId: "TXN-007",
+    paymentMethod: "Apple Pay",
+    amount: "150",
+    currency: "SAR",
+  },
+  {
+    id: 8,
+    title: "Premium Subscription Plan",
+    startDate: new Date("2025-08-03T19:30:00Z").toISOString(),
+    endDate: new Date("2025-09-03T19:30:00Z").toISOString(),
+    transactionId: "TXN-008",
+    paymentMethod: "Credit Card",
+    amount: "250",
+    currency: "SAR",
+  },
+  {
+    id: 9,
+    title: "Basic Subscription Plan",
+    startDate: new Date("2025-09-25T06:40:00Z").toISOString(),
+    endDate: new Date("2025-10-25T06:40:00Z").toISOString(),
+    transactionId: "TXN-009",
+    paymentMethod: "Mada",
+    amount: "99",
+    currency: "SAR",
+  },
+  {
+    id: 10,
+    title: "Standard Subscription Plan",
+    startDate: new Date("2025-10-12T15:55:00Z").toISOString(),
+    endDate: new Date("2025-11-12T15:55:00Z").toISOString(),
+    transactionId: "TXN-010",
+    paymentMethod: "Apple Pay",
+    amount: "150",
+    currency: "SAR",
+  },
+];
+
 export const QR_SCAN_HISTORY = [
   {
     id: 1,
@@ -278,22 +381,31 @@ export const STATUS_CARDS_DATA = [
   },
 ];
 
-
-export const MENU_ITEM:ProfileItem[] = [
-  { id: 1, icon: ProfileIcon, title: "Basic Information", path: "/basicInformation" },
+export const MENU_ITEM: ProfileItem[] = [
+  {
+    id: 1,
+    icon: ProfileIcon,
+    title: "Basic Information",
+    path: "/basicInformation",
+  },
   {
     id: 2,
     icon: LanguageIcon,
     title: "Language",
-    path: "/",
+    path: "/appLanguage",
     rightText: "English",
   },
-  { id: 3, icon: LocationIcon, title: "My QBox Location", path: "/" },
+  {
+    id: 3,
+    icon: LocationIcon,
+    title: "My QBox Location",
+    path: "/myQBoxLocation",
+  },
   {
     id: 4,
     icon: SubscriptionHistoryIcon,
     title: "Subscription History",
-    path: "/",
+    path: "/suscriptionHistory",
   },
   { id: 5, icon: ContactIcon, title: "Contact Us", path: "/" },
   {

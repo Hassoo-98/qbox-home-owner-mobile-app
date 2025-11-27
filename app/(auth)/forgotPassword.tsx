@@ -38,7 +38,7 @@ export const ForgotPassword = () => {
   const onSubmit = (data: ForgotPasswordFormValues) => {
     console.log("forgot password submission: ", data);
     router.navigate({
-      pathname: "/(auth)/otpVerification",
+      pathname: "/otpVerification",
       params: {
         authOption: selectedAuthProvider,
         authValue:

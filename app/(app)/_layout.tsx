@@ -43,7 +43,7 @@ export const AppTabLayout = () => {
   return (
     <Tabs
       screenOptions={() => ({
-        headerShown: true,
+        headerShown: shouldShowTabBar,
         headerShadowVisible: false,
         headerTitleAlign: "left",
         headerStyle: {

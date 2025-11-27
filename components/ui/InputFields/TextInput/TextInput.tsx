@@ -17,6 +17,7 @@ export const TextInput = ({
   iconPath,
   endIconPath,
   startIconPath,
+  endButtonProps,
   onEndIconClick,
   onStartIconClick,
   endButtonText,
@@ -90,17 +91,9 @@ export const TextInput = ({
                 <Button
                   onPress={onEndButtonClick}
                   size="sm"
+                  {...endButtonProps}
                   title={endButtonText}
                 />
-                // <TouchableOpacity
-                //   onPress={onEndButtonClick}
-                //   style={styles.endButton}
-                //   // activeOpacity={0.8}
-                // >
-                //   <Text size="md" style={styles.endButtonText}>
-                //     {endButtonText}
-                //   </Text>
-                // </TouchableOpacity>
               )}
             </View>
 
