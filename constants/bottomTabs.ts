@@ -28,7 +28,7 @@ export const BOTTOM_TABS = [
   },
   {
     id: 3,
-    name: "package",
+    name: "(package)",
     title: "Package",
     Icon: PackageIcon,
     IconOutline: PackageIconOutline,

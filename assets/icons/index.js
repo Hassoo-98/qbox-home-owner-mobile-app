@@ -11,6 +11,7 @@ export { default as MyQBoxIcon } from "./myqbox-icon.svg";
 export { default as NotificationBellIcon } from "./notification-bell.svg";
 export { default as PackageIconOutline } from "./package-icon-outline.svg";
 export { default as PackageIcon } from "./package-icon.svg";
+export { default as PackageItemIcon } from "./package_1.svg";
 export { default as PlaceholderQRIcon } from "./placeholder-qr.svg";
 export { default as ProfileIconOutline } from "./profile-icon-outline.svg";
 export { default as ProfileIcon } from "./profile-icon.svg";

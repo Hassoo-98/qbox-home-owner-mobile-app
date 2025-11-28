@@ -7,7 +7,7 @@ import {
   SubscriptionHistoryIcon,
 } from "@/assets/icons";
 import { ProfileItem } from "@/types";
-import { QR_VALIDITY_DURATION_TYPE } from "./enums";
+import { PACKAGE_TYPE, QR_VALIDITY_DURATION_TYPE } from "./enums";
 import { Colors } from "./theme";
 
 export const OFFERS = [
@@ -414,5 +414,72 @@ export const MENU_ITEM: ProfileItem[] = [
     title: "Logout",
     backgroundColor: Colors.lightRed,
     textColor: Colors.danger,
+  },
+];
+export const PACKAGES = [
+  // INCOMING
+  {
+    id: 1,
+    title: "Courier Name",
+    Subtitle: "Ali Khan / Ahmed Raza",
+    trackingId: "SM240815001",
+    createdAt: new Date("2025-01-19T12:00:00Z").toISOString(),
+    city: "Lahore",
+    status: null,
+    type: PACKAGE_TYPE.INCOMING,
+  },
+  {
+    id: 2,
+    title: "FastEx Logistics",
+    Subtitle: "Driver: Umar / Sender: Bilal",
+    trackingId: "SM240815002",
+    createdAt: new Date("2025-01-20T09:30:00Z").toISOString(),
+    city: "Karachi",
+    status: null,
+    type: PACKAGE_TYPE.INCOMING,
+  },
+
+  // OUTGOING
+  {
+    id: 3,
+    title: "ParcelPro",
+    Subtitle: "Express Delivery",
+    trackingId: "SM240815003",
+    createdAt: new Date("2025-01-18T15:45:00Z").toISOString(),
+    city: null,
+    status: "Send",
+    type: PACKAGE_TYPE.OUTGOING,
+  },
+  {
+    id: 4,
+    title: "SpeedyShip",
+    Subtitle: "Premium Delivery",
+    trackingId: "SM240815004",
+    createdAt: new Date("2025-01-17T11:00:00Z").toISOString(),
+    city: null,
+    status: "Return",
+    type: PACKAGE_TYPE.OUTGOING,
+  },
+
+  // DELIVERED
+  {
+    id: 5,
+    title: "BlueLine Couriers",
+    Subtitle: "Delivered by: Hassan",
+    trackingId: "SM240815005",
+    createdAt: new Date("2025-01-16T08:10:00Z").toISOString(),
+    city: null,
+    status: null,
+    type: PACKAGE_TYPE.DELIVERED,
+  },
+  {
+    id: 6,
+    title: "FlyPost Service",
+    Subtitle: "Sender: Zain",
+    trackingId: "SM240815006",
+    createdAt: new Date("2025-01-14T14:20:00Z").toISOString(),
+    city: null,
+    status: null,
+    type: PACKAGE_TYPE.DELIVERED,
   },
 ];
