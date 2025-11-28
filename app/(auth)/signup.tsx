@@ -1,7 +1,7 @@
 import {
   AuthScreenLayout,
   BasicInformation,
-  SignupAddress,
+  QBoxLocation,
   SignupFooter,
   TextInput,
 } from "@/components";
@@ -69,7 +69,7 @@ export const SignUp = () => {
             placeholder="Enter your full name"
           />
         ) : (
-          <SignupAddress
+          <QBoxLocation
             control={control}
             pickImage={pickImage}
             qboxImage={qboxImage}

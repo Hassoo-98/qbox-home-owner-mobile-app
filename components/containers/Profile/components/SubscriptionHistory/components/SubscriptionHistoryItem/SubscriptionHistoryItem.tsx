@@ -3,7 +3,6 @@ import { Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
-import { router } from "expo-router";
 import { View } from "react-native";
 import { SubscriptionHistoryItemProps } from "./props";
 
@@ -11,7 +10,7 @@ export const SubscriptionHistoryItem = ({
   item,
 }: SubscriptionHistoryItemProps) => {
   const handleCardPress = () => {
-    router.navigate(`/qrCodeDetails/${item.id}`);
+    console.log("Card is Pressed");
   };
 
   return (

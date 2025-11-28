@@ -1,6 +1,6 @@
 import { Control } from "react-hook-form";
 
-export interface SignupAddressProps {
+export interface QBoxLocationProps {
   control: Control<any, any, any>;
   qboxImage: string;
   pickImage: () => Promise<void>;

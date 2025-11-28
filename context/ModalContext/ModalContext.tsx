@@ -1,4 +1,4 @@
-import { Modal } from "@/components";
+import { Modal, OTPModal } from "@/components";
 import React from "react";
 import { ModalContextType, ModalProviderProps, ModalStateType } from "./props";
 
@@ -17,6 +17,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     subtitle: "",
     primaryButtonText: "Confirm",
     primaryButtonHandler: () => {},
+    modalType: "default", // Add this to distinguish modal types
   });
 
   const handleOpen = (values: ModalStateType) => {
@@ -24,6 +25,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     setModal({
       ...values,
       primaryButtonText: values.primaryButtonText || "Confirm",
+      modalType: values.modalType || "default",
     });
   };
 
@@ -44,6 +46,12 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     }
   };
 
+  const handleOTPResend = () => {
+    if (modal.onOTPResend) {
+      modal.onOTPResend();
+    }
+  };
+
   return (
     <ModalContext.Provider
       value={{
@@ -54,7 +62,21 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
       }}
     >
       {children}
-      {isOpen && (
+      {isOpen && modal.modalType === "otp" ? (
+        <OTPModal
+          isOpen={isOpen}
+          onClose={handleClose}
+          title={modal.title}
+          subtitle={modal.subtitle}
+          footerText={modal.footerText}
+          footerAction={modal.footerAction}
+          isForgotPassowrd={modal.isForgotPassowrd}
+          onSubmit={handlePrimaryAction}
+          secondaryButtonHandler={handleOTPResend}
+          primaryButtonText={modal.primaryButtonText}
+          isLoading={isLoading}
+        />
+      ) : isOpen ? (
         <Modal
           isOpen={isOpen}
           icon={modal.icon}
@@ -67,7 +89,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
           secondaryButtonText={modal.secondaryButtonText}
           secondaryButtonHandler={handleSecondaryAction}
         />
-      )}
+      ) : null}
     </ModalContext.Provider>
   );
 };

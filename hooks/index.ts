@@ -1,5 +1,5 @@
-export * from './useAuth';
-export * from './useCalendar';
-export * from './useShare';
-export * from './useSignup';
-
+export * from "./useAuth";
+export * from "./useCalendar";
+export * from "./useModal";
+export * from "./useShare";
+export * from "./useSignup";

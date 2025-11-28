@@ -9,6 +9,7 @@ import {
   LoginFormValues,
   QBoxLocationFormFormValues,
   QRGenerationFormValues,
+  RenewSubscriptionFormData,
   SignUpFormValues,
 } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -328,4 +329,107 @@ export const MyQBoxLocationResolver = yupResolver(
 
     qboxImage: yup.string().required("Please upload a QBox image"),
   }) as yup.ObjectSchema<QBoxLocationFormFormValues>
+);
+export const RenewSubscriptionResolver = yupResolver(
+  yup.object().shape({
+    name: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(2, "Name must be at least 2 characters")
+      .max(100, "Name must not exceed 100 characters"),
+
+    phone: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(10, "Phone number must be at least 10 digits"),
+
+    price: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(/^\d+(\.\d{1,2})?$/, "Price must be a valid number"),
+
+    startDate: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(/^\d{2}\/\d{2}\/\d{2}$/, "Date format should be DD/MM/YY"),
+
+    endDate: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(/^\d{2}\/\d{2}\/\d{2}$/, "Date format should be DD/MM/YY"),
+
+    paymentMethod: yup
+      .string()
+      .oneOf(["card", "stc"], "Please select a valid payment method")
+      .required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    cardHolderName: yup.string().when("paymentMethod", {
+      is: "card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .min(3, "Card holder name must be at least 3 characters")
+          .max(100, "Card holder name must not exceed 100 characters"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+    cardNumber: yup.string().when("paymentMethod", {
+      is: "card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(
+            /^\d{13,19}$/,
+            "Card number must be between 13 and 19 digits"
+          )
+          .test("luhn", "Invalid card number", (value) => {
+            if (!value) return false;
+            // Luhn algorithm for card validation
+            let sum = 0;
+            let isEven = false;
+            for (let i = value.length - 1; i >= 0; i--) {
+              let digit = parseInt(value.charAt(i), 10);
+              if (isEven) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+              }
+              sum += digit;
+              isEven = !isEven;
+            }
+            return sum % 10 === 0;
+          }),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+    expiry: yup.string().when("paymentMethod", {
+      is: "card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(/^\d{2}\/\d{4}$/, "Expiry format should be MM/YYYY")
+          .test("valid-month", "Month must be between 01 and 12", (value) => {
+            if (!value) return false;
+            const month = parseInt(value.split("/")[0], 10);
+            return month >= 1 && month <= 12;
+          })
+          .test("not-expired", "Card has expired", (value) => {
+            if (!value) return false;
+            const [month, year] = value.split("/").map(Number);
+            const expiry = new Date(year, month - 1);
+            const today = new Date();
+            today.setDate(1); // Set to first day of current month
+            return expiry >= today;
+          }),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+    cvv: yup.string().when("paymentMethod", {
+      is: "card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  }) as yup.ObjectSchema<RenewSubscriptionFormData>
 );

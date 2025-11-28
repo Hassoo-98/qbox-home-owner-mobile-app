@@ -405,7 +405,7 @@ export const MENU_ITEM: ProfileItem[] = [
     id: 4,
     icon: SubscriptionHistoryIcon,
     title: "Subscription History",
-    path: "/suscriptionHistory",
+    path: "/subscriptionHistory",
   },
   { id: 5, icon: ContactIcon, title: "Contact Us", path: "/" },
   {

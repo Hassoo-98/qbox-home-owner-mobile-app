@@ -51,9 +51,18 @@ export default function ProfileStack() {
         }}
       />
       <Stack.Screen
-        name="suscriptionHistory"
+        name="subscriptionHistory"
         options={{
           title: "Subscription History",
+        }}
+      />
+      <Stack.Screen
+        name="renewSubscription"
+        options={{
+          title: "Renew Subscription",
+          headerRight: () => {
+            return <Button title="Save" variant="transparent" />;
+          },
         }}
       />
     </Stack>

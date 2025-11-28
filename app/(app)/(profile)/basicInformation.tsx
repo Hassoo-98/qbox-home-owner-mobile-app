@@ -1,13 +1,14 @@
 import { PhoneNumberInput, TextInput } from "@/components";
 import { MenuItem } from "@/components/containers/Profile";
 import { AUTH_PROVIDERS, Colors, emailPattern } from "@/constants";
+import { useModal } from "@/hooks";
 import { mvs } from "@/utils/metrices";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import {
   isValidPhoneNumber,
   parsePhoneNumberWithError,
 } from "libphonenumber-js";
-import { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 
@@ -21,154 +22,108 @@ export const BasicInformation = () => {
     },
   });
 
-  const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
-  const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
+  const { onTriggerModal } = useModal();
 
-  // Watch values
   const email = watch("email");
   const phone = watch("phone");
-
   const params = useLocalSearchParams();
 
-  // Validation logic
-  const isEmailValid = useMemo(() => {
-    return email?.trim() !== "" && emailPattern.test(email?.trim() || "");
-  }, [email]);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+
+  const isEmailValid = useMemo(
+    () => email?.trim() !== "" && emailPattern.test(email?.trim()),
+    [email]
+  );
 
   const isPhoneValid = useMemo(() => {
-    // Remove all non-digit characters for validation
-    const preFixedValue = phone.startsWith("+") ? phone : `+${phone}`;
+    if (!phone) return false;
+    const value = phone.startsWith("+") ? phone : `+${phone}`;
+
     try {
-      const phoneNumber = parsePhoneNumberWithError(preFixedValue);
-      if (!phoneNumber) return false;
-      const isValid = isValidPhoneNumber(
-        preFixedValue,
-        phoneNumber.country as any
-      );
-      return isValid;
-    } catch (error) {
-      console.log("error while validating phone number", error);
+      const phoneNumber = parsePhoneNumberWithError(value);
+      return isValidPhoneNumber(value, phoneNumber.country as any);
+    } catch {
       return false;
     }
   }, [phone]);
 
-  // Email button configuration
-  const emailButtonConfig = useMemo(() => {
-    if (isEmailVerified) {
-      return {
-        text: "Verified!",
-        variant: "transparent" as const,
-        textColor: Colors.success,
-        backgroundColor: "transparent",
-        disabled: true,
-        opacity: 1,
-      };
-    }
+  const createVerifyButtonConfig = useCallback(
+    (isValid: boolean, isVerified: boolean) => {
+      if (isVerified) {
+        return {
+          text: "Verified!",
+          variant: "transparent" as const,
+          textColor: Colors.success,
+          backgroundColor: "transparent",
+          disabled: true,
+          opacity: 1,
+        };
+      }
 
-    if (!isEmailValid) {
-      return {
-        text: "Verify",
-        variant: "primary" as const,
-        textColor: Colors.white,
-        backgroundColor: Colors.secondaryText,
-        disabled: true,
-        opacity: 0.5,
-      };
-    }
+      if (!isValid) {
+        return {
+          text: "Verify",
+          variant: "primary" as const,
+          textColor: Colors.white,
+          backgroundColor: Colors.secondaryText,
+          disabled: true,
+          opacity: 0.5,
+        };
+      }
 
-    return {
-      text: "Verify",
-      variant: "primary" as const,
-      textColor: Colors.white,
-      backgroundColor: Colors.primary,
-      disabled: false,
-      opacity: 1,
-    };
-  }, [isEmailValid, isEmailVerified]);
-
-  // Phone button configuration
-  const phoneButtonConfig = useMemo(() => {
-    if (isPhoneVerified) {
-      return {
-        text: "Verified!",
-        variant: "transparent" as const,
-        textColor: Colors.success,
-        backgroundColor: "transparent",
-        disabled: true,
-        opacity: 1,
-      };
-    }
-
-    if (!isPhoneValid) {
       return {
         text: "Verify",
         variant: "primary" as const,
         textColor: Colors.white,
-        backgroundColor: Colors.secondaryText,
-        disabled: true,
-        opacity: 0.5,
+        backgroundColor: Colors.primary,
+        disabled: false,
+        opacity: 1,
       };
-    }
+    },
+    []
+  );
 
-    return {
-      text: "Verify",
-      variant: "primary" as const,
-      textColor: Colors.white,
-      backgroundColor: Colors.primary,
-      disabled: false,
-      opacity: 1,
-    };
-  }, [isPhoneValid, isPhoneVerified]);
+  const emailButtonConfig = createVerifyButtonConfig(
+    isEmailValid,
+    isEmailVerified
+  );
+  const phoneButtonConfig = createVerifyButtonConfig(
+    isPhoneValid,
+    isPhoneVerified
+  );
+
+  const handleVerify = (type: string) => {
+    const subtitle =
+      type === "phone"
+        ? `Enter the 5-digit code sent to your phone number.`
+        : `Enter the 5-digit code sent to your email.`;
+    onTriggerModal({
+      modalType: "otp",
+      title: "OTP Verification",
+      subtitle: subtitle,
+      footerText: "Didn’t receive the code?",
+      footerAction: "Resend OTP",
+      onOTPResend: () => console.log("Resend OTP"),
+      primaryButtonHandler: () => {
+        if (type === "phone") {
+          setIsPhoneVerified(true);
+          return;
+        }
+        setIsEmailVerified(true);
+      },
+    });
+  };
 
   useEffect(() => {
-    if (params?.origin === "otpVerification") {
-      const authOption = params?.verifiedProvider;
+    if (params?.origin !== "otpVerification") return;
 
-      if (authOption) {
-        if (authOption === AUTH_PROVIDERS.EMAIL) {
-          setIsEmailVerified(true);
-        } else if (authOption === AUTH_PROVIDERS.PHONE) {
-          setIsPhoneVerified(true);
-        }
-      }
+    if (params?.verifiedProvider === AUTH_PROVIDERS.EMAIL) {
+      setIsEmailVerified(true);
+    } else if (params?.verifiedProvider === AUTH_PROVIDERS.PHONE) {
+      setIsPhoneVerified(true);
     }
   }, [params]);
-
-  const handleEmailVerify = () => {
-    if (!isEmailValid || isEmailVerified) return;
-
-    try {
-      router.navigate({
-        pathname: "/otpVerification",
-        params: {
-          authOption: AUTH_PROVIDERS.EMAIL,
-          authValue: email.trim(),
-          origin: "basicInformation",
-        },
-      });
-    } catch (error) {
-      console.error("Email verification navigation error:", error);
-    }
-  };
-
-  const handlePhoneVerify = () => {
-    if (!isPhoneValid || isPhoneVerified) return;
-
-    try {
-      router.navigate({
-        pathname: "/otpVerification",
-        params: {
-          authOption: AUTH_PROVIDERS.PHONE,
-          authValue: phone,
-          origin: "basicInformation",
-        },
-      });
-    } catch (error) {
-      console.error("Phone verification navigation error:", error);
-    }
-  };
-
-  const item = { id: 1, title: "Password", path: "/password" };
 
   return (
     <ScrollView
@@ -208,10 +163,9 @@ export const BasicInformation = () => {
             backgroundColor: emailButtonConfig.backgroundColor,
           },
         }}
-        onEndButtonClick={handleEmailVerify}
+        onEndButtonClick={() => handleVerify("email")}
       />
 
-      {/* Phone Number */}
       <PhoneNumberInput
         name="phone"
         control={control}
@@ -228,10 +182,9 @@ export const BasicInformation = () => {
             backgroundColor: phoneButtonConfig.backgroundColor,
           },
         }}
-        onEndButtonClick={handlePhoneVerify}
+        onEndButtonClick={() => handleVerify("phone")}
       />
 
-      {/* Secondary Phone Number */}
       <PhoneNumberInput
         name="secondaryPhone"
         control={control}

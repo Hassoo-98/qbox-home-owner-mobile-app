@@ -5,13 +5,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
-import { SignupAddressProps } from "./props";
+import { QBoxLocationProps } from "./props";
 
-export const SignupAddress = ({
+export const QBoxLocation = ({
   control,
   qboxImage,
   pickImage,
-}: SignupAddressProps) => {
+}: QBoxLocationProps) => {
   return (
     <View>
       <TextInput

@@ -1,4 +1,4 @@
-import { ButtonProps } from '@/components';
+import { ButtonProps } from "@/components";
 import { Control } from "react-hook-form";
 import { PhoneInputProps as RNPhoneInputProps } from "react-native-phone-number-input";
 
@@ -9,6 +9,6 @@ export interface PhoneInputProps extends Partial<RNPhoneInputProps> {
   control: Control<any>;
   placeholder?: string;
   endButtonText?: string;
-  onEndButtonClick?:any
-    endButtonProps?:ButtonProps
+  onEndButtonClick?: () => void;
+  endButtonProps?: ButtonProps;
 }

@@ -1,4 +1,5 @@
 import { TextInput } from "@/components";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { PasswordInputProps } from "./props";
 
@@ -11,10 +12,12 @@ export const PasswordInput = (props: PasswordInputProps) => {
     <TextInput
       {...props}
       secureTextEntry={!isPasswordVisible}
-      endIconPath={
-        isPasswordVisible
-          ? require("@/assets/images/eye.png")
-          : require("@/assets/images/eye-slash.png")
+      endIcon={
+        <Ionicons
+          name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
+          size={24}
+          color="#777E90"
+        />
       }
       onEndIconClick={handlePasswordVisibility}
     />

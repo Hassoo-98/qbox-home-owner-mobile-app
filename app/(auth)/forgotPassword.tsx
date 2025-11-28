@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "@/components";
 import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
+import { useModal } from "@/hooks";
 import { ForgotPasswordFormValues } from "@/types";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -22,7 +23,8 @@ export const ForgotPassword = () => {
     email: "",
     phone: "",
   };
-
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const {
     control,
     formState: { isDirty },
@@ -35,18 +37,30 @@ export const ForgotPassword = () => {
 
   const isFormValid = isDirty;
 
-  const onSubmit = (data: ForgotPasswordFormValues) => {
-    console.log("forgot password submission: ", data);
-    router.navigate({
-      pathname: "/otpVerification",
-      params: {
-        authOption: selectedAuthProvider,
-        authValue:
-          selectedAuthProvider === AUTH_PROVIDERS.PHONE
-            ? data.phone
-            : data.email,
+  const { onTriggerModal } = useModal();
+
+  const handleVerify = (type: string) => {
+    const subtitle =
+      type === "phone"
+        ? `Enter the 5-digit code sent to your phone number.`
+        : `Enter the 5-digit code sent to your email.`;
+    onTriggerModal({
+      modalType: "otp",
+      title: "OTP Verification",
+      subtitle: subtitle,
+      footerText: "Remember Password ? Back to",
+      footerAction: "Login",
+      isForgotPassowrd: true,
+      onOTPResend: () => console.log("Resend OTP"),
+      primaryButtonHandler: () => {
+        router.navigate("/resetPassword");
       },
     });
+  };
+
+  const onSubmit = (data: ForgotPasswordFormValues) => {
+    console.log("forgot password submission: ", data);
+    handleVerify(selectedAuthProvider === "phone" ? "phone" : "email");
   };
 
   const handleAuthProviderChange = (option: string) => {

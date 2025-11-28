@@ -1,4 +1,4 @@
-import { ButtonProps } from '@/components';
+import { ButtonProps } from "@/components";
 import { Control } from "react-hook-form";
 import {
   DimensionValue,
@@ -11,8 +11,10 @@ export interface TextInputProps extends RNTextInputProps {
   iconPath?: string;
   required?: boolean;
   width?: DimensionValue;
-  endButtonProps?:ButtonProps
+  endButtonProps?: ButtonProps;
   endIconPath?: any;
+  endIcon?: any;
+  startIcon?: any;
   startIconPath?: any;
   control: Control<any>;
   onEndIconClick?: () => void;

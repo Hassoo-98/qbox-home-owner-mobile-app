@@ -1,5 +1,5 @@
 import { WarningIconOutline } from "@/assets/icons";
-import { SignupAddress } from "@/components";
+import { QBoxLocation } from "@/components";
 import { Button, Text } from "@/components/ui";
 import { BorderRadius, Colors, Spacing } from "@/constants";
 import { useModal } from "@/hooks/useModal";
@@ -108,7 +108,7 @@ export const MyQBoxLocation = () => {
           contentContainerStyle={{ paddingBottom: 10 }}
         >
           <Button title="open modal" onPress={onSubmit} />
-          <SignupAddress
+          <QBoxLocation
             control={control}
             pickImage={pickImage}
             qboxImage={qboxImage}

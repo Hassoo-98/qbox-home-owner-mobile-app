@@ -15,6 +15,8 @@ export const TextInput = ({
   label,
   control,
   iconPath,
+  endIcon,
+  startIcon,
   endIconPath,
   startIconPath,
   endButtonProps,
@@ -48,13 +50,18 @@ export const TextInput = ({
         }) => (
           <>
             <View style={[styles.inputWrapper, error && styles.inputError]}>
-              {startIconPath && (
+              {/* Support both icon components and image paths */}
+              {(startIcon || startIconPath) && (
                 <TouchableOpacity
                   onPress={onStartIconClick}
                   style={styles.iconButton}
                   activeOpacity={0.7}
                 >
-                  <Image source={startIconPath} style={styles.inputIcon} />
+                  {startIcon ? (
+                    startIcon
+                  ) : (
+                    <Image source={startIconPath} style={styles.inputIcon} />
+                  )}
                 </TouchableOpacity>
               )}
 
@@ -67,8 +74,9 @@ export const TextInput = ({
                 placeholderTextColor="#777E90"
                 style={[
                   styles.input,
-                  startIconPath && styles.inputWithStartIcon,
-                  (endIconPath || endButtonText) && styles.inputWithEndIcon,
+                  (startIcon || startIconPath) && styles.inputWithStartIcon,
+                  (endIcon || endIconPath || endButtonText) &&
+                    styles.inputWithEndIcon,
                   restProps.multiline && {
                     height: 120,
                     textAlignVertical: "top",
@@ -77,13 +85,18 @@ export const TextInput = ({
                 ]}
               />
 
-              {endIconPath && (
+              {/* Support both icon components and image paths */}
+              {(endIcon || endIconPath) && (
                 <TouchableOpacity
                   onPress={onEndIconClick}
                   style={styles.iconButton}
                   activeOpacity={0.7}
                 >
-                  <Image source={endIconPath} style={styles.inputIcon} />
+                  {endIcon ? (
+                    endIcon
+                  ) : (
+                    <Image source={endIconPath} style={styles.inputIcon} />
+                  )}
                 </TouchableOpacity>
               )}
 
