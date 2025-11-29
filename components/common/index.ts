@@ -1,3 +1,4 @@
+export * from "./AttributeView";
 export * from "./ItemInfo";
 export * from "./Modal";
 export * from "./OTPModal";

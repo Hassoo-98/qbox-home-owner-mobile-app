@@ -8,6 +8,8 @@ export const Text = ({
   size = "md",
   variant = "default",
   font = "default",
+  bold,
+  color,
   style,
   ...restProps
 }: TextProps) => {
@@ -18,7 +20,17 @@ export const Text = ({
   return (
     <RNText
       {...restProps}
-      style={[styles.base, { fontFamily }, sizeStyle, variantStyle, style]}
+      style={[
+        styles.base,
+        {
+          fontFamily,
+          ...(bold && { fontWeight: "bold" }),
+          ...(color && { color }),
+        },
+        sizeStyle,
+        variantStyle,
+        style,
+      ]}
     >
       {children}
     </RNText>

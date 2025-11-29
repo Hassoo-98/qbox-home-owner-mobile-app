@@ -1,5 +1,10 @@
-import { PackageItemIcon } from "@/assets/icons";
-import { Card, Chip, SegmentedControl, Text } from "@/components";
+import {
+  PackageItemIcon,
+  ReturnPackageIcon,
+  Send,
+  SendPackageIcon,
+} from "@/assets/icons";
+import { Button, Card, Chip, SegmentedControl, Text } from "@/components";
 import {
   BorderRadius,
   Colors,
@@ -10,17 +15,43 @@ import {
 } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
+import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export const Package = () => {
   const [selectedPackageType, setSelectedPackageType] = useState<string>(
     PACKAGE_TYPE.INCOMING
   );
   const [searchId, setSearchId] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState<"send" | "return" | null>(
+    null
+  );
 
   const handleAuthProviderChange = (option: string) => {
     setSelectedPackageType(option);
+  };
+
+  const handlePackageTypeSelect = (type: "send" | "return") => {
+    setSelectedType(type);
+  };
+
+  const handleConfirm = () => {
+    if (selectedType) {
+      console.log("Selected package type:", selectedType);
+      // Add your logic here (e.g., navigate to next screen, create package, etc.)
+      setModalVisible(false);
+      setSelectedType(null);
+    }
   };
 
   // Filter by type
@@ -32,6 +63,10 @@ export const Package = () => {
   const finalPackages = filteredByType.filter((item) =>
     item.trackingId.toLowerCase().includes(searchId.toLowerCase())
   );
+
+  const handleCardPress = (id: number) => {
+    router.navigate(`/packageDetails/${id}`);
+  };
 
   return (
     <View style={{ flex: 1, paddingHorizontal: mvs(20) }}>
@@ -69,7 +104,9 @@ export const Package = () => {
           <Card
             variant="filled"
             style={{ marginBottom: mvs(Spacing.sm), width: "100%" }}
-            onPress={() => {}}
+            onPress={() => {
+              handleCardPress(item?.id);
+            }}
           >
             <View style={{ flexDirection: "row", gap: mvs(12) }}>
               {/* Icon */}
@@ -138,8 +175,189 @@ export const Package = () => {
           </Card>
         )}
       />
+
+      {/* Floating Action Button */}
+      {selectedPackageType === PACKAGE_TYPE.OUTGOING && (
+        <TouchableOpacity
+          style={{
+            width: mvs(50),
+            height: mvs(50),
+            borderRadius: BorderRadius.full,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: Colors.primary,
+            position: "absolute",
+            right: mvs(20),
+            bottom: mvs(50),
+            elevation: 5,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+          }}
+          onPress={() => setModalVisible(true)}
+          activeOpacity={0.8}
+        >
+          <Send />
+        </TouchableOpacity>
+      )}
+
+      {/* Package Type Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => {
+            setModalVisible(false);
+            setSelectedType(null);
+          }}
+        >
+          <Pressable
+            style={styles.modalContent}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.modalHeader}>
+              <Text style={{ fontWeight: "700" }} variant="default">
+                Choose Package Type
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                  setSelectedType(null);
+                }}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text
+              variant="secondary"
+              size="sm"
+              style={{ marginBottom: mvs(24) }}
+            >
+              Select one of the options below to proceed further.
+            </Text>
+
+            <View style={styles.optionsContainer}>
+              <Card
+                style={[
+                  styles.optionCard,
+                  selectedType === "send" && styles.optionCardSelected,
+                ]}
+                onPress={() => handlePackageTypeSelect("send")}
+                variant="outlined"
+              >
+                <View style={{ alignSelf: "center" }}>
+                  <SendPackageIcon
+                    color={selectedType === "send" ? Colors.white : Colors.dark}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    textAlign: "center",
+                    color: selectedType === "send" ? Colors.white : Colors.dark,
+                  }}
+                >
+                  Send Package
+                </Text>
+              </Card>
+
+              <Card
+                style={[
+                  styles.optionCard,
+                  selectedType === "return" && styles.optionCardSelected,
+                ]}
+                onPress={() => handlePackageTypeSelect("return")}
+                variant="outlined"
+              >
+                <View style={{ alignSelf: "center" }}>
+                  <ReturnPackageIcon
+                    color={
+                      selectedType === "return" ? Colors.white : Colors.dark
+                    }
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    textAlign: "center",
+                    color:
+                      selectedType === "return" ? Colors.white : Colors.dark,
+                  }}
+                >
+                  Return Package
+                </Text>
+              </Card>
+            </View>
+
+            <Button title="Confirm" disabled={!selectedType} />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: mvs(16),
+    padding: mvs(20),
+    width: "90%",
+    maxWidth: 400,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: mvs(8),
+  },
+  closeButton: {
+    padding: mvs(4),
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: Colors.secondaryText,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    gap: mvs(16),
+    marginBottom: mvs(24),
+  },
+  optionCard: {},
+  optionCardSelected: {
+    backgroundColor: Colors.primary,
+  },
+  iconContainer: {
+    width: mvs(48),
+    height: mvs(48),
+    borderRadius: mvs(24),
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: mvs(12),
+  },
+  confirmButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: mvs(8),
+    paddingVertical: mvs(14),
+    alignItems: "center",
+  },
+  confirmButtonDisabled: {
+    backgroundColor: "#d1d5db",
+  },
+});
 
 export default Package;

@@ -1,12 +1,19 @@
 import {
+  CameraIcon,
   ContactIcon,
   LanguageIcon,
+  LED_IndicatorIcon,
   LocationIcon,
   LogoutIcon,
+  OnlineStatusIcon,
+  PackageTypeIcon,
+  PackageValueIcon,
+  PackageWeightIcon,
+  PowerStatusIcom,
   ProfileIcon,
   SubscriptionHistoryIcon,
 } from "@/assets/icons";
-import { ProfileItem } from "@/types";
+import { PackageDetailsType, ProfileItem } from "@/types";
 import { PACKAGE_TYPE, QR_VALIDITY_DURATION_TYPE } from "./enums";
 import { Colors } from "./theme";
 
@@ -353,31 +360,52 @@ export const QR_SCAN_HISTORY = [
 export const STATUS_CARDS_DATA = [
   {
     id: "1",
-    icon: "online-prediction",
+    icon: OnlineStatusIcon,
     title: "QBox Status",
     statusText: "Online",
     statusColor: Colors.success,
   },
   {
     id: "2",
-    icon: "camera-alt",
+    icon: CameraIcon,
     title: "Camera",
     statusText: "Working",
     statusColor: Colors.success,
   },
   {
     id: "3",
-    icon: "lightbulb-outline",
+    icon: LED_IndicatorIcon,
     title: "LED Indicator",
     statusText: "Red",
     statusColor: Colors.danger,
   },
   {
     id: "4",
-    icon: "power",
+    icon: PowerStatusIcom,
     title: "Power Status",
     statusText: "Plugged",
     statusColor: Colors.primary,
+  },
+];
+
+export const PACKAGE_ATTRIBUTE_DATA = [
+  {
+    id: "1",
+    icon: PackageTypeIcon,
+    title: "Package Type",
+    statusText: "Electronics",
+  },
+  {
+    id: "2",
+    icon: PackageValueIcon,
+    title: "Item Value",
+    statusText: "250",
+  },
+  {
+    id: "3",
+    icon: PackageWeightIcon,
+    title: "Package Weight",
+    statusText: "1 kg",
   },
 ];
 
@@ -481,5 +509,235 @@ export const PACKAGES = [
     city: null,
     status: null,
     type: PACKAGE_TYPE.DELIVERED,
+  },
+];
+
+// Add these new constants to your existing appData.ts file
+
+// Package timeline/history data
+export const PACKAGE_TIMELINE = [
+  {
+    id: 1,
+    packageId: 1,
+    timestamp: new Date("2021-03-10T20:01:00Z").toISOString(),
+    status: "Issue Logged",
+    location: "Riyadh",
+  },
+  {
+    id: 2,
+    packageId: 1,
+    timestamp: new Date("2021-03-08T20:01:00Z").toISOString(),
+    status: "Delivery Completed",
+    location: "Riyadh",
+  },
+  {
+    id: 3,
+    packageId: 1,
+    timestamp: new Date("2021-03-10T20:01:00Z").toISOString(),
+    status: "Notification Sent to Homeowner",
+    location: "Riyadh",
+  },
+  {
+    id: 4,
+    packageId: 1,
+    timestamp: new Date("2021-03-08T20:01:00Z").toISOString(),
+    status: "Locker Closed",
+    location: "Riyadh",
+  },
+  {
+    id: 5,
+    packageId: 1,
+    timestamp: new Date("2021-03-07T12:27:00Z").toISOString(),
+    status: "Locker Opened",
+    location: "Riyadh",
+  },
+  {
+    id: 6,
+    packageId: 1,
+    timestamp: new Date("2021-03-10T11:43:00Z").toISOString(),
+    status: "QR Scanned by Driver",
+    location: "Riyadh",
+  },
+  {
+    id: 7,
+    packageId: 1,
+    timestamp: new Date("2021-03-03T10:48:00Z").toISOString(),
+    status: "Out for Delivery",
+    location: "Jeddah",
+  },
+  {
+    id: 8,
+    packageId: 1,
+    timestamp: new Date("2021-02-24T23:17:00Z").toISOString(),
+    status: "Shipment Created",
+    location: "Asr",
+  },
+  // Package 2 timeline
+  {
+    id: 9,
+    packageId: 2,
+    timestamp: new Date("2025-01-20T14:30:00Z").toISOString(),
+    status: "Delivered",
+    location: "Karachi",
+  },
+  {
+    id: 10,
+    packageId: 2,
+    timestamp: new Date("2025-01-20T12:15:00Z").toISOString(),
+    status: "Out for Delivery",
+    location: "Karachi",
+  },
+  {
+    id: 11,
+    packageId: 2,
+    timestamp: new Date("2025-01-20T09:30:00Z").toISOString(),
+    status: "Arrived at Hub",
+    location: "Karachi",
+  },
+  // Package 3 timeline
+  {
+    id: 12,
+    packageId: 3,
+    timestamp: new Date("2025-01-18T18:00:00Z").toISOString(),
+    status: "Package Sent",
+    location: "Lahore",
+  },
+  {
+    id: 13,
+    packageId: 3,
+    timestamp: new Date("2025-01-18T15:45:00Z").toISOString(),
+    status: "QR Code Generated",
+    location: "Lahore",
+  },
+];
+
+// Package details with additional information
+export const PACKAGE_DETAILS: PackageDetailsType[] = [
+  // =================== ID: 1 (INCOMING) ===================
+  {
+    id: 1,
+    type: PACKAGE_TYPE.INCOMING,
+    courierName: "Courier Name",
+    lastUpdate: new Date("2025-12-10T11:05:00Z").toISOString(),
+    qrCode: "SB-kK_KD",
+    description:
+      "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "Electronics" },
+      { type: "Item Value", value: "250" },
+      { type: "Package Weight", value: "1 kg" },
+    ],
+  },
+
+  // =================== ID: 2 (INCOMING) ===================
+  {
+    id: 2,
+    type: PACKAGE_TYPE.INCOMING,
+    courierName: "FastEx Logistics",
+    lastUpdate: new Date("2025-01-20T14:30:00Z").toISOString(),
+    qrCode: "FE-2024-XY",
+    description:
+      "Express delivery package containing electronic accessories and gadgets. Packed with protective materials for safe transportation.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "Electronics" },
+      { type: "Item Value", value: "180" },
+      { type: "Package Weight", value: "0.8 kg" },
+    ],
+  },
+
+  // =================== ID: 3 (OUTGOING - Send) ===================
+  {
+    id: 3,
+    type: PACKAGE_TYPE.OUTGOING,
+    courierName: "ParcelPro",
+    lastUpdate: new Date("2025-01-18T15:45:00Z").toISOString(),
+    qrCode: "PP-EXP-03",
+    status: "Send",
+    phoneNumber: "033334444555",
+    email: "test@gmail.com",
+    recepientName: "Sardar",
+    description:
+      "Premium package with fragile items. Handle with care. Contains specialized equipment requiring careful handling.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "Fragile" },
+      { type: "Item Value", value: "420" },
+      { type: "Package Weight", value: "1.5 kg" },
+    ],
+    paymentSummary: {
+      paymentMethod: "Apple Pay",
+      charges: [
+        {
+          key: "Base delivery fee (First 5 Kg’s)",
+          value: 5,
+        },
+        {
+          key: "Additional per Kg",
+          value: 10,
+        },
+        {
+          key: "Tax Fuel",
+          value: 5,
+        },
+      ],
+      currency: "SAR",
+    },
+  },
+
+  // =================== ID: 4 (OUTGOING - Return) ===================
+  {
+    id: 4,
+    type: PACKAGE_TYPE.OUTGOING,
+    courierName: "SpeedyShip",
+    lastUpdate: new Date("2025-01-17T11:00:00Z").toISOString(),
+    qrCode: "SS-RET-04",
+    status: "Return",
+    phoneNumber: "033334444555",
+    email: "test@gmail.com",
+    recepientName: "Sardar",
+    description:
+      "Return package processed and scheduled for dispatch. Contains items returned by the user due to incorrect specifications.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "Returned Item" },
+      { type: "Item Value", value: "320" },
+      { type: "Package Weight", value: "1.2 kg" },
+    ],
+  },
+
+  // =================== ID: 5 (DELIVERED) ===================
+  {
+    id: 5,
+    type: PACKAGE_TYPE.DELIVERED,
+    courierName: "BlueLine Couriers",
+    lastUpdate: new Date("2025-01-16T08:10:00Z").toISOString(),
+    qrCode: "BL-DEL-05",
+    description:
+      "Package successfully delivered to the recipient. Verified and confirmed by the delivery personnel.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "General Item" },
+      { type: "Item Value", value: "150" },
+      { type: "Package Weight", value: "0.9 kg" },
+    ],
+  },
+
+  // =================== ID: 6 (DELIVERED) ===================
+  {
+    id: 6,
+    type: PACKAGE_TYPE.DELIVERED,
+    courierName: "FlyPost Service",
+    lastUpdate: new Date("2025-01-14T14:20:00Z").toISOString(),
+    qrCode: "FP-DEL-06",
+    description:
+      "Delivered package containing clothing items. No damages reported and delivery was on time.",
+    imageUrl: require("@/assets/images/packageItem.jpg"),
+    attributes: [
+      { type: "Package Type", value: "Clothing" },
+      { type: "Item Value", value: "95" },
+      { type: "Package Weight", value: "0.6 kg" },
+    ],
   },
 ];
