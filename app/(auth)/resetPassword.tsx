@@ -1,4 +1,4 @@
-import { AuthScreenLayout, Button, Form, PasswordInput } from "@/components";
+import { Button, Form, FormLayout, PasswordInput } from "@/components";
 import { Spacing } from "@/constants";
 import { router } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ export const ResetPassword = () => {
   };
 
   return (
-    <AuthScreenLayout
+    <FormLayout
       title="Create a Secure Password"
       description={`Enter a strong password to secure your account.`}
     >
@@ -41,7 +41,7 @@ export const ResetPassword = () => {
           onPress={handleSubmit(onSubmit)}
         />
       </Form>
-    </AuthScreenLayout>
+    </FormLayout>
   );
 };
 

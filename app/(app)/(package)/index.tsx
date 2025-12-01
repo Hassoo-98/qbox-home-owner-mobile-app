@@ -15,11 +15,13 @@ import {
 } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
+import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -49,6 +51,12 @@ export const Package = () => {
     if (selectedType) {
       console.log("Selected package type:", selectedType);
       // Add your logic here (e.g., navigate to next screen, create package, etc.)
+      if (selectedType === "send") {
+        router.navigate("/sendPackage");
+      } else {
+        router.navigate("/returnPackage");
+      }
+
       setModalVisible(false);
       setSelectedType(null);
     }
@@ -216,88 +224,101 @@ export const Package = () => {
             setSelectedType(null);
           }}
         >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
+          <BlurView
+            intensity={Platform.OS === "ios" ? 30 : 80}
+            tint="light"
+            style={styles.blurContainer}
           >
-            <View style={styles.modalHeader}>
-              <Text style={{ fontWeight: "700" }} variant="default">
-                Choose Package Type
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                  setSelectedType(null);
-                }}
-                style={styles.closeButton}
-              >
-                <Text style={styles.closeButtonText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text
-              variant="secondary"
-              size="sm"
-              style={{ marginBottom: mvs(24) }}
+            <Pressable
+              style={styles.modalContent}
+              onPress={(e) => e.stopPropagation()}
             >
-              Select one of the options below to proceed further.
-            </Text>
-
-            <View style={styles.optionsContainer}>
-              <Card
-                style={[
-                  styles.optionCard,
-                  selectedType === "send" && styles.optionCardSelected,
-                ]}
-                onPress={() => handlePackageTypeSelect("send")}
-                variant="outlined"
-              >
-                <View style={{ alignSelf: "center" }}>
-                  <SendPackageIcon
-                    color={selectedType === "send" ? Colors.white : Colors.dark}
-                  />
-                </View>
-                <Text
-                  style={{
-                    fontWeight: "500",
-                    textAlign: "center",
-                    color: selectedType === "send" ? Colors.white : Colors.dark,
-                  }}
-                >
-                  Send Package
+              <View style={styles.modalHeader}>
+                <Text style={{ fontWeight: "700" }} variant="default">
+                  Choose Package Type
                 </Text>
-              </Card>
-
-              <Card
-                style={[
-                  styles.optionCard,
-                  selectedType === "return" && styles.optionCardSelected,
-                ]}
-                onPress={() => handlePackageTypeSelect("return")}
-                variant="outlined"
-              >
-                <View style={{ alignSelf: "center" }}>
-                  <ReturnPackageIcon
-                    color={
-                      selectedType === "return" ? Colors.white : Colors.dark
-                    }
-                  />
-                </View>
-                <Text
-                  style={{
-                    fontWeight: "500",
-                    textAlign: "center",
-                    color:
-                      selectedType === "return" ? Colors.white : Colors.dark,
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false);
+                    setSelectedType(null);
                   }}
+                  style={styles.closeButton}
                 >
-                  Return Package
-                </Text>
-              </Card>
-            </View>
+                  <Text style={styles.closeButtonText}>✕</Text>
+                </TouchableOpacity>
+              </View>
 
-            <Button title="Confirm" disabled={!selectedType} />
-          </Pressable>
+              <Text
+                variant="secondary"
+                size="sm"
+                style={{ marginBottom: mvs(24) }}
+              >
+                Select one of the options below to proceed further.
+              </Text>
+
+              <View style={styles.optionsContainer}>
+                <Card
+                  style={[
+                    styles.optionCard,
+                    selectedType === "send" && styles.optionCardSelected,
+                  ]}
+                  onPress={() => handlePackageTypeSelect("send")}
+                  variant="outlined"
+                >
+                  <View style={{ alignSelf: "center" }}>
+                    <SendPackageIcon
+                      color={
+                        selectedType === "send" ? Colors.white : Colors.dark
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      textAlign: "center",
+                      color:
+                        selectedType === "send" ? Colors.white : Colors.dark,
+                    }}
+                  >
+                    Send Package
+                  </Text>
+                </Card>
+
+                <Card
+                  style={[
+                    styles.optionCard,
+                    selectedType === "return" && styles.optionCardSelected,
+                  ]}
+                  onPress={() => handlePackageTypeSelect("return")}
+                  variant="outlined"
+                >
+                  <View style={{ alignSelf: "center" }}>
+                    <ReturnPackageIcon
+                      color={
+                        selectedType === "return" ? Colors.white : Colors.dark
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      textAlign: "center",
+                      color:
+                        selectedType === "return" ? Colors.white : Colors.dark,
+                    }}
+                  >
+                    Return Package
+                  </Text>
+                </Card>
+              </View>
+
+              <Button
+                title="Confirm"
+                disabled={!selectedType}
+                onPress={handleConfirm}
+              />
+            </Pressable>
+          </BlurView>
         </Pressable>
       </Modal>
     </View>
@@ -308,6 +329,12 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  blurContainer: {
+    flex: 1,
+    padding: Spacing.md,
     justifyContent: "center",
     alignItems: "center",
   },

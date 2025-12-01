@@ -2,9 +2,9 @@ import { Stepper, Text } from "@/components";
 import { Spacing } from "@/constants";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AuthScreenLayoutProps } from "./props";
+import { FormLayoutProps } from "./props";
 
-export const AuthScreenLayout = ({
+export const FormLayout = ({
   title,
   description,
   children,
@@ -14,7 +14,7 @@ export const AuthScreenLayout = ({
   style,
   stepperStyle,
   footer,
-}: AuthScreenLayoutProps) => {
+}: FormLayoutProps) => {
   return (
     <SafeAreaView
       edges={{ top: "off", bottom: "additive" }}
@@ -77,4 +77,4 @@ export const AuthScreenLayout = ({
   );
 };
 
-export default AuthScreenLayout;
+export default FormLayout;

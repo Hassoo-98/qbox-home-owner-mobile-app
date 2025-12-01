@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { ViewStyle } from "react-native";
 
-export interface AuthScreenLayoutProps {
+export interface FormLayoutProps {
   title: string;
   description: string;
   children: ReactNode;

@@ -1,15 +1,15 @@
 import {
-  BasicInformation,
   FormLayout,
-  QBoxLocation,
-  SignupFooter,
-  TextInput,
+  RecipientInformation,
+  SendPackageFooter,
 } from "@/components";
+import { PackageInformation } from "@/components/common/PackageInformation";
+import { DeliveryInformation } from "@/components/containers/Package/components/SendPackage/components/DeliveryInformation";
 import { Spacing } from "@/constants";
-import { useSignup } from "@/hooks";
+import { useSendPackage } from "@/hooks";
 import { View } from "react-native";
 
-export const SignUp = () => {
+export const SendPackage = () => {
   const {
     currentStep,
     setCurrentStep,
@@ -19,29 +19,23 @@ export const SignUp = () => {
     phoneNumber,
     pickImage,
     qboxImage,
-  } = useSignup();
+  } = useSendPackage();
 
   return (
     <FormLayout
       title={
         currentStep === 1
-          ? "Basic Information"
+          ? "Recipient Information"
           : currentStep === 2
-          ? "Verify QBox"
-          : "Address"
+          ? "Package Information "
+          : "Delivery Information "
       }
-      description={
-        currentStep === 1
-          ? "Let's begin with basic information."
-          : currentStep === 2
-          ? "Add serial number mentioned on the QBox."
-          : "Where should we install your QBox?"
-      }
+      description={"Let’s begin with basic information. "}
       currentStep={currentStep}
       totalSteps={3}
       stepperStyle={{ marginBottom: Spacing.md }}
       footer={
-        <SignupFooter
+        <SendPackageFooter
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
           isFormValid={isFormValid}
@@ -57,27 +51,19 @@ export const SignUp = () => {
         }}
       >
         {currentStep === 1 ? (
-          <BasicInformation control={control} />
+          <RecipientInformation control={control} />
         ) : currentStep === 2 ? (
-          <TextInput
-            name="qBoxId"
-            inputMode="text"
+          <PackageInformation
             control={control}
-            endButtonText="Check"
-            autoCorrect={false}
-            label="QBox ID"
-            placeholder="Enter your full name"
+            packageImage={qboxImage}
+            pickImage={pickImage}
           />
         ) : (
-          <QBoxLocation
-            control={control}
-            pickImage={pickImage}
-            qboxImage={qboxImage}
-          />
+          <DeliveryInformation control={control} />
         )}
       </View>
     </FormLayout>
   );
 };
 
-export default SignUp;
+export default SendPackage;

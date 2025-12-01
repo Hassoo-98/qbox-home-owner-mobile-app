@@ -1,52 +1,37 @@
 import {
-  BasicInformation,
   FormLayout,
-  QBoxLocation,
-  SignupFooter,
+  PackageInformation,
+  ReturnPackageFooter,
   TextInput,
 } from "@/components";
 import { Spacing } from "@/constants";
-import { useSignup } from "@/hooks";
+import { useReturnPackage } from "@/hooks";
 import { View } from "react-native";
 
-export const SignUp = () => {
+export const ReturnPackage = () => {
   const {
     currentStep,
     setCurrentStep,
     isFormValid,
     onSubmit,
     control,
-    phoneNumber,
+    returnPackageImage,
     pickImage,
-    qboxImage,
-  } = useSignup();
+  } = useReturnPackage();
 
   return (
     <FormLayout
-      title={
-        currentStep === 1
-          ? "Basic Information"
-          : currentStep === 2
-          ? "Verify QBox"
-          : "Address"
-      }
-      description={
-        currentStep === 1
-          ? "Let's begin with basic information."
-          : currentStep === 2
-          ? "Add serial number mentioned on the QBox."
-          : "Where should we install your QBox?"
-      }
+      title={"Package Infromation"}
+      description={"Enter the infromation bellow."}
       currentStep={currentStep}
-      totalSteps={3}
+      totalSteps={2}
       stepperStyle={{ marginBottom: Spacing.md }}
       footer={
-        <SignupFooter
+        <ReturnPackageFooter
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
           isFormValid={isFormValid}
           onSubmit={onSubmit}
-          phoneNumber={phoneNumber}
         />
       }
     >
@@ -57,22 +42,20 @@ export const SignUp = () => {
         }}
       >
         {currentStep === 1 ? (
-          <BasicInformation control={control} />
-        ) : currentStep === 2 ? (
           <TextInput
-            name="qBoxId"
+            name="pinCode"
             inputMode="text"
             control={control}
             endButtonText="Check"
             autoCorrect={false}
-            label="QBox ID"
-            placeholder="Enter your full name"
+            label="Pin Code"
+            placeholder="Enter pin Code"
           />
         ) : (
-          <QBoxLocation
+          <PackageInformation
             control={control}
+            packageImage={returnPackageImage}
             pickImage={pickImage}
-            qboxImage={qboxImage}
           />
         )}
       </View>
@@ -80,4 +63,4 @@ export const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default ReturnPackage;

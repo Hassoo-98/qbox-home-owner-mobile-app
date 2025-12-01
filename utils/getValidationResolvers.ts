@@ -10,6 +10,8 @@ import {
   QBoxLocationFormFormValues,
   QRGenerationFormValues,
   RenewSubscriptionFormData,
+  ReturnPackageFormValues,
+  SendPackageFormValues,
   SignUpFormValues,
 } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -432,4 +434,103 @@ export const RenewSubscriptionResolver = yupResolver(
       otherwise: (schema) => schema.notRequired(),
     }),
   }) as yup.ObjectSchema<RenewSubscriptionFormData>
+);
+
+export const SendPackageFormResolver = yupResolver(
+  yup.object().shape({
+    fullName: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(2, "Name must be at least 2 characters")
+      .max(50, "Name must not exceed 50 characters"),
+
+    email: yup
+      .string()
+      .matches(emailPattern, ERROR_MESSAGES.INVALID_EMAIL)
+      .required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    phone: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .test(
+        "valid-phone",
+        "Please enter a valid phone number",
+        function (value) {
+          if (!value) return false;
+          const preFixedValue = value.startsWith("+") ? value : `+${value}`;
+          try {
+            const phoneNumber = parsePhoneNumberWithError(preFixedValue);
+            if (!phoneNumber) return false;
+
+            return isValidPhoneNumber(
+              preFixedValue,
+              phoneNumber.country as any
+            );
+          } catch (error) {
+            console.log("error while validating phone number", error);
+            return false;
+          }
+        }
+      ),
+
+    qBoxId: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(5, "QBox ID must be at least 5 characters"),
+
+    packageType: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    packageWeight: yup
+      .number()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(0.1, "Weight must be greater than 0"),
+
+    currency: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    packageItemValue: yup
+      .number()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(1, "Item value must be greater than 0"),
+
+    packageDescription: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(10, "Description must be at least 10 characters")
+      .max(500, "Description must not exceed 500 characters"),
+
+    qboxImage: yup.string().required("Please upload a QBox image"),
+
+    shippingCompany: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+  }) as yup.ObjectSchema<SendPackageFormValues>
+);
+
+export const ReturnPackageFormResolver = yupResolver(
+  yup.object().shape({
+    pinCode: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(3, "Pin Code must be at least 3 characters")
+      .max(18, "Pin Code must not exceed 18 characters"),
+    packageType: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    packageWeight: yup
+      .number()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(0.1, "Weight must be greater than 0"),
+
+    currency: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    packageItemValue: yup
+      .number()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(1, "Item value must be greater than 0"),
+
+    packageDescription: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(10, "Description must be at least 10 characters")
+      .max(500, "Description must not exceed 500 characters"),
+
+    returnPackageImage: yup.string().required("Please upload a QBox image"),
+  }) as yup.ObjectSchema<ReturnPackageFormValues>
 );

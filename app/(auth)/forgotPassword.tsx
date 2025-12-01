@@ -1,7 +1,7 @@
 import {
-  AuthScreenLayout,
   Button,
   Form,
+  FormLayout,
   PhoneNumberInput,
   SegmentedControl,
   Text,
@@ -69,7 +69,7 @@ export const ForgotPassword = () => {
   };
 
   return (
-    <AuthScreenLayout
+    <FormLayout
       title="Forgot Password?"
       description={`Enter your ${
         selectedAuthProvider === "phone" ? "phone number" : "email address"
@@ -126,7 +126,7 @@ export const ForgotPassword = () => {
           </Text>
         </Text>
       </Form>
-    </AuthScreenLayout>
+    </FormLayout>
   );
 };
 
