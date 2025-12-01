@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 
 export const BasicInformation = () => {
-  const { control, watch } = useForm({
+  const { control, watch, handleSubmit } = useForm({
     defaultValues: {
       fullName: "",
       email: "",
@@ -124,6 +124,13 @@ export const BasicInformation = () => {
       setIsPhoneVerified(true);
     }
   }, [params]);
+
+  const onSubmit = handleSubmit((data) =>
+    console.log(
+      "this is the Basic information form data ",
+      JSON.stringify(data, null, 4)
+    )
+  );
 
   return (
     <ScrollView

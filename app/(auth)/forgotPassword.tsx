@@ -23,8 +23,6 @@ export const ForgotPassword = () => {
     email: "",
     phone: "",
   };
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const {
     control,
     formState: { isDirty },

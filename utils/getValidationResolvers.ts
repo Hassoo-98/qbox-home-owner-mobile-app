@@ -7,6 +7,7 @@ import {
 import {
   ForgotPasswordFormValues,
   LoginFormValues,
+  PasswordFormVales,
   QBoxLocationFormFormValues,
   QRGenerationFormValues,
   RenewSubscriptionFormData,
@@ -533,4 +534,72 @@ export const ReturnPackageFormResolver = yupResolver(
 
     returnPackageImage: yup.string().required("Please upload a QBox image"),
   }) as yup.ObjectSchema<ReturnPackageFormValues>
+);
+const checkPasswordStrength = (password: string) => {
+  const hasLowercase = /[a-z]/.test(password);
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[@$!%*?&]/.test(password);
+
+  return {
+    hasLowercase,
+    hasUppercase,
+    hasNumbers,
+    hasSpecialChar,
+  };
+};
+
+export const PasswordFormResolver = yupResolver(
+  yup.object().shape({
+    oldPassword: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(8, "Password must be at least 8 characters")
+      .test(
+        "password-strength",
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+        function (value) {
+          if (!value) return false;
+          const strength = checkPasswordStrength(value);
+          return (
+            strength.hasLowercase &&
+            strength.hasUppercase &&
+            strength.hasNumbers &&
+            strength.hasSpecialChar
+          );
+        }
+      ),
+
+    password: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(8, "Password must be at least 8 characters")
+      .test(
+        "password-strength",
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+        function (value) {
+          if (!value) return false;
+          const strength = checkPasswordStrength(value);
+          return (
+            strength.hasLowercase &&
+            strength.hasUppercase &&
+            strength.hasNumbers &&
+            strength.hasSpecialChar
+          );
+        }
+      )
+      .test(
+        "different-from-old",
+        "New password must be different from old password",
+        function (value) {
+          const { oldPassword } = this.parent;
+          return !oldPassword || value !== oldPassword;
+        }
+      ),
+
+    confirmPassword: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .oneOf([yup.ref("password")], "Passwords must match"),
+  }) as yup.ObjectSchema<PasswordFormVales>
 );

@@ -1,12 +1,8 @@
-import {
-  CardDetailsSection,
-  PaymentMethodSection,
-  PersonalInfoSection,
-} from "@/components/containers/Profile/components/RenewSubscription";
+import { PaymentSection, PersonalInfoSection } from "@/components";
 import { RenewSubscriptionFormData } from "@/types";
 import { RenewSubscriptionResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 
@@ -15,7 +11,6 @@ export const RenewSubscription = () => {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<RenewSubscriptionFormData>({
     defaultValues: {
       name: "",
@@ -33,16 +28,11 @@ export const RenewSubscription = () => {
     mode: "onChange",
   });
 
-  const [method, setMethod] = useState<"card" | "stc">("card");
+  console.log("this is the form errors :", errors);
 
-  const handlePaymentMethodChange = (newMethod: "card" | "stc") => {
-    setMethod(newMethod);
-    setValue("paymentMethod", newMethod);
-  };
-
-  const onSubmit = (data: RenewSubscriptionFormData) => {
+  const onSubmit = handleSubmit((data: RenewSubscriptionFormData) => {
     console.log("Form Data:", data);
-  };
+  });
 
   return (
     <KeyboardAvoidingView
@@ -57,12 +47,7 @@ export const RenewSubscription = () => {
         >
           <PersonalInfoSection control={control} />
 
-          <PaymentMethodSection
-            method={method}
-            onMethodChange={handlePaymentMethodChange}
-          />
-
-          {method === "card" && <CardDetailsSection control={control} />}
+          <PaymentSection control={control} />
         </ScrollView>
       </View>
     </KeyboardAvoidingView>

@@ -1,9 +1,4 @@
-import { Text } from "@/components";
-import {
-  MenuList,
-  ProfileCard,
-  SubscriptionCard,
-} from "@/components/containers/Profile";
+import { MenuList, ProfileCard, SubscriptionCard, Text } from "@/components";
 import { MENU_ITEM } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import React from "react";

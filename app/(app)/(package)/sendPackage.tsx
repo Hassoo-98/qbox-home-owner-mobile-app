@@ -1,10 +1,10 @@
 import {
+  DeliveryInformation,
   FormLayout,
+  PackageInformation,
   RecipientInformation,
   SendPackageFooter,
 } from "@/components";
-import { PackageInformation } from "@/components/common/PackageInformation";
-import { DeliveryInformation } from "@/components/containers/Package/components/SendPackage/components/DeliveryInformation";
 import { Spacing } from "@/constants";
 import { useSendPackage } from "@/hooks";
 import { View } from "react-native";

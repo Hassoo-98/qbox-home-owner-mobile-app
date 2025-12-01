@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 
 export const AppLanguage = () => {
-  const { control } = useForm({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
-      AppLanguage: "",
-      oldAppLanguage: "",
-      comfirmAppLanguage: "",
+      language: "",
     },
+  });
+  const onsubmit = handleSubmit((data) => {
+    console.log("this is language", JSON.stringify(data, null, 4));
   });
 
   return (

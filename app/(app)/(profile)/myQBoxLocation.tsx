@@ -1,8 +1,7 @@
 import { WarningIconOutline } from "@/assets/icons";
-import { QBoxLocation } from "@/components";
-import { Button, Text } from "@/components/ui";
+import { Button, QBoxLocation, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
-import { useModal } from "@/hooks/useModal";
+import { useModal } from "@/hooks";
 import { QBoxLocationFormFormValues } from "@/types";
 import { MyQBoxLocationResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
@@ -90,7 +89,6 @@ export const MyQBoxLocation = () => {
       title: "Your location change request has been submitted for approval.",
       primaryButtonText: "Confirm",
       primaryButtonHandler: onCloseModal,
-      secondaryButtonText: "Deny",
       secondaryButtonHandler: onCloseModal,
       subtitle: "Once approved, our team will contact you within 24 hours .",
     });
@@ -107,7 +105,6 @@ export const MyQBoxLocation = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 10 }}
         >
-          <Button title="open modal" onPress={onSubmit} />
           <QBoxLocation
             control={control}
             pickImage={pickImage}
@@ -143,6 +140,7 @@ export const MyQBoxLocation = () => {
             </View>
           </View>
         </ScrollView>
+        <Button title="Submit" onPress={onSubmit} />
       </View>
     </KeyboardAvoidingView>
   );
