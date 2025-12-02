@@ -36,6 +36,11 @@ export const OTPModal = ({
     onClose();
   };
 
+  const resendOtp = () => {
+    //resend otp logic
+    console.log("Resend the otp button is pressed");
+  };
+
   return (
     <RNModal
       visible={isOpen}
@@ -75,7 +80,7 @@ export const OTPModal = ({
                   <Text
                     variant="primary"
                     style={{ fontWeight: "bold" }}
-                    onPress={secondaryButtonHandler}
+                    onPress={resendOtp}
                   >
                     Resend again
                   </Text>
@@ -99,7 +104,14 @@ export const OTPModal = ({
                   <Text
                     variant="primary"
                     style={{ fontWeight: "bold" }}
-                    onPress={secondaryButtonHandler}
+                    onPress={() => {
+                      if (secondaryButtonHandler) {
+                        secondaryButtonHandler();
+                        onClose();
+                      } else {
+                        resendOtp();
+                      }
+                    }}
                   >
                     {footerAction}
                   </Text>

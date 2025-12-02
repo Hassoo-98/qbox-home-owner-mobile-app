@@ -1,5 +1,5 @@
-import { Modal, OTPModal } from "@/components";
-import React from "react";
+import { DriverOTPRequestModal, Modal, OTPModal } from "@/components";
+import React, { useState } from "react";
 import { ModalContextType, ModalProviderProps, ModalStateType } from "./props";
 
 export const ModalContext = React.createContext<ModalContextType>({
@@ -7,10 +7,14 @@ export const ModalContext = React.createContext<ModalContextType>({
   onOpen: () => {},
   onClose: () => {},
   setLoading: () => {},
+  onRequestOTP: () => {},
 });
 
 export const ModalProvider = ({ children }: ModalProviderProps) => {
   const [isOpen, setOpen] = React.useState<boolean>(false);
+
+  const [isOTPRequested, setIsOTPRequested] = useState<boolean>(false);
+
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [modal, setModal] = React.useState<ModalStateType>({
     title: "",
@@ -27,6 +31,11 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
       primaryButtonText: values.primaryButtonText || "Confirm",
       modalType: values.modalType || "default",
     });
+  };
+
+  const onRequestOTP = () => {
+    console.log("pressed: ");
+    setIsOTPRequested(true);
   };
 
   const handleClose = () => {
@@ -59,10 +68,18 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
         setLoading,
         onOpen: handleOpen,
         onClose: handleClose,
+        onRequestOTP,
       }}
     >
       {children}
-      {isOpen && modal.modalType === "otp" ? (
+      {isOTPRequested ? (
+        <DriverOTPRequestModal
+          isOpen={isOTPRequested}
+          onClose={() => {
+            setIsOTPRequested(false);
+          }}
+        />
+      ) : isOpen && modal.modalType === "otp" ? (
         <OTPModal
           isOpen={isOpen}
           onClose={handleClose}
@@ -72,7 +89,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
           footerAction={modal.footerAction}
           isForgotPassowrd={modal.isForgotPassowrd}
           onSubmit={handlePrimaryAction}
-          secondaryButtonHandler={handleOTPResend}
+          secondaryButtonHandler={handleSecondaryAction}
           primaryButtonText={modal.primaryButtonText}
           isLoading={isLoading}
         />

@@ -22,9 +22,11 @@ export type ModalStateType = {
 export type ModalContextType = {
   isOpen: boolean;
   onClose: () => void;
+  onRequestOTP: () => void;
   setLoading: (isLoading: boolean) => void;
   onOpen: (values: ModalStateType) => void;
 };
+
 export interface ModalProps {
   icon?: ReactNode | string;
   title: string;

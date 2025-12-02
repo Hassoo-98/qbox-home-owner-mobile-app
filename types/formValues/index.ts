@@ -4,6 +4,7 @@ export * from "./myQBoxLocationFormValues";
 export * from "./paswordFromValues";
 export * from "./qrGenerationFormValues";
 export * from "./renewSubscriptioin";
+export * from "./resetPasswordFormValues";
 export * from "./returnPackageFormValues";
 export * from "./sendPackagefromValues";
 export * from "./signupformValues";

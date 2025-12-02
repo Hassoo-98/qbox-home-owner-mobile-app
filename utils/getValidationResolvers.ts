@@ -11,6 +11,7 @@ import {
   QBoxLocationFormFormValues,
   QRGenerationFormValues,
   RenewSubscriptionFormData,
+  ResetPasswordFormVales,
   ReturnPackageFormValues,
   SendPackageFormValues,
   SignUpFormValues,
@@ -180,6 +181,30 @@ export const SignUpFormResolver = yupResolver(
       .required(ERROR_MESSAGES.REQUIRED_FIELD),
 
     phone: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .test(
+        "valid-phone",
+        "Please enter a valid phone number",
+        function (value) {
+          if (!value) return false;
+          const preFixedValue = value.startsWith("+") ? value : `+${value}`;
+          try {
+            const phoneNumber = parsePhoneNumberWithError(preFixedValue);
+            if (!phoneNumber) return false;
+            const isValid = isValidPhoneNumber(
+              preFixedValue,
+              phoneNumber.country as any
+            );
+            return isValid;
+          } catch (error) {
+            console.log("error while validating phone number", error);
+            return false;
+          }
+        }
+      ),
+
+    secondaryPhone: yup
       .string()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .test(
@@ -602,4 +627,31 @@ export const PasswordFormResolver = yupResolver(
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .oneOf([yup.ref("password")], "Passwords must match"),
   }) as yup.ObjectSchema<PasswordFormVales>
+);
+
+export const ResetPasswordFormResolver = yupResolver(
+  yup.object().shape({
+    password: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .min(8, "Password must be at least 8 characters")
+      .test(
+        "password-strength",
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+        function (value) {
+          if (!value) return false;
+          const strength = checkPasswordStrength(value);
+          return (
+            strength.hasLowercase &&
+            strength.hasUppercase &&
+            strength.hasNumbers &&
+            strength.hasSpecialChar
+          );
+        }
+      ),
+    confirmPassword: yup
+      .string()
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .oneOf([yup.ref("password")], "Passwords must match"),
+  }) as yup.ObjectSchema<ResetPasswordFormVales>
 );

@@ -1,10 +1,13 @@
 import { Card, ItemInfo, Text } from "@/components";
-import { Colors, Spacing } from "@/constants";
+import { BorderRadius, Colors, Spacing } from "@/constants";
+import { mvs } from "@/utils/metrices";
+import { Image } from "expo-image";
 import { useWatch } from "react-hook-form";
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import { QRGenerationForm } from "./components";
 import { QRSettingProps } from "./props";
 import { QRGenerationSuccessCard } from "./QRGenerationSuccessCard";
+const { width: screenWidth } = Dimensions.get("window");
 
 export const QRSetting = ({
   isGenerating,
@@ -19,6 +22,8 @@ export const QRSetting = ({
     control,
     name: "validityDurationType",
   });
+
+  const imageWidth = screenWidth * 0.25;
 
   return (
     <Card
@@ -51,7 +56,16 @@ export const QRSetting = ({
         }
         rightContent={
           <View>
-            <Text>Right Content</Text>
+            <Image
+              source={require("@/assets/images/packageItem.jpg")}
+              style={{
+                width: imageWidth,
+                height: imageWidth,
+                marginBottom: mvs(8),
+                borderRadius: BorderRadius.sm,
+              }}
+              contentFit="cover"
+            />
           </View>
         }
       />

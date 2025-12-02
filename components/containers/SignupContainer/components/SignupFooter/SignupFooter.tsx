@@ -23,7 +23,7 @@ export const SignupFooter = ({
       subtitle: `Enter the 5-digit code sent to your phone number. ${phoneNumber}`,
       footerText: "Didn’t receive the code?",
       footerAction: "Resend OTP",
-      onOTPResend: () => console.log("Resend OTP"),
+      secondaryButtonHandler: () => console.log("Resend OTP"),
       primaryButtonHandler: () => {
         console.log("otp verified: ", currentStep);
         setCurrentStep((prev) => ++prev);

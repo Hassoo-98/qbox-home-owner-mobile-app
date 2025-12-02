@@ -40,9 +40,13 @@ export const AppTabLayout = () => {
     return null;
   };
 
+  const isHomeScreen = pathname === "/";
+
+  console.log("is home screen: ", isHomeScreen);
+
   return (
     <Tabs
-      screenOptions={() => ({
+      screenOptions={({ route: { name: routeName } }) => ({
         headerShown: shouldShowTabBar,
         headerShadowVisible: false,
         headerTitleAlign: "left",
@@ -54,13 +58,15 @@ export const AppTabLayout = () => {
           return <AppHeaderTitle title={title} />;
         },
         headerLeft: () => <AppHeaderLeft canGoBack={isNestedScreen} />,
-        headerRight: () => (
-          <AppHeaderRight
-            activeTab={pathname.split("/")[1]}
-            handleQRPress={handleQRPress}
-            handleNotificationPress={handleNotificationPress}
-          />
-        ),
+        headerRight: () => {
+          return (
+            <AppHeaderRight
+              activeTab={routeName}
+              handleQRPress={handleQRPress}
+              handleNotificationPress={handleNotificationPress}
+            />
+          );
+        },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.secondary,
         tabBarButton: HapticTab,

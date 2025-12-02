@@ -1,12 +1,14 @@
-import { BoxInfo, Offer, QRSetting, Text } from "@/components";
+import { BoxInfo, Button, Offer, QRSetting, Text } from "@/components";
 import {
   Colors,
   OFFERS,
   QR_VALIDITY_DURATION_TYPE,
   Spacing,
 } from "@/constants";
+import { useModal } from "@/hooks";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils";
+import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useState } from "react";
@@ -24,7 +26,9 @@ import {
 export const Home = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
   const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
+  const { onRequestOTP } = useModal();
 
   const defaultFormValues = {
     qrName: "",
@@ -104,6 +108,8 @@ export const Home = () => {
           onGenerateQR={handleGenerateQR}
           isQrCodeGenerated={isQrCodeGenerated}
         />
+
+        <Button title="Driver OTP Request Modal" onPress={onRequestOTP} />
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={showSuccess}>
@@ -130,6 +136,47 @@ const styles = StyleSheet.create({
   blurContainer: {
     flex: 1,
     padding: Spacing.md,
+  },
+  blurContainerDriverRequestModal: {
+    flex: 1,
+    padding: Spacing.md,
+    justifyContent: "center",
+    width: "100%",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 500,
+    overflow: "hidden",
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: mvs(16),
+    padding: mvs(20),
+    width: "100%",
+    maxWidth: 400,
+    justifyContent: "center",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: mvs(8),
+  },
+  closeButton: {
+    padding: mvs(4),
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: Colors.secondaryText,
   },
   successCard: {
     backgroundColor: Colors.white,

@@ -2,8 +2,9 @@ import { PhoneNumberInput, TextInput } from "@/components";
 import { MenuItem } from "@/components/containers/Profile";
 import { AUTH_PROVIDERS, Colors, emailPattern } from "@/constants";
 import { useModal } from "@/hooks";
+import { useProfile } from "@/hooks/useProfile";
 import { mvs } from "@/utils/metrices";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   isValidPhoneNumber,
   parsePhoneNumberWithError,
@@ -13,6 +14,8 @@ import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 
 export const BasicInformation = () => {
+  const { setOnSave } = useProfile();
+
   const { control, watch, handleSubmit } = useForm({
     defaultValues: {
       fullName: "",
@@ -20,6 +23,7 @@ export const BasicInformation = () => {
       phone: "",
       secondaryPhone: "",
     },
+    mode: "onChange",
   });
 
   const { onTriggerModal } = useModal();
@@ -104,7 +108,7 @@ export const BasicInformation = () => {
       subtitle: subtitle,
       footerText: "Didn’t receive the code?",
       footerAction: "Resend OTP",
-      onOTPResend: () => console.log("Resend OTP"),
+      secondaryButtonHandler: () => console.log("Resend OTP"),
       primaryButtonHandler: () => {
         if (type === "phone") {
           setIsPhoneVerified(true);
@@ -125,12 +129,19 @@ export const BasicInformation = () => {
     }
   }, [params]);
 
-  const onSubmit = handleSubmit((data) =>
+  const onSubmit = handleSubmit((data) => {
     console.log(
       "this is the Basic information form data ",
       JSON.stringify(data, null, 4)
-    )
-  );
+    );
+    router.dismiss();
+  });
+
+  useEffect(() => {
+    setOnSave(() => onSubmit);
+
+    return () => setOnSave(null);
+  }, []);
 
   return (
     <ScrollView

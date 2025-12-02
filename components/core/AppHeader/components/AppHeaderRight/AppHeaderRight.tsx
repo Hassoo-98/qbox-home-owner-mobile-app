@@ -10,9 +10,10 @@ export const AppHeaderRight = ({
   handleNotificationPress,
 }: AppHeaderRightProps) => {
   const notificationCount = 5;
+  console.log("active tab: ", activeTab);
   return (
     <View style={styles.headerRight}>
-      {activeTab === "" && (
+      {activeTab === "(home-screens)" && (
         <HapticPressable onPress={handleQRPress}>
           <QRHistoryIcon width={24} height={24} />
         </HapticPressable>

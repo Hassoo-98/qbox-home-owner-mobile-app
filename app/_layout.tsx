@@ -5,8 +5,9 @@ import { AppNavigation } from "@/navigation";
 import { ThemeProvider } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { Platform } from "react-native";
+import React, { useEffect } from "react";
+import { Platform, StyleSheet, View } from "react-native";
+import ToastManager from "toastify-react-native";
 
 export const RootLayout = () => {
   useEffect(() => {
@@ -17,15 +18,25 @@ export const RootLayout = () => {
   }, []);
 
   return (
-    <ThemeProvider value={CustomNavigationTheme}>
-      <AuthProvider>
-        <ModalProvider>
-          <AppNavigation />
-        </ModalProvider>
-      </AuthProvider>
-      <StatusBar style="dark" />
-    </ThemeProvider>
+    <View style={styles.container}>
+      <ThemeProvider value={CustomNavigationTheme}>
+        <AuthProvider>
+          <ModalProvider>
+            <AppNavigation />
+          </ModalProvider>
+        </AuthProvider>
+        <StatusBar style="dark" />
+      </ThemeProvider>
+
+      <ToastManager />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default RootLayout;

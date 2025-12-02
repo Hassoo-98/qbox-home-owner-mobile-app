@@ -1,12 +1,16 @@
 import { PaymentSection, PersonalInfoSection } from "@/components";
+import { useProfile } from "@/hooks/useProfile";
 import { RenewSubscriptionFormData } from "@/types";
 import { RenewSubscriptionResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
-import React from "react";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 
 export const RenewSubscription = () => {
+  const { setOnSave } = useProfile();
+
   const {
     control,
     handleSubmit,
@@ -32,7 +36,14 @@ export const RenewSubscription = () => {
 
   const onSubmit = handleSubmit((data: RenewSubscriptionFormData) => {
     console.log("Form Data:", data);
+    router.dismiss();
   });
+
+  useEffect(() => {
+    setOnSave(() => onSubmit);
+
+    return () => setOnSave(null);
+  }, []);
 
   return (
     <KeyboardAvoidingView

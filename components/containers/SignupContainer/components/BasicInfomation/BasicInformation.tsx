@@ -34,6 +34,14 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
         defaultCode="PK"
       />
 
+      <PhoneNumberInput
+        name="secondaryPhone"
+        control={control}
+        label="Secondary Number"
+        placeholder="+966 XX XXX XXXX"
+        defaultCode="PK"
+      />
+
       <PasswordInput
         name="password"
         control={control}

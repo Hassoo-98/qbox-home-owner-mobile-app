@@ -1,13 +1,15 @@
 import { WarningIconOutline } from "@/assets/icons";
-import { Button, QBoxLocation, Text } from "@/components";
+import { QBoxLocation, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
 import { useModal } from "@/hooks";
+import { useProfile } from "@/hooks/useProfile";
 import { QBoxLocationFormFormValues } from "@/types";
 import { MyQBoxLocationResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import React from "react";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -18,6 +20,8 @@ import {
 } from "react-native";
 
 export const MyQBoxLocation = () => {
+  const { setOnSave } = useProfile();
+
   const { onTriggerModal, onCloseModal } = useModal();
 
   const {
@@ -88,11 +92,19 @@ export const MyQBoxLocation = () => {
       ),
       title: "Your location change request has been submitted for approval.",
       primaryButtonText: "Confirm",
-      primaryButtonHandler: onCloseModal,
-      secondaryButtonHandler: onCloseModal,
+      primaryButtonHandler: () => {
+        onCloseModal();
+        router.dismiss();
+      },
       subtitle: "Once approved, our team will contact you within 24 hours .",
     });
   });
+
+  useEffect(() => {
+    setOnSave(() => onSubmit);
+
+    return () => setOnSave(null);
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -140,7 +152,6 @@ export const MyQBoxLocation = () => {
             </View>
           </View>
         </ScrollView>
-        <Button title="Submit" onPress={onSubmit} />
       </View>
     </KeyboardAvoidingView>
   );

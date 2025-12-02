@@ -20,7 +20,7 @@ export const ItemInfo = ({
     <View
       style={[{ flexDirection: "row", justifyContent: "space-between" }, style]}
     >
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
+      <View style={{ flex: 1 }}>
         <View>
           <Text
             size="xs"

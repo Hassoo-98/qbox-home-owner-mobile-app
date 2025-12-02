@@ -19,6 +19,9 @@ export const SignUp = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    isSecondStepFormValid,
+    isFirstStepFormValid,
+    isLastStepFormValid,
   } = useSignup();
 
   return (
@@ -44,7 +47,15 @@ export const SignUp = () => {
         <SignupFooter
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
-          isFormValid={isFormValid}
+          isFormValid={
+            currentStep === 1
+              ? isFirstStepFormValid
+              : currentStep === 2
+              ? isSecondStepFormValid
+              : currentStep === 3
+              ? isLastStepFormValid
+              : isFormValid
+          }
           onSubmit={onSubmit}
           phoneNumber={phoneNumber}
         />
