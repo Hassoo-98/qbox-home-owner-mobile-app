@@ -23,6 +23,7 @@ export const SignupFooter = ({
       subtitle: `Enter the 5-digit code sent to your phone number. ${phoneNumber}`,
       footerText: "Didn’t receive the code?",
       footerAction: "Resend OTP",
+      primaryButtonText: "Verify",
       secondaryButtonHandler: () => console.log("Resend OTP"),
       primaryButtonHandler: () => {
         console.log("otp verified: ", currentStep);
@@ -57,7 +58,7 @@ export const SignupFooter = ({
           }}
         />
         <Button
-          title="Next"
+          title={currentStep === 3 ? "Complete" : "Next"}
           disabled={!isFormValid}
           onPress={() => {
             console.log("current step: ", currentStep);

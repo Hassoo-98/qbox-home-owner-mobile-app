@@ -1,5 +1,6 @@
 import { Stepper, Text } from "@/components";
 import { Spacing } from "@/constants";
+import { StatusBar } from "expo-status-bar";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FormLayoutProps } from "./props";
@@ -20,6 +21,7 @@ export const FormLayout = ({
       edges={{ top: "off", bottom: "additive" }}
       style={{ flex: 1 }}
     >
+      <StatusBar style="dark" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -57,20 +59,18 @@ export const FormLayout = ({
             </View>
 
             {children}
+            {/* Fixed Footer */}
+            {footer && (
+              <View
+                style={{
+                  paddingHorizontal: Spacing.xl,
+                  backgroundColor: "white",
+                }}
+              >
+                {footer}
+              </View>
+            )}
           </ScrollView>
-
-          {/* Fixed Footer */}
-          {footer && (
-            <View
-              style={{
-                paddingHorizontal: Spacing.xl,
-                paddingBottom: Spacing.xl,
-                backgroundColor: "white",
-              }}
-            >
-              {footer}
-            </View>
-          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

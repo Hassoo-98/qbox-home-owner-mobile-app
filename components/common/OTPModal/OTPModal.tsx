@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F5F5F7",
     borderRadius: 16,
-    padding: 32,
+    padding: 20,
     width: "90%",
     maxWidth: 400,
     shadowColor: "#000",

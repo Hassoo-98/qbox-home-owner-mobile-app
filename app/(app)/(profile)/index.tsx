@@ -7,11 +7,11 @@ import { ScrollView } from "react-native";
 export const Profile = () => {
   return (
     <ScrollView
+      style={{ flex: 1 }}
       contentContainerStyle={{
-        flex: 1,
         alignItems: "center",
         paddingHorizontal: mvs(20),
-        marginBottom: mvs(50),
+        paddingBottom: mvs(30), // use padding instead of margin for contentContainer
       }}
     >
       <ProfileCard
@@ -24,7 +24,7 @@ export const Profile = () => {
 
       <MenuList menuData={MENU_ITEM} />
 
-      <Text variant="secondary" size="xs" style={{ marginVertical: mvs(10) }}>
+      <Text variant="secondary" size="xs" style={{ marginVertical: mvs(20) }}>
         Developed and Maintained by REPLA Technologies PVT Ltd
       </Text>
     </ScrollView>

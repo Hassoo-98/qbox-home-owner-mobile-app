@@ -1,17 +1,10 @@
 import { Button, Text, TextInput } from "@/components";
-import { Colors, Spacing } from "@/constants";
+import { BorderRadius, Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { BlurView } from "expo-blur";
 import React from "react";
 import { useForm } from "react-hook-form";
-import {
-  Platform,
-  Modal as RNModal,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { Platform, Modal as RNModal, StyleSheet, View } from "react-native";
 
 export const DriverOTPRequestModal = ({ isOpen, onClose, onSubmit }: any) => {
   const { control, handleSubmit } = useForm();
@@ -23,57 +16,88 @@ export const DriverOTPRequestModal = ({ isOpen, onClose, onSubmit }: any) => {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <BlurView
-          intensity={Platform.OS === "ios" ? 30 : 80}
-          tint="dark"
-          style={styles.blurContainer}
-        >
-          <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-            <View style={styles.container}>
-              <View style={styles.modalHeader}>
-                <Text style={{ fontWeight: "700" }} variant="default">
-                  OTP Request
-                </Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>✕</Text>
-                </TouchableOpacity>
-              </View>
-              <Text size="sm" style={{ marginBottom: mvs(8) }}>
-                Driver "Ahmed Zaib" is requesting for the OTP.
+      <BlurView
+        intensity={Platform.OS === "ios" ? 30 : 80}
+        tint="dark"
+        style={styles.blurContainer}
+      >
+        <View style={styles.container}>
+          <View style={styles.modalHeader}>
+            <Text style={{ fontWeight: "700" }} variant="default">
+              OTP Request
+            </Text>
+          </View>
+          <Text size="sm" style={{ marginBottom: mvs(8) }}>
+            Driver "Ahmed Zaib" is requesting for the OTP.
+          </Text>
+          <TextInput
+            name="trackingID"
+            inputMode="numeric"
+            control={control}
+            autoCorrect={false}
+            label="Tracking Id"
+            placeholder="XXXXXXXXXXXXXXXX"
+          />
+
+          <TextInput
+            name="driverName"
+            inputMode="text"
+            control={control}
+            autoCorrect={false}
+            label="Driver Name"
+            placeholder="Ahamad"
+          />
+
+          <TextInput
+            name="otp"
+            inputMode="numeric"
+            control={control}
+            autoCorrect={false}
+            label="OTP"
+            placeholder="XXXXX"
+          />
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              gap: Spacing.md,
+            }}
+          >
+            <Button
+              title="Cancel"
+              style={{ width: "48%", backgroundColor: Colors.white }}
+              textStyle={{ color: Colors.text }}
+              onPress={onClose}
+            />
+            <Button size="sm" title="Assign OTP" style={{ width: "48%" }} />
+          </View>
+          <View
+            style={{
+              backgroundColor: Colors.warning,
+              paddingVertical: Spacing.sm,
+              paddingHorizontal: Spacing.md,
+              borderRadius: BorderRadius.sm,
+              flexDirection: "row",
+              gap: Spacing.sm,
+              alignItems: "flex-start", // Important: align to top, not center
+              marginTop: mvs(10),
+            }}
+          >
+            {/* Wrap text content in a flexible container */}
+            <View style={{ flex: 1, flexShrink: 1 }}>
+              <Text size="sm" variant="warning" style={{ fontWeight: "bold" }}>
+                Note:
               </Text>
-              <TextInput
-                name="trackingID"
-                inputMode="numeric"
-                control={control}
-                autoCorrect={false}
-                label="Tracking Id"
-                placeholder="XXXXXXXXXXXXXXXX"
-              />
-
-              <TextInput
-                name="driverName"
-                inputMode="text"
-                control={control}
-                autoCorrect={false}
-                label="Driver Name"
-                placeholder="Ahamad"
-              />
-
-              <TextInput
-                name="otp"
-                inputMode="numeric"
-                control={control}
-                autoCorrect={false}
-                label="OTP"
-                placeholder="XXXXX"
-              />
-
-              <Button title="Assign OTP" />
+              <Text size="sm" variant="warning">
+                By clicking on the Cancel button, your delivery will be marked
+                as failed.
+              </Text>
             </View>
-          </TouchableWithoutFeedback>
-        </BlurView>
-      </TouchableWithoutFeedback>
+          </View>
+        </View>
+      </BlurView>
     </RNModal>
   );
 };

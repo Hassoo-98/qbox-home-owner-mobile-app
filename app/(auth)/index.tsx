@@ -1,30 +1,34 @@
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { FC } from "react";
+import { Image, StyleSheet, View } from "react-native";
+
 import { Button, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
-import { router } from "expo-router";
-import { Image, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-export const Welcome = () => {
+const LOCKER_IMAGE = require("@/assets/images/welcome-locker.png");
+
+export const Welcome: FC = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar style="light" backgroundColor={Colors.primary} />
+
       <View style={styles.backgroundCircle} />
 
       <Image
-        source={require("@/assets/images/welcome-locker.png")}
+        source={LOCKER_IMAGE}
         style={styles.lockerImage}
-        resizeMode="contain"
+        resizeMode="cover"
       />
 
-      <View style={styles.textContent}>
+      <View style={styles.contentWrapper}>
         <Text size="xl" style={styles.title}>
-          Unlock the Future of Delivery
+          Deliver Smarter with QBOX
         </Text>
         <Text style={styles.subtitle}>
-          Smart lockers powered by cloud technology
+          Fast, Secure, and Hassle-Free Drop-Offs.
         </Text>
       </View>
-
-      <View style={styles.spacer} />
 
       <View style={styles.buttonContainer}>
         <Button
@@ -43,60 +47,67 @@ export const Welcome = () => {
           </Text>
         </Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
+
+const CIRCLE_SIZE = 580;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: 80,
+    backgroundColor: Colors.white,
+    justifyContent: "center",
   },
+
   backgroundCircle: {
-    width: 520.98,
-    height: 580.47,
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
     backgroundColor: Colors.primary,
-    top: -310,
-    borderRadius: 1000,
-    transform: [{ rotate: "-4.44deg" }],
-    left: -76.94,
+    borderRadius: CIRCLE_SIZE / 2,
     position: "absolute",
+    top: -CIRCLE_SIZE * 0.55,
+    left: -CIRCLE_SIZE * 0.15,
+    transform: [{ rotate: "-4deg" }],
   },
+
   lockerImage: {
-    position: "relative",
-    width: 300,
-    height: 400,
-    marginTop: Spacing.xl,
+    width: "45%",
+    height: "45%",
+    position: "absolute",
+    top: 80,
   },
-  textContent: {
+
+  contentWrapper: {
+    marginTop: "70%",
     alignItems: "center",
-    gap: Spacing.sm,
+    justifyContent: "center",
     paddingHorizontal: Spacing.xl,
-    marginTop: Spacing.xxl,
+    gap: Spacing.sm,
   },
+
   title: {
     fontWeight: "bold",
     textAlign: "center",
   },
+
   subtitle: {
     color: Colors.secondaryText,
     fontSize: 16,
     textAlign: "center",
   },
-  spacer: {
-    flex: 1,
+
+  buttonContainer: {
+    position: "absolute",
+    bottom: Spacing.lg,
+    width: "100%",
+    padding: Spacing.lg,
   },
   link: {
     fontSize: 16,
     textAlign: "center",
     fontWeight: "bold",
-  },
-  buttonContainer: {
-    width: "100%",
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
-    gap: Spacing.md,
   },
   signupText: {
     color: Colors.secondaryText,

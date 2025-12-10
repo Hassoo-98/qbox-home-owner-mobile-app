@@ -5,7 +5,7 @@ import {
   QR_VALIDITY_DURATION_TYPE,
   Spacing,
 } from "@/constants";
-import { useModal } from "@/hooks";
+import { useModal, useShare } from "@/hooks";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
@@ -36,6 +36,7 @@ export const Home = () => {
     validityDuration: "",
     validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
   };
+  const { onShare } = useShare();
 
   const { control, handleSubmit, reset } = useForm<QRGenerationFormValues>({
     defaultValues: defaultFormValues,
@@ -44,10 +45,16 @@ export const Home = () => {
 
   const handleGenerateQR = handleSubmit(
     async (data: QRGenerationFormValues) => {
+      // If QR already generated → directly share and stop execution
+      if (isQrCodeGenerated) {
+        return onShare("QR Code generated", "https://myqbox.com/status/123");
+      }
+
       console.log("QR Generation Form Data:", JSON.stringify(data, null, 4));
       setIsGenerating(true);
 
       try {
+        // Simulate QR generation time
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         setIsGenerating(false);

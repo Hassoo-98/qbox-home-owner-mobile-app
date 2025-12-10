@@ -14,6 +14,7 @@ import {
   Spacing,
 } from "@/constants";
 import { mvs } from "@/utils/metrices";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { format } from "date-fns";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
@@ -244,7 +245,7 @@ export const Package = () => {
                   }}
                   style={styles.closeButton}
                 >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                  <Ionicons name="close-outline" size={24} color="black" />
                 </TouchableOpacity>
               </View>
 

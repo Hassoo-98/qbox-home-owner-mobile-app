@@ -1,4 +1,5 @@
-import { SelectField, Text, TextInput } from "@/components/ui";
+import { Text, TextInput } from "@/components/ui";
+import { CustomDropdown } from "@/components/ui/Dropdown";
 import { Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
@@ -84,7 +85,7 @@ export const QBoxLocation = ({
         placeholder="XXXX"
       />
 
-      <SelectField
+      <CustomDropdown
         name="installationLocation"
         control={control}
         label="Preferred Installation Location"
