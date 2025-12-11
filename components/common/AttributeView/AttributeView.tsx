@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
     gap: mvs(5),
   },
   statusIndicator: {
-    width: mvs(20),
-    height: mvs(20),
+    width: mvs(13),
+    height: mvs(13),
     borderRadius: BorderRadius.full,
   },
   statusText: {

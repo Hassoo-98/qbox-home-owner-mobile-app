@@ -1,4 +1,5 @@
-import { Button, SelectField, Text, TextInput } from "@/components/ui";
+import { Button, Text, TextInput } from "@/components/ui";
+import { CustomDropdown } from "@/components/ui/Dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React from "react";
@@ -49,15 +50,15 @@ export const PackageReportModal = ({
                 placeholder="XXXXXXXXXXXXXXX"
               />
 
-              <SelectField
+              <CustomDropdown
                 name="reportType"
                 control={control}
                 label="Issue related to"
                 placeholder="Select issue type"
                 options={[
                   { label: "Driver", value: "driver" },
-                  { label: "Sender", value: "Sender" },
-                  { label: "Other", value: "other" },
+                  { label: "Package", value: "Sender" },
+                  { label: "Couier", value: "courier" },
                 ]}
               />
 

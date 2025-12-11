@@ -54,7 +54,7 @@ export const RenewSubscription = () => {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 10 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
         >
           <PersonalInfoSection control={control} />
 

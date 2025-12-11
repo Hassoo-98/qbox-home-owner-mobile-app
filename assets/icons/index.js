@@ -24,6 +24,7 @@ export { default as ProfileIconOutline } from "./profile-icon-outline.svg";
 export { default as ProfileIcon } from "./profile-icon.svg";
 export { default as QRHistoryIcon } from "./qr-history.svg";
 export { default as RecordingIcon } from "./recording-icon.svg";
+export { default as ReportIcon } from "./report.svg";
 export { default as ReturnPackageIcon } from "./returnPackageIcon.tsx";
 export { default as Send } from "./send.svg";
 export { default as SendPackageIcon } from "./sendPackageIcon.tsx";

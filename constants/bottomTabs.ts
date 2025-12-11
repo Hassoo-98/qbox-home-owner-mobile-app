@@ -21,7 +21,7 @@ export const BOTTOM_TABS = [
   {
     id: 2,
     name: "(myQbox)",
-    title: "MyQBox",
+    title: "My QBox",
     Icon: MyQBoxIcon,
     IconOutline: MyQBoxIconOutline,
     isBottomTab: true,

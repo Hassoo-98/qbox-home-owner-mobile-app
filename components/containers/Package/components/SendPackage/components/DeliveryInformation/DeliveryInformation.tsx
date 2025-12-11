@@ -1,5 +1,5 @@
 import { PaymentSection } from "@/components/common";
-import { SelectField } from "@/components/ui";
+import { CustomDropdown } from "@/components/ui/Dropdown";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { PackageOrderPaymentSummary } from "../PackageOrderPaymentSummary";
@@ -32,10 +32,10 @@ export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
   };
   return (
     <View>
-      <SelectField
+      <CustomDropdown
         name="shippingCompany"
         control={control}
-        label="Ship[ing Company"
+        label="Shipping Company"
         placeholder="Choose package type"
         options={[
           { label: "ABC", value: "mainDoor" },

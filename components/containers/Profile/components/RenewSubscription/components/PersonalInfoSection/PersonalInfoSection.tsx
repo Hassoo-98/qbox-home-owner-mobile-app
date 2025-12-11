@@ -1,4 +1,5 @@
 import { PhoneNumberInput, TextInput } from "@/components/ui";
+import { Colors } from "@/constants";
 import React from "react";
 import { View } from "react-native";
 import { PersonalInfoSectionProps } from "./props";
@@ -32,6 +33,21 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         autoCorrect={false}
         label="Price"
         placeholder="XXXX"
+        endButtonText="Yearly"
+        endButtonProps={{
+          variant: "danger", // change background
+          style: {
+            backgroundColor: Colors.background,
+          },
+          textStyle: {
+            // control the text inside the button
+            color: Colors.text,
+            fontWeight: "bold",
+            borderLeftColor: Colors.text,
+            paddingLeft: 5,
+            borderLeftWidth: 1,
+          },
+        }}
       />
 
       <TextInput

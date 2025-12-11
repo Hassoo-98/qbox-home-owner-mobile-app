@@ -274,8 +274,10 @@ export const Package = () => {
                     />
                   </View>
                   <Text
+                    size="sm"
                     style={{
                       fontWeight: "500",
+
                       textAlign: "center",
                       color:
                         selectedType === "send" ? Colors.white : Colors.dark,
@@ -301,6 +303,7 @@ export const Package = () => {
                     />
                   </View>
                   <Text
+                    size="sm"
                     style={{
                       fontWeight: "500",
                       textAlign: "center",
@@ -335,16 +338,23 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     flex: 1,
-    padding: Spacing.md,
+    padding: Spacing.sm,
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   modalContent: {
-    backgroundColor: Colors.white,
-    borderRadius: mvs(16),
-    padding: mvs(20),
+    backgroundColor: "#F5F5F7",
+    borderRadius: 16,
+    paddingHorizontal: 32,
+    paddingVertical: 15,
     width: "90%",
     maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
   },
   modalHeader: {
     flexDirection: "row",
@@ -364,7 +374,9 @@ const styles = StyleSheet.create({
     gap: mvs(16),
     marginBottom: mvs(24),
   },
-  optionCard: {},
+  optionCard: {
+    width: "48%",
+  },
   optionCardSelected: {
     backgroundColor: Colors.primary,
   },

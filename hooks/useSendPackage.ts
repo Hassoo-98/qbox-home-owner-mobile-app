@@ -43,7 +43,7 @@ export const useSendPackage = () => {
       "sendPackage submission submission: ",
       JSON.stringify(data, null, 4)
     );
-    router.navigate("/(auth)/confirmSignup");
+    router.navigate("/(app)/(package)");
   });
 
   const phoneNumber = watch("phone");

@@ -50,7 +50,7 @@ export const ReturnPackageFooter = ({
           }}
         />
         <Button
-          title="Next"
+          title={currentStep === 2 ? "Confirm" : "Next"}
           disabled={!isFormValid}
           onPress={() => {
             console.log("current step: ", currentStep);

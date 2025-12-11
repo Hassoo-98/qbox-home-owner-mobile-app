@@ -63,7 +63,7 @@ export const QRCodeDetailsHeader = ({
         }}
       >
         <Text size="lg" style={{ fontWeight: "bold" }}>
-          QR History
+          Scan History
         </Text>
       </View>
     </>

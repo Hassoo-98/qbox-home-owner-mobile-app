@@ -1,3 +1,4 @@
+import { RecordingIcon, ReportIcon } from "@/assets/icons";
 import {
   AppHeaderTitle,
   Button,
@@ -5,12 +6,13 @@ import {
   PackageDetailsDescription,
   PackageDetailsHeader,
   PackageDetailsPaymentSummary,
-  PackageDetailsQRCodeSection,
   PackageDetailsTimeLine,
   PackageReportModal,
+  SpecificInfoSection,
   Text,
 } from "@/components";
 import {
+  Colors,
   PACKAGE_DETAILS,
   PACKAGE_TIMELINE,
   PACKAGE_TYPE,
@@ -117,10 +119,17 @@ export const PackageDetails = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: mvs(30) }}
+      >
         <PackageDetailsHeader packageData={packageData} />
 
-        <PackageDetailsQRCodeSection qrCode={packageData.qrCode} />
+        <SpecificInfoSection
+          title="Assigned QR Code"
+          description="QR Code"
+          value={packageData.qrCode}
+        />
 
         <PackageDetailsAttribute attributes={packageData.attributes} />
 
@@ -138,6 +147,27 @@ export const PackageDetails = () => {
           packageData?.status === "Send") && (
           <PackageDetailsTimeLine timelineData={timelineData} />
         )}
+        {packageData.type === PACKAGE_TYPE.DELIVERED && (
+          <View>
+            <Button
+              title="View Recording"
+              textStyle={{ color: Colors.primary }}
+              icon={<RecordingIcon width={24} height={24} />}
+              style={{
+                backgroundColor: Colors.background,
+                marginTop: mvs(Spacing.xs),
+                borderWidth: 1,
+                borderColor: Colors.border,
+              }}
+            />
+
+            <SpecificInfoSection
+              title="Returning PIN"
+              description="PIN Code"
+              value={packageData.qrCode}
+            />
+          </View>
+        )}
       </ScrollView>
 
       {packageData.type === PACKAGE_TYPE.INCOMING && (
@@ -146,6 +176,8 @@ export const PackageDetails = () => {
             title="Report an Issue"
             variant="danger"
             onPress={handleReportIssue}
+            icon={<ReportIcon />}
+            iconPosition="left"
           />
         </View>
       )}
@@ -164,6 +196,7 @@ export const PackageDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: mvs(30),
   },
   scrollView: {
     padding: mvs(20),

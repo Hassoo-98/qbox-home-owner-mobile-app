@@ -1,7 +1,7 @@
-import { Card, Text } from "@/components";
+import { Card, CustomSwitch, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
-import { StyleSheet, Switch, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { QBoxAlarmCardProps } from "./prpos";
 
 export const QBoxAlarmCard = ({ isEnabled, onToggle }: QBoxAlarmCardProps) => {
@@ -19,13 +19,9 @@ export const QBoxAlarmCard = ({ isEnabled, onToggle }: QBoxAlarmCardProps) => {
       </Text>
       <View style={styles.controlsContainer}>
         {isEnabled && <Text style={styles.timer}>00:00:00</Text>}
-        <Switch
-          value={isEnabled}
-          onValueChange={onToggle}
-          thumbColor={isEnabled ? Colors.danger : Colors.primary}
-          trackColor={{ false: Colors.white, true: Colors.white }}
-          ios_backgroundColor={Colors.white}
-        />
+        <View style={styles.SubControlsContainer}>
+          <CustomSwitch value={isEnabled} onValueChange={onToggle} />
+        </View>
       </View>
     </Card>
   );
@@ -49,7 +45,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: mvs(20),
+    gap: mvs(10),
+  },
+  SubControlsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   timer: {
     color: Colors.danger,

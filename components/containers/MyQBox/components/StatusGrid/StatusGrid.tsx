@@ -1,5 +1,5 @@
 import { AttributeView } from "@/components";
-import { BorderRadius, STATUS_CARDS_DATA } from "@/constants";
+import { STATUS_CARDS_DATA } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { StyleSheet, View } from "react-native";
 
@@ -20,21 +20,5 @@ const styles = StyleSheet.create({
     width: "90%",
     gap: mvs(12),
     justifyContent: "space-between",
-  },
-  card: {
-    width: "48%",
-  },
-  statusContainer: {
-    flexDirection: "row",
-    gap: mvs(5),
-    alignItems: "center",
-  },
-  statusIndicator: {
-    width: mvs(20),
-    height: mvs(20),
-    borderRadius: BorderRadius.full,
-  },
-  statusText: {
-    fontWeight: "bold",
   },
 });

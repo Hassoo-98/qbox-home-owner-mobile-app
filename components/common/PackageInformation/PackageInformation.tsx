@@ -1,4 +1,5 @@
-import { SelectField, Text, TextInput } from "@/components/ui";
+import { Text, TextInput } from "@/components/ui";
+import { CustomDropdown } from "@/components/ui/Dropdown";
 import { Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +15,7 @@ export const PackageInformation = ({
 }: PackageInformationProps) => {
   return (
     <View>
-      <SelectField
+      <CustomDropdown
         name="packageType"
         control={control}
         label="Package Type"
@@ -42,7 +43,7 @@ export const PackageInformation = ({
           width: "100%",
         }}
       >
-        <SelectField
+        <CustomDropdown
           name="currency"
           control={control}
           label="Currency"

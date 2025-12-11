@@ -609,9 +609,37 @@ export const PACKAGE_TIMELINE = [
     status: "QR Code Generated",
     location: "Lahore",
   },
+  {
+    id: 14,
+    packageId: 5,
+    timestamp: new Date("2025-01-16T08:10:00Z").toISOString(),
+    status: "Delivered",
+    location: "Riyadh",
+  },
+  {
+    id: 15,
+    packageId: 5,
+    timestamp: new Date("2025-01-16T06:30:00Z").toISOString(),
+    status: "Out for Delivery",
+    location: "Riyadh",
+  },
+
+  {
+    id: 16,
+    packageId: 6,
+    timestamp: new Date("2025-01-14T14:20:00Z").toISOString(),
+    status: "Delivered",
+    location: "Jeddah",
+  },
+  {
+    id: 17,
+    packageId: 6,
+    timestamp: new Date("2025-01-14T12:00:00Z").toISOString(),
+    status: "Out for Delivery",
+    location: "Jeddah",
+  },
 ];
 
-// Package details with additional information
 export const PACKAGE_DETAILS: PackageDetailsType[] = [
   // =================== ID: 1 (INCOMING) ===================
   {

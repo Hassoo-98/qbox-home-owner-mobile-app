@@ -43,21 +43,21 @@ export const Password = () => {
         name="oldPassword"
         control={control}
         label="Password"
-        placeholder="Enter password"
+        placeholder="Enter old password"
       />
 
       <PasswordInput
         name="password"
         control={control}
-        label="Password"
-        placeholder="Enter password"
+        label="New Password"
+        placeholder="Enter new password"
       />
 
       <PasswordInput
         name="confirmPassword"
         control={control}
         label="Confirm Password"
-        placeholder="Enter password"
+        placeholder="Enter confirm password"
       />
     </ScrollView>
   );

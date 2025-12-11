@@ -9,6 +9,7 @@ export const SubscriptionHistory = () => {
     <View
       style={{
         flex: 1,
+        paddingBottom: mvs(20),
       }}
     >
       <FlatList

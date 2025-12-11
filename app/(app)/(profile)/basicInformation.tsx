@@ -108,6 +108,7 @@ export const BasicInformation = () => {
       subtitle: subtitle,
       footerText: "Didn’t receive the code?",
       footerAction: "Resend OTP",
+      primaryButtonText: "Verify",
       secondaryButtonHandler: () => console.log("Resend OTP"),
       primaryButtonHandler: () => {
         if (type === "phone") {

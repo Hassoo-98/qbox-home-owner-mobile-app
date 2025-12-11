@@ -46,7 +46,7 @@ export const SendPackageFooter = ({
           }}
         />
         <Button
-          title="Next"
+          title={currentStep === 3 ? "Submit" : "Next"}
           disabled={!isFormValid}
           onPress={() => {
             console.log("current step: ", currentStep);
@@ -85,7 +85,7 @@ export const SendPackageFooter = ({
               size="sm"
               variant="warning"
               style={{ fontWeight: "bold" }}
-              numberOfLines={undefined} // Allow unlimited lines
+              numberOfLines={undefined}
             >
               Package Guidelines
             </Text>

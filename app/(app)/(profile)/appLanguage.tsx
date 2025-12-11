@@ -1,4 +1,4 @@
-import { SelectField } from "@/components";
+import { CustomDropdown } from "@/components/ui/Dropdown";
 import { useProfile } from "@/hooks/useProfile";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
@@ -33,7 +33,7 @@ export const AppLanguage = () => {
         padding: mvs(20),
       }}
     >
-      <SelectField
+      <CustomDropdown
         name="language"
         control={control}
         label="Language"

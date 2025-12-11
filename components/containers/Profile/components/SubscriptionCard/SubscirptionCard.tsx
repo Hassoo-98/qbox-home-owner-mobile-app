@@ -1,5 +1,6 @@
 import { Button, Card, Text } from "@/components";
 import { Colors } from "@/constants";
+import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 
@@ -28,6 +29,7 @@ export const SubscriptionCard = () => {
           size="sm"
           title="Renew"
           textStyle={{ color: Colors.secondary }}
+          onPress={() => router.navigate("/renewSubscription")}
         />
       </View>
     </Card>

@@ -1,3 +1,4 @@
+import { Colors } from "@/constants";
 import { ReturnPackageFormValues } from "@/types";
 import { ReturnPackageFormResolver } from "@/utils";
 import * as ImagePicker from "expo-image-picker";
@@ -5,6 +6,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
+import { Toast } from "toastify-react-native";
 
 export const useReturnPackage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -41,6 +43,15 @@ export const useReturnPackage = () => {
     );
     reset();
     router.navigate("/(app)/(package)");
+    Toast.show({
+      type: "success",
+      text1: "Package returned successfully.",
+      position: "top",
+      backgroundColor: Colors.white,
+      textColor: Colors.text,
+      progressBarColor: Colors.white,
+      visibilityTime: 3000,
+    });
   });
 
   const returnPackageImage = watch("returnPackageImage");
