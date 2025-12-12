@@ -12,6 +12,7 @@ import {
   PackageReportModal,
   SpecificInfoSection,
   Text,
+  VedioRecording,
 } from "@/components";
 import {
   Colors,
@@ -22,9 +23,10 @@ import {
 } from "@/constants";
 import { PackageDetailsType } from "@/types";
 import { mvs } from "@/utils/metrices";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useVideoPlayer } from "expo-video";
 import {
   useCallback,
   useEffect,
@@ -33,7 +35,7 @@ import {
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, View } from "react-native";
 
 export const PackageDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,6 +43,7 @@ export const PackageDetails = () => {
   const [packageData, setPackageData] = useState<PackageDetailsType>();
   const [loading, setLoading] = useState<boolean>(true);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { handleSubmit, control } = useForm({
     defaultValues: {
@@ -49,6 +52,18 @@ export const PackageDetails = () => {
       reportType: "",
     },
   });
+
+  // ✅ ALWAYS call the hook - no conditions before it
+  const videoPlayer = useVideoPlayer(
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    (player) => {
+      player.loop = false;
+      player.muted = false;
+    }
+  );
+
+  // Determine if we should show video features
+  const shouldShowVideo = packageData?.type === PACKAGE_TYPE.DELIVERED;
 
   const timelineData = useMemo(() => {
     if (!id) return [];
@@ -132,9 +147,23 @@ export const PackageDetails = () => {
   }, []);
 
   const onSubmitReport = handleSubmit(async (data: any) => {
-    console.log("report fomr data: ", data);
+    console.log("report form data: ", data);
     onCloseReportModal();
   });
+
+  const handleCloseModal = useCallback(() => {
+    if (videoPlayer) {
+      try {
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0;
+        // Optional: mute it as well
+        videoPlayer.muted = true;
+      } catch (error) {
+        console.error("Error resetting video player:", error);
+      }
+    }
+    setModalVisible(false);
+  }, [videoPlayer]);
 
   if (loading) {
     return (
@@ -182,7 +211,9 @@ export const PackageDetails = () => {
           packageData?.status === "Send") && (
           <PackageDetailsTimeLine timelineData={timelineData} />
         )}
-        {packageData.type === PACKAGE_TYPE.DELIVERED && (
+
+        {/* ✅ Only show video button for delivered packages */}
+        {shouldShowVideo && (
           <View>
             <Button
               title="View Recording"
@@ -194,6 +225,7 @@ export const PackageDetails = () => {
                 borderWidth: 1,
                 borderColor: Colors.border,
               }}
+              onPress={() => setModalVisible(true)}
             />
 
             <SpecificInfoSection
@@ -216,6 +248,7 @@ export const PackageDetails = () => {
           />
         </View>
       )}
+
       {isReportModalOpen && (
         <PackageReportModal
           control={control}
@@ -223,6 +256,38 @@ export const PackageDetails = () => {
           onCloseReportModal={onCloseReportModal}
           onSubmitReport={onSubmitReport}
         />
+      )}
+
+      {/* Video Recording Modal - only render when visible and video is available */}
+      {shouldShowVideo && modalVisible && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleCloseModal}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: mvs(10),
+                }}
+              >
+                <View />
+                <Ionicons
+                  name="close-outline"
+                  size={24}
+                  color="black"
+                  onPress={handleCloseModal}
+                />
+              </View>
+              <VedioRecording player={videoPlayer} autoPlay={true} />
+            </View>
+          </View>
+        </Modal>
       )}
     </View>
   );
@@ -244,6 +309,20 @@ const styles = StyleSheet.create({
   footer: {
     width: "100%",
     padding: mvs(Spacing.lg),
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 500,
+    overflow: "hidden",
   },
 });
 
