@@ -1,6 +1,7 @@
 export { default as CameraIcon } from "./camera.svg";
 export { default as ChevronDownIcon } from "./chevron-down.svg";
 export { default as ContactIcon } from "./contact.svg";
+export { default as ShareIcon } from "./deleteIcon.svg";
 export { default as DummyQRCodeIcon } from "./dummy-qr-code.svg";
 export { default as HomeIconOutline } from "./home-icon-outline.svg";
 export { default as HomeIcon } from "./home-icon.svg";
@@ -28,5 +29,6 @@ export { default as ReportIcon } from "./report.svg";
 export { default as ReturnPackageIcon } from "./returnPackageIcon.tsx";
 export { default as Send } from "./send.svg";
 export { default as SendPackageIcon } from "./sendPackageIcon.tsx";
+export { default as DeletetIcon } from "./shareIcon.svg";
 export { default as SubscriptionHistoryIcon } from "./subscription-History.svg";
 export { default as WarningIconOutline } from "./warning-icon.svg";

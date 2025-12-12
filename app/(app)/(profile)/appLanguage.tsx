@@ -43,6 +43,7 @@ export const AppLanguage = () => {
           { label: "Urdu", value: "ur" },
           { label: "Arabic", value: "ar" },
         ]}
+        containerStyle={{ width: "100%" }}
       />
     </ScrollView>
   );

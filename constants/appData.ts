@@ -644,6 +644,8 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   // =================== ID: 1 (INCOMING) ===================
   {
     id: 1,
+    trackingId: "SM240815001",
+
     type: PACKAGE_TYPE.INCOMING,
     courierName: "Courier Name",
     lastUpdate: new Date("2025-12-10T11:05:00Z").toISOString(),
@@ -662,6 +664,8 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   {
     id: 2,
     type: PACKAGE_TYPE.INCOMING,
+    trackingId: "SM240815002",
+
     courierName: "FastEx Logistics",
     lastUpdate: new Date("2025-01-20T14:30:00Z").toISOString(),
     qrCode: "FE-2024-XY",
@@ -679,6 +683,8 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   {
     id: 3,
     type: PACKAGE_TYPE.OUTGOING,
+    trackingId: "SM240815003",
+
     courierName: "ParcelPro",
     lastUpdate: new Date("2025-01-18T15:45:00Z").toISOString(),
     qrCode: "PP-EXP-03",
@@ -718,6 +724,8 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   {
     id: 4,
     type: PACKAGE_TYPE.OUTGOING,
+    trackingId: "SM240815004",
+
     courierName: "SpeedyShip",
     lastUpdate: new Date("2025-01-17T11:00:00Z").toISOString(),
     qrCode: "SS-RET-04",
@@ -739,6 +747,8 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   {
     id: 5,
     type: PACKAGE_TYPE.DELIVERED,
+    trackingId: "SM240815005",
+
     courierName: "BlueLine Couriers",
     lastUpdate: new Date("2025-01-16T08:10:00Z").toISOString(),
     qrCode: "BL-DEL-05",
@@ -756,6 +766,7 @@ export const PACKAGE_DETAILS: PackageDetailsType[] = [
   {
     id: 6,
     type: PACKAGE_TYPE.DELIVERED,
+    trackingId: "SM240815006",
     courierName: "FlyPost Service",
     lastUpdate: new Date("2025-01-14T14:20:00Z").toISOString(),
     qrCode: "FP-DEL-06",

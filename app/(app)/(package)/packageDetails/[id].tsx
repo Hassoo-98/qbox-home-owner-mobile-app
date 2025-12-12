@@ -1,7 +1,9 @@
 import { RecordingIcon, ReportIcon } from "@/assets/icons";
 import {
+  AppHeaderLeft,
   AppHeaderTitle,
   Button,
+  Chip,
   PackageDetailsAttribute,
   PackageDetailsDescription,
   PackageDetailsHeader,
@@ -20,6 +22,7 @@ import {
 } from "@/constants";
 import { PackageDetailsType } from "@/types";
 import { mvs } from "@/utils/metrices";
+import { Feather } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import {
@@ -76,15 +79,47 @@ export const PackageDetails = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <AppHeaderTitle
-          title={
-            packageData?.courierName || packageData
-              ? `Package #${packageData.id}`
-              : "Package Not Found"
-          }
-        />
+      headerTitle: () => <AppHeaderTitle title="" />,
+      headerLeft: () => (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+          }}
+        >
+          <AppHeaderLeft canGoBack />
+          <AppHeaderTitle
+            title={
+              packageData?.courierName || packageData
+                ? `${packageData.trackingId}`
+                : "Package Not Found"
+            }
+          />
+        </View>
       ),
+      headerRight: () => {
+        return (
+          <View style={{ flexDirection: "row", gap: mvs(10) }}>
+            {packageData?.type === PACKAGE_TYPE.INCOMING && (
+              <Feather name="phone" size={24} color="black" />
+            )}
+            {packageData?.type === PACKAGE_TYPE.OUTGOING && (
+              <Chip
+                label={packageData.status}
+                size="small"
+                variant={
+                  packageData.status === "Send"
+                    ? "warning"
+                    : packageData.status === "Return"
+                    ? "info"
+                    : "default"
+                }
+              />
+            )}
+          </View>
+        );
+      },
     });
   }, [packageData, navigation]);
 

@@ -3,5 +3,7 @@ export * from "./PackageDetailsDescription";
 export * from "./PackageDetailsPaymentSummary";
 export * from "./PackageDetailsTimeLine";
 export * from "./PackageDetalsHeader";
+export * from "./PackageList";
+export * from "./PackageTypeModal";
 export * from "./PackgeReportModal";
 export * from "./SpecificInfoSection";

@@ -18,6 +18,7 @@ export interface PaymentSummary {
 
 export interface PackageBase {
   id: number;
+  trackingId: string;
   type: PACKAGE_TYPE;
   courierName: string;
   lastUpdate: string; // ISO string

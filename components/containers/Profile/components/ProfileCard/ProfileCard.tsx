@@ -11,7 +11,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   phone = "+966 54 678 6543",
 }) => {
   const getInitial = () => {
-    return name.charAt(0).toUpperCase();
+    if (!name) return "";
+
+    const parts = name.trim().split(" ").filter(Boolean);
+    return parts.map((p) => p.charAt(0).toUpperCase()).join("");
   };
 
   return (

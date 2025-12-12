@@ -85,18 +85,17 @@ export const SignupFooter = ({
           borderRadius: Spacing.sm,
           flexDirection: "row",
           gap: Spacing.sm,
-          alignItems: "flex-start", // Important: align to top, not center
+          alignItems: "flex-start",
         }}
       >
         <WarningIconOutline width={20} height={20} />
 
-        {/* Wrap text content in a flexible container */}
         <View style={{ flex: 1, flexShrink: 1 }}>
           <Text
             size="sm"
             variant="warning"
             style={{ fontWeight: "bold" }}
-            numberOfLines={undefined} // Allow unlimited lines
+            numberOfLines={undefined}
           >
             Your data is secure
           </Text>
