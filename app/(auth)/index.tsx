@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { FC } from "react";
+import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 
 import { Button, Text } from "@/components";
@@ -8,7 +8,7 @@ import { Colors, Spacing } from "@/constants";
 
 const LOCKER_IMAGE = require("@/assets/images/welcome-locker.png");
 
-export const Welcome: FC = () => {
+export const Welcome = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="light" backgroundColor={Colors.primary} />

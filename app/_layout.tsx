@@ -4,10 +4,12 @@ import { AuthProvider } from "@/context/AuthContext";
 import { AppNavigation } from "@/navigation";
 import { ThemeProvider } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { I18nManager, Platform, StatusBar, StyleSheet, View } from "react-native";
 import ToastManager from "toastify-react-native";
+
+I18nManager.forceRTL(false);
+I18nManager.allowRTL(false);
 
 export const RootLayout = () => {
   useEffect(() => {
