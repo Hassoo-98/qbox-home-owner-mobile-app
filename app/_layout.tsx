@@ -5,7 +5,13 @@ import { AppNavigation } from "@/navigation";
 import { ThemeProvider } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
 import React, { useEffect } from "react";
-import { I18nManager, Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+  I18nManager,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
 import ToastManager from "toastify-react-native";
 
 I18nManager.forceRTL(false);
@@ -27,7 +33,7 @@ export const RootLayout = () => {
             <AppNavigation />
           </ModalProvider>
         </AuthProvider>
-        <StatusBar style="dark" />
+        <StatusBar barStyle="dark-content" />
       </ThemeProvider>
 
       <ToastManager />

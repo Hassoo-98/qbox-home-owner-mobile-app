@@ -9,7 +9,7 @@ export const AppHeaderRight = ({
   handleQRPress,
   handleNotificationPress,
 }: AppHeaderRightProps) => {
-  const notificationCount = 5;
+  const notificationCount = 4;
   console.log("active tab: ", activeTab);
   return (
     <View style={styles.headerRight}>
