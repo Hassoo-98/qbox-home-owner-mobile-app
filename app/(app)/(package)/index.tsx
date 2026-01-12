@@ -58,15 +58,13 @@ export const Package = () => {
 
       <PackageList packages={filteredPackages} />
 
-      {selectedPackageType === PACKAGE_TYPE.OUTGOING && (
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => setModalVisible(true)}
-          activeOpacity={0.8}
-        >
-          <Send />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.8}
+      >
+        <Send />
+      </TouchableOpacity>
 
       <PackageTypeModal
         visible={modalVisible}

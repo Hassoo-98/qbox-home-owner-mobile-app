@@ -1,4 +1,4 @@
-import { BoxInfo, Button, Offer, QRSetting, Text } from "@/components";
+import { BoxInfo, Offer, QRSetting, Text } from "@/components";
 import {
   Colors,
   OFFERS,
@@ -116,7 +116,7 @@ export const Home = () => {
           isQrCodeGenerated={isQrCodeGenerated}
         />
 
-        <Button title="Driver OTP Request Modal" onPress={onRequestOTP} />
+        {/* <Button title="Driver OTP Request Modal" onPress={onRequestOTP} /> */}
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={showSuccess}>
