@@ -3,6 +3,7 @@ import { ModalProvider } from "@/context";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppNavigation } from "@/navigation";
 import { ThemeProvider } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as NavigationBar from "expo-navigation-bar";
 import React, { useEffect } from "react";
 import {
@@ -13,6 +14,8 @@ import {
   View,
 } from "react-native";
 import ToastManager from "toastify-react-native";
+
+const queryClient = new QueryClient();
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
@@ -27,14 +30,16 @@ export const RootLayout = () => {
 
   return (
     <View style={styles.container}>
-      <ThemeProvider value={CustomNavigationTheme}>
-        <AuthProvider>
-          <ModalProvider>
-            <AppNavigation />
-          </ModalProvider>
-        </AuthProvider>
-        <StatusBar barStyle="dark-content" />
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={CustomNavigationTheme}>
+          <AuthProvider>
+            <ModalProvider>
+              <AppNavigation />
+            </ModalProvider>
+          </AuthProvider>
+          <StatusBar barStyle="dark-content" />
+        </ThemeProvider>
+      </QueryClientProvider>
 
       <ToastManager />
     </View>
