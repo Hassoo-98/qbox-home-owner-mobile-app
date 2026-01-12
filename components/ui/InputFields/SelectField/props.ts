@@ -1,4 +1,5 @@
 import { Control } from "react-hook-form";
+import { StyleProp, ViewStyle } from "react-native";
 import { DropdownProps } from "react-native-element-dropdown/lib/typescript/components/Dropdown/model";
 
 export interface SelectOption {
@@ -26,4 +27,5 @@ export interface SelectFieldProps
   endAdornment?: React.ReactNode;
   placeholder?: string;
   disabled?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
 }

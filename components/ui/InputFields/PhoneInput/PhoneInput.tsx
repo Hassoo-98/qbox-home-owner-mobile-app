@@ -1,4 +1,4 @@
-import { Text } from "@/components";
+import { Button, Text } from "@/components";
 import React, { useRef } from "react";
 import { Controller } from "react-hook-form";
 import { Image, View } from "react-native";
@@ -12,6 +12,9 @@ export const PhoneNumberInput = ({
   control,
   iconPath,
   placeholder = "Enter phone number",
+  endButtonText,
+  onEndButtonClick,
+  endButtonProps,
   ...restProps
 }: PhoneInputProps) => {
   const phoneInput = useRef<PhoneInput>(null);
@@ -55,6 +58,14 @@ export const PhoneNumberInput = ({
                 }}
                 {...restProps}
               />
+              {endButtonText && (
+                <Button
+                  onPress={onEndButtonClick}
+                  size="sm"
+                  {...endButtonProps}
+                  title={endButtonText}
+                />
+              )}
             </View>
 
             {error && (

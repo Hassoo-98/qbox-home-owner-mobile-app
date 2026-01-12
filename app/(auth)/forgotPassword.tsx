@@ -1,14 +1,16 @@
 import {
-  AuthScreenLayout,
   Button,
   Form,
+  FormLayout,
   PhoneNumberInput,
   SegmentedControl,
   Text,
   TextInput,
 } from "@/components";
 import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
+import { useModal } from "@/hooks";
 import { ForgotPasswordFormValues } from "@/types";
+import { ForgotPasswordFormResolver } from "@/utils";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,31 +24,47 @@ export const ForgotPassword = () => {
     email: "",
     phone: "",
   };
-
   const {
     control,
     formState: { isDirty },
     reset,
     handleSubmit,
+    getValues,
   } = useForm<ForgotPasswordFormValues>({
     defaultValues: defaultFormValues,
+    resolver: ForgotPasswordFormResolver,
     mode: "onChange",
   });
 
   const isFormValid = isDirty;
 
-  const onSubmit = (data: ForgotPasswordFormValues) => {
-    console.log("forgot password submission: ", data);
-    router.navigate({
-      pathname: "/(auth)/otpVerification",
-      params: {
-        authOption: selectedAuthProvider,
-        authValue:
-          selectedAuthProvider === AUTH_PROVIDERS.PHONE
-            ? data.phone
-            : data.email,
+  const { onTriggerModal } = useModal();
+
+  const handleVerify = (type: string) => {
+    const { email, phone } = getValues();
+    const subtitle =
+      type === "phone"
+        ? `Enter the 5-digit code sent to your phone number ${phone}`
+        : `Enter the 5-digit code sent to your ${email} email.`;
+    onTriggerModal({
+      modalType: "otp",
+      title: "OTP Verification",
+      subtitle: subtitle,
+      footerText: "Remember Password ? Back to",
+      footerAction: "Login",
+      isForgotPassowrd: true,
+      secondaryButtonHandler: () => {
+        router.dismissTo("/login");
+      },
+      primaryButtonHandler: () => {
+        router.navigate("/resetPassword");
       },
     });
+  };
+
+  const onSubmit = (data: ForgotPasswordFormValues) => {
+    console.log("forgot password submission: ", data);
+    handleVerify(selectedAuthProvider === "phone" ? "phone" : "email");
   };
 
   const handleAuthProviderChange = (option: string) => {
@@ -55,7 +73,7 @@ export const ForgotPassword = () => {
   };
 
   return (
-    <AuthScreenLayout
+    <FormLayout
       title="Forgot Password?"
       description={`Enter your ${
         selectedAuthProvider === "phone" ? "phone number" : "email address"
@@ -112,7 +130,7 @@ export const ForgotPassword = () => {
           </Text>
         </Text>
       </Form>
-    </AuthScreenLayout>
+    </FormLayout>
   );
 };
 

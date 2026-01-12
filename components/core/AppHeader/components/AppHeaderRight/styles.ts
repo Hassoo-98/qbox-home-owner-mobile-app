@@ -1,4 +1,4 @@
-import { Colors, Spacing } from "@/constants";
+import { Spacing } from "@/constants";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -21,15 +21,19 @@ export const styles = StyleSheet.create({
     right: -4,
     backgroundColor: "#FF3B30",
     borderRadius: 10,
-    minWidth: 20,
-    height: 20,
+    minWidth: 15,
+    height: 15,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
   },
   badgeText: {
-    color: Colors.white,
-    fontSize: 10,
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontSize: 9,
+    fontWeight: "600",
+    textAlign: "center",
+    includeFontPadding: false,
+    textAlignVertical: "center",
+    lineHeight: 10,
   },
 });

@@ -1,6 +1,7 @@
 export * from "./Button";
 export * from "./Card";
 export * from "./Chip";
+export * from "./CustomSwitch";
 export * from "./Form";
 export * from "./InputFields";
 export * from "./SegmentedControl";

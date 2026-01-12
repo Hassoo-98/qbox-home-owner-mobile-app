@@ -91,7 +91,8 @@ export const VedioRecording = ({
         {
           borderRadius: 16,
           width: "100%",
-          padding: 20,
+          paddingHorizontal: 20,
+          paddingVertical: 10,
         },
         style,
       ]}

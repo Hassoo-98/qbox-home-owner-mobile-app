@@ -1,8 +1,8 @@
 import { WarningIconOutline } from "@/assets/icons";
 import { Button, Text } from "@/components/ui";
-import { AUTH_PROVIDERS, Colors, Spacing } from "@/constants";
+import { Colors, Spacing } from "@/constants";
+import { useModal } from "@/hooks";
 import { mvs } from "@/utils/metrices";
-import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 import { SignupFooterProps } from "./props";
@@ -14,6 +14,24 @@ export const SignupFooter = ({
   onSubmit,
   phoneNumber,
 }: SignupFooterProps) => {
+  const { onTriggerModal } = useModal();
+
+  const handleVerify = () => {
+    onTriggerModal({
+      modalType: "otp",
+      title: "OTP Verification",
+      subtitle: `Enter the 5-digit code sent to your phone number. ${phoneNumber}`,
+      footerText: "Didn’t receive the code?",
+      footerAction: "Resend OTP",
+      primaryButtonText: "Verify",
+      secondaryButtonHandler: () => console.log("Resend OTP"),
+      primaryButtonHandler: () => {
+        console.log("otp verified: ", currentStep);
+        setCurrentStep((prev) => ++prev);
+      },
+    });
+  };
+
   return (
     <View>
       <View
@@ -37,28 +55,23 @@ export const SignupFooter = ({
           variant="default"
           onPress={() => {
             setCurrentStep((prev) => --prev);
-            router.setParams({ origin: "" });
           }}
         />
         <Button
-          title="Next"
+          title={currentStep === 3 ? "Complete" : "Next"}
           disabled={!isFormValid}
           onPress={() => {
-            if (currentStep === 1) {
-              router.navigate({
-                pathname: "/otpVerification",
-                params: {
-                  authOption: AUTH_PROVIDERS.PHONE,
-                  authValue: phoneNumber,
-                  origin: "signup",
-                },
-              });
-            } else if (currentStep < 3) {
-              router.setParams({ origin: "" });
-              setCurrentStep((prev) => ++prev);
-            } else {
-              console.log("here");
-              onSubmit();
+            console.log("current step: ", currentStep);
+            switch (currentStep) {
+              case 1:
+                handleVerify();
+                return;
+              case 2:
+                setCurrentStep((prev) => ++prev);
+                return;
+              case 3:
+                onSubmit();
+                return;
             }
           }}
         />
@@ -72,18 +85,17 @@ export const SignupFooter = ({
           borderRadius: Spacing.sm,
           flexDirection: "row",
           gap: Spacing.sm,
-          alignItems: "flex-start", // Important: align to top, not center
+          alignItems: "flex-start",
         }}
       >
         <WarningIconOutline width={20} height={20} />
 
-        {/* Wrap text content in a flexible container */}
         <View style={{ flex: 1, flexShrink: 1 }}>
           <Text
             size="sm"
             variant="warning"
             style={{ fontWeight: "bold" }}
-            numberOfLines={undefined} // Allow unlimited lines
+            numberOfLines={undefined}
           >
             Your data is secure
           </Text>

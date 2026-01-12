@@ -21,14 +21,14 @@ export const BOTTOM_TABS = [
   {
     id: 2,
     name: "(myQbox)",
-    title: "MyQBox",
+    title: "My QBox",
     Icon: MyQBoxIcon,
     IconOutline: MyQBoxIconOutline,
     isBottomTab: true,
   },
   {
     id: 3,
-    name: "package",
+    name: "(package)",
     title: "Package",
     Icon: PackageIcon,
     IconOutline: PackageIconOutline,
@@ -36,7 +36,7 @@ export const BOTTOM_TABS = [
   },
   {
     id: 4,
-    name: "profile",
+    name: "(profile)",
     title: "Profile",
     Icon: ProfileIcon,
     IconOutline: ProfileIconOutline,

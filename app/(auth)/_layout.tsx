@@ -38,29 +38,12 @@ export const AuthLayout = () => {
         }}
       />
       <Stack.Screen
-        name="otpVerification"
-        options={{
-          title: "OTP Verification",
-          headerShadowVisible: false,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitleAlign: "left",
-          presentation: "modal",
-        }}
-      />
-      <Stack.Screen
         name="resetPassword"
         options={{
           title: "Reset Password",
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
-        }}
-      />
-      <Stack.Screen
-        name="confirmSignup"
-        options={{
-          title: "Signup Confirmation",
-          headerShown: false,
         }}
       />
     </Stack>

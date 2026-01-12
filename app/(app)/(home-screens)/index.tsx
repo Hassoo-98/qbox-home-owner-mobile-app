@@ -5,8 +5,10 @@ import {
   QR_VALIDITY_DURATION_TYPE,
   Spacing,
 } from "@/constants";
+import { useModal, useShare } from "@/hooks";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils";
+import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useState } from "react";
@@ -24,7 +26,9 @@ import {
 export const Home = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
   const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
+  const { onRequestOTP } = useModal();
 
   const defaultFormValues = {
     qrName: "",
@@ -32,6 +36,7 @@ export const Home = () => {
     validityDuration: "",
     validityDurationType: QR_VALIDITY_DURATION_TYPE.MIN,
   };
+  const { onShare } = useShare();
 
   const { control, handleSubmit, reset } = useForm<QRGenerationFormValues>({
     defaultValues: defaultFormValues,
@@ -40,10 +45,16 @@ export const Home = () => {
 
   const handleGenerateQR = handleSubmit(
     async (data: QRGenerationFormValues) => {
+      // If QR already generated → directly share and stop execution
+      if (isQrCodeGenerated) {
+        return onShare("QR Code generated", "https://myqbox.com/status/123");
+      }
+
       console.log("QR Generation Form Data:", JSON.stringify(data, null, 4));
       setIsGenerating(true);
 
       try {
+        // Simulate QR generation time
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         setIsGenerating(false);
@@ -104,6 +115,8 @@ export const Home = () => {
           onGenerateQR={handleGenerateQR}
           isQrCodeGenerated={isQrCodeGenerated}
         />
+
+        {/* <Button title="Driver OTP Request Modal" onPress={onRequestOTP} /> */}
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={showSuccess}>
@@ -130,6 +143,47 @@ const styles = StyleSheet.create({
   blurContainer: {
     flex: 1,
     padding: Spacing.md,
+  },
+  blurContainerDriverRequestModal: {
+    flex: 1,
+    padding: Spacing.md,
+    justifyContent: "center",
+    width: "100%",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 500,
+    overflow: "hidden",
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: mvs(16),
+    padding: mvs(20),
+    width: "100%",
+    maxWidth: 400,
+    justifyContent: "center",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: mvs(8),
+  },
+  closeButton: {
+    padding: mvs(4),
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: Colors.secondaryText,
   },
   successCard: {
     backgroundColor: Colors.white,

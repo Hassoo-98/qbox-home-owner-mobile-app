@@ -2,9 +2,9 @@
   "expo": {
     "name": "QBox",
     "slug": "QBox",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/home-locker.png",
     "scheme": "qbox",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -17,7 +17,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "foregroundImage": "./assets/images/welcome-locker.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
@@ -60,6 +60,12 @@
       "eas": {
         "projectId": "9a9b24cf-d99f-4c9e-a7fc-5fab8c78ea4c"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9a9b24cf-d99f-4c9e-a7fc-5fab8c78ea4c"
     }
   }
 }

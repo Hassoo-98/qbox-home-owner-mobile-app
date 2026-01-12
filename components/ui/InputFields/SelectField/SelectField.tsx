@@ -17,10 +17,11 @@ export const SelectField = ({
   placeholder = "Select an option",
   disabled = false,
   style,
+  containerStyle,
   ...restProps
 }: SelectFieldProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {label && (
         <View style={styles.labelContainer}>
           {iconPath && (

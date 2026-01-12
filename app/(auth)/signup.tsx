@@ -1,7 +1,7 @@
 import {
-  AuthScreenLayout,
   BasicInformation,
-  SignupAddress,
+  FormLayout,
+  QBoxLocation,
   SignupFooter,
   TextInput,
 } from "@/components";
@@ -19,10 +19,13 @@ export const SignUp = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    isSecondStepFormValid,
+    isFirstStepFormValid,
+    isLastStepFormValid,
   } = useSignup();
 
   return (
-    <AuthScreenLayout
+    <FormLayout
       title={
         currentStep === 1
           ? "Basic Information"
@@ -44,7 +47,15 @@ export const SignUp = () => {
         <SignupFooter
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
-          isFormValid={isFormValid}
+          isFormValid={
+            currentStep === 1
+              ? isFirstStepFormValid
+              : currentStep === 2
+              ? isSecondStepFormValid
+              : currentStep === 3
+              ? isLastStepFormValid
+              : isFormValid
+          }
           onSubmit={onSubmit}
           phoneNumber={phoneNumber}
         />
@@ -69,14 +80,14 @@ export const SignUp = () => {
             placeholder="Enter your full name"
           />
         ) : (
-          <SignupAddress
+          <QBoxLocation
             control={control}
             pickImage={pickImage}
             qboxImage={qboxImage}
           />
         )}
       </View>
-    </AuthScreenLayout>
+    </FormLayout>
   );
 };
 

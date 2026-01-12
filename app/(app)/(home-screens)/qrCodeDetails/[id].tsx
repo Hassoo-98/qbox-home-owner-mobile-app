@@ -1,5 +1,8 @@
+import { DeletetIcon, ShareIcon } from "@/assets/icons";
 import {
+  AppHeaderLeft,
   AppHeaderTitle,
+  Chip,
   QRCodeDetailsHeader,
   QRScanHistoryItem,
   Text,
@@ -62,14 +65,44 @@ export const QRCodeDetails = () => {
     }
   }, [id]);
 
-  // Update header title dynamically
   useLayoutEffect(() => {
     if (qrCodeData) {
       navigation.setOptions({
-        // title: qrCodeData.title || `QR #${qrCodeData.id}`,
-        headerTitle: () => (
-          <AppHeaderTitle title={qrCodeData.title || `QR #${qrCodeData.id}`} />
+        headerLeft: () => (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <AppHeaderLeft canGoBack />
+            <AppHeaderTitle
+              title={qrCodeData.title || `QR #${qrCodeData.id}`}
+              customStyle={{
+                width: "52%",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+              }}
+            />
+            <View>
+              <Text> </Text>
+            </View>
+            <Chip
+              label={qrCodeData.isActive ? "Active" : "Inactive"}
+              size="small"
+              variant={qrCodeData.isActive ? "success" : "error"}
+            />
+          </View>
         ),
+        headerRight: () => {
+          return (
+            <View style={{ flexDirection: "row", gap: mvs(10) }}>
+              <ShareIcon />
+              <DeletetIcon />
+            </View>
+          );
+        },
       });
     }
   }, [qrCodeData, navigation]);

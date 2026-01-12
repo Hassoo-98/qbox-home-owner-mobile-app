@@ -1,9 +1,9 @@
-import { VedioRecording } from "@/components";
 import {
   DatePickerModal,
   QBoxAlarmCard,
   StatusCardsGrid,
-} from "@/components/containers/MyQBox";
+  VedioRecording,
+} from "@/components";
 import { useShare } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Feather } from "@expo/vector-icons";

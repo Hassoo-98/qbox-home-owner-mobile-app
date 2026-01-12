@@ -35,6 +35,7 @@
     "expo-status-bar": "~3.0.8",
     "expo-symbols": "~1.0.7",
     "expo-system-ui": "~6.0.8",
+    "expo-updates": "~29.0.15",
     "expo-video": "~3.0.14",
     "expo-web-browser": "~15.0.9",
     "libphonenumber-js": "^1.12.25",
@@ -53,12 +54,15 @@
     "react-native-screens": "~4.16.0",
     "react-native-svg": "15.12.1",
     "react-native-svg-transformer": "^1.5.2",
+    "react-native-table-component": "^1.2.2",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
+    "toastify-react-native": "^7.2.3",
     "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "@types/react-native-table-component": "^1.2.9",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"

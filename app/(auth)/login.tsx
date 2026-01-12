@@ -1,7 +1,7 @@
 import {
-  AuthScreenLayout,
   Button,
   Form,
+  FormLayout,
   HapticPressable,
   PasswordInput,
   PhoneNumberInput,
@@ -52,7 +52,7 @@ export const Login = () => {
   };
 
   return (
-    <AuthScreenLayout
+    <FormLayout
       title="Welcome Back!"
       description="Sign in to your Qbox account."
       headerContent={
@@ -117,7 +117,7 @@ export const Login = () => {
           </Text>
         </Text>
       </Form>
-    </AuthScreenLayout>
+    </FormLayout>
   );
 };
 
