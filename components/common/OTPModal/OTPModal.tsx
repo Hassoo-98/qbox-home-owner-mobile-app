@@ -31,8 +31,9 @@ export const OTPModal = ({
     },
   });
 
-  const handleOTPSubmit = () => {
-    onSubmit();
+  const handleOTPSubmit = (data: any) => {
+    console.log("OTPModal handlesubmit data:", data);
+    onSubmit(data.otp);
     onClose();
   };
 

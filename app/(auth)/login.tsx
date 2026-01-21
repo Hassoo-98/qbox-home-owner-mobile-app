@@ -10,7 +10,8 @@ import {
   TextInput,
 } from "@/components";
 import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
-import { useAuth } from "@/hooks";
+import { useLogin } from "@/hooks/api/useAuthQueries";
+import { LoginPayload } from "@/services/api/types";
 import { LoginFormValues } from "@/types";
 import { LoginFormResolver } from "@/utils";
 import { router } from "expo-router";
@@ -19,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const Login = () => {
-  const { login } = useAuth();
+  const { mutate: loginUser, isPending } = useLogin();
   const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
     AUTH_PROVIDERS.PHONE
   );
@@ -43,7 +44,20 @@ export const Login = () => {
 
   const onSubmit = (data: LoginFormValues) => {
     console.log("login submission: ", JSON.stringify(data, null, 4));
-    login("fake_token_123");
+
+    // Construct the payload based on the selected provider
+    const payload = {
+      password: data.password,
+      // If email provider is selected, send email, otherwise send phone
+      ...(selectedAuthProvider === AUTH_PROVIDERS.EMAIL
+        ? { email: data.email }
+        : { phone: data.phone } // Ensure your API supports 'phone' as a key or adjust accordingly
+      )
+    };
+
+    // We cast to any because the specific payload type interface might need to be adjusted
+    // depending on exactly what your API expects for phone vs email 
+    loginUser(payload as LoginPayload);
   };
 
   const handleAuthProviderChange = (option: string) => {
@@ -102,7 +116,8 @@ export const Login = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Sign in"
-          disabled={!isDirty}
+          disabled={!isDirty || isPending}
+          loading={isPending}
           onPress={handleSubmit(onSubmit)}
         />
 

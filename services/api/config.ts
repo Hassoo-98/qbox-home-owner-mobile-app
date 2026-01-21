@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 
-const BASE_URL = 'http://69.62.125.223:5000';
+const BASE_URL = 'https://backend.qbox.sa/api/mobile';
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -15,7 +15,7 @@ const api = axios.create({
 api.interceptors.request.use(
     async (config) => {
         try {
-            const token = await SecureStore.getItemAsync('userToken');
+            const token = await SecureStore.getItemAsync('token');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }

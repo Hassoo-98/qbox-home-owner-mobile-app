@@ -1,5 +1,7 @@
 import { BorderRadius, Colors } from "@/constants";
 import { useModal } from "@/hooks";
+import { useRegister, useSendOtp, useVerifyOtp } from "@/hooks/api/useAuthQueries";
+import { RegisterPayload } from "@/services/api/types";
 import { SignUpFormValues } from "@/types";
 import { SignUpFormResolver } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,6 +13,9 @@ import { Alert, View } from "react-native";
 
 export const useSignup = () => {
   const { onTriggerModal, onCloseModal } = useModal();
+  const registerMutation = useRegister();
+  const sendOtpMutation = useSendOtp();
+  const verifyOtpMutation = useVerifyOtp();
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -77,32 +82,57 @@ export const useSignup = () => {
 
   const onSubmit = handleSubmit((data: SignUpFormValues) => {
     console.log(
-      "signup form submission submission: ",
+      "signup form submission: ",
       JSON.stringify(data, null, 4)
     );
-    onTriggerModal({
-      icon: (
-        <View
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: BorderRadius.full,
-            backgroundColor: Colors.success,
-            justifyContent: "center",
-            alignItems: "center",
-            alignSelf: "center",
-          }}
-        >
-          <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
-        </View>
-      ),
-      title: "Your request has been submitted for approval.",
-      primaryButtonText: "Confirm",
-      primaryButtonHandler: handleConfirm,
-      secondaryButtonHandler: onCloseModal,
-      subtitle: "Once approved, we’ll send you confirmation email.",
+
+    const payload: RegisterPayload = {
+      full_name: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      secondary_phone: data.secondaryPhone,
+      password: data.password,
+      role: 'homeowner', // Default role for this app
+      qbox_id: data.qBoxId,
+      short_id: data.shortId,
+      city: data.city,
+      district: data.district,
+      street: data.street,
+      postal_code: data.postalCode,
+      building_number: data.buildingNumber,
+      secondary_number: data.secondaryNumber,
+      installation_location: data.installationLocation,
+      access_instruction: data.accessInstruction,
+      qbox_image: data.qboxImage,
+    };
+
+    registerMutation.mutate(payload, {
+      onSuccess: () => {
+        onTriggerModal({
+          icon: (
+            <View
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: BorderRadius.full,
+                backgroundColor: Colors.success,
+                justifyContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
+            </View>
+          ),
+          title: "Your request has been submitted for approval.",
+          primaryButtonText: "Confirm",
+          primaryButtonHandler: handleConfirm,
+          secondaryButtonHandler: onCloseModal,
+          subtitle: "Once approved, we’ll send you confirmation email.",
+        });
+        reset();
+      }
     });
-    reset();
   });
 
   const phoneNumber = watch("phone");
@@ -141,6 +171,18 @@ export const useSignup = () => {
     }
   };
 
+  const handleSendOtp = (contact: string) => {
+    sendOtpMutation.mutate({ contact });
+  };
+
+  const handleVerifyOtp = (contact: string, otp: string, onSuccess: () => void) => {
+    verifyOtpMutation.mutate({ contact, otp }, {
+      onSuccess: () => {
+        onSuccess();
+      }
+    });
+  };
+
   return {
     currentStep,
     setCurrentStep,
@@ -153,5 +195,7 @@ export const useSignup = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    handleSendOtp,
+    handleVerifyOtp,
   };
 };

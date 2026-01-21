@@ -2,33 +2,41 @@
 export interface RegisterPayload {
     full_name: string;
     email: string;
-    password?: string; // Optional because API might not require it for social login, but usually required
+    password?: string;
     phone: string;
-    role: string;
-    // Add other fields as per your specific form
-    secondaryPhone?: string;
-    qBoxId?: string;
-    shortId?: string;
+    secondary_phone?: string;
+    role?: string;
+    qbox_id?: string;
+    short_id?: string;
     city?: string;
     district?: string;
     street?: string;
-    postalCode?: string;
-    buildingNumber?: string;
-    secondaryNumber?: string;
-    installationLocation?: string;
-    accessInstruction?: string;
-    qboxImage?: string;
+    postal_code?: string;
+    building_number?: string;
+    secondary_number?: string;
+    installation_location?: string;
+    access_instruction?: string;
+    qbox_image?: string;
 }
 
 export interface LoginPayload {
-    email: string;
-    password?: string;
+    email?: string;
+    password: string;
     phone?: string; // Some apps allow phone login
 }
 
 export interface AuthResponse {
     token: string;
     user: any; // Define user type more specifically if possible
+}
+
+export interface SendOtpPayload {
+    contact: string;
+}
+
+export interface VerifyOtpPayload {
+    contact: string;
+    otp: string;
 }
 
 // Locker Types

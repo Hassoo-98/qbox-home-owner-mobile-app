@@ -22,6 +22,8 @@ export const SignUp = () => {
     isSecondStepFormValid,
     isFirstStepFormValid,
     isLastStepFormValid,
+    handleSendOtp,
+    handleVerifyOtp,
   } = useSignup();
 
   return (
@@ -30,15 +32,15 @@ export const SignUp = () => {
         currentStep === 1
           ? "Basic Information"
           : currentStep === 2
-          ? "Verify QBox"
-          : "Address"
+            ? "Verify QBox"
+            : "Address"
       }
       description={
         currentStep === 1
           ? "Let's begin with basic information."
           : currentStep === 2
-          ? "Add serial number mentioned on the QBox."
-          : "Where should we install your QBox?"
+            ? "Add serial number mentioned on the QBox."
+            : "Where should we install your QBox?"
       }
       currentStep={currentStep}
       totalSteps={3}
@@ -51,13 +53,15 @@ export const SignUp = () => {
             currentStep === 1
               ? isFirstStepFormValid
               : currentStep === 2
-              ? isSecondStepFormValid
-              : currentStep === 3
-              ? isLastStepFormValid
-              : isFormValid
+                ? isSecondStepFormValid
+                : currentStep === 3
+                  ? isLastStepFormValid
+                  : isFormValid
           }
           onSubmit={onSubmit}
           phoneNumber={phoneNumber}
+          handleSendOtp={handleSendOtp}
+          handleVerifyOtp={handleVerifyOtp}
         />
       }
     >
