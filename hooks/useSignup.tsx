@@ -92,18 +92,22 @@ export const useSignup = () => {
       phone: data.phone,
       secondary_phone: data.secondaryPhone,
       password: data.password,
-      role: 'homeowner', // Default role for this app
+      role: 'homeowner',
       qbox_id: data.qBoxId,
-      short_id: data.shortId,
-      city: data.city,
-      district: data.district,
-      street: data.street,
-      postal_code: data.postalCode,
-      building_number: data.buildingNumber,
-      secondary_number: data.secondaryNumber,
-      installation_location: data.installationLocation,
-      access_instruction: data.accessInstruction,
-      qbox_image: data.qboxImage,
+      address_details: {
+        short_address: data.shortId,
+        city: data.city,
+        district: data.district,
+        street: data.street,
+        postal_code: data.postalCode,
+        building_number: data.buildingNumber,
+        secondary_number: data.secondaryNumber,
+      },
+      installation: {
+        location_preference: data.installationLocation,
+        access_instruction: data.accessInstruction,
+        qbox_image_url: data.qboxImage,
+      },
     };
 
     registerMutation.mutate(payload, {
