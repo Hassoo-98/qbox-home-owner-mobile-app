@@ -1,8 +1,19 @@
 import { Colors } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import * as Auth from '@/services/api/modules/auth';
-import { LoginPayload, RegisterPayload } from '@/services/api/types';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+    ChangePasswordPayload,
+    LoginPayload,
+    RegisterPayload,
+    ResetConfirmPayload,
+    ResetInitiatePayload,
+    ResetVerifyPayload,
+    UpdateSettingsPayload,
+    VerifyAddressPayload,
+    VerifyQBoxPayload
+} from '@/services/api/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { Toast } from 'toastify-react-native';
 
 export const useRegister = () => {
@@ -77,6 +88,56 @@ export const useUserProfile = () => {
     });
 };
 
+export const useUpdateProfileSettings = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: UpdateSettingsPayload) => Auth.updateProfileSettings(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            Toast.show({
+                type: "success",
+                text1: "Settings updated successfully",
+                position: "top",
+                backgroundColor: Colors.white,
+                textColor: Colors.text,
+                progressBarColor: Colors.success,
+                visibilityTime: 3000,
+            });
+        },
+    });
+};
+
+export const useChangePassword = () => {
+    const router = useRouter();
+    return useMutation({
+        mutationFn: (data: ChangePasswordPayload) => Auth.changePassword(data),
+        onSuccess: () => {
+            Toast.show({
+                type: "success",
+                text1: "Password changed successfully",
+                position: "top",
+                backgroundColor: Colors.white,
+                textColor: Colors.text,
+                progressBarColor: Colors.success,
+                visibilityTime: 3000,
+            });
+            router.back();
+        },
+        onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || 'Failed to change password';
+            Toast.show({
+                type: "error",
+                text1: errorMessage,
+                position: "top",
+                backgroundColor: Colors.white,
+                textColor: Colors.text,
+                progressBarColor: Colors.danger,
+                visibilityTime: 3000,
+            });
+        }
+    });
+};
+
 export const useSendOtp = () => {
     return useMutation({
         mutationFn: (data: { contact: string }) => Auth.sendOtp(data),
@@ -131,10 +192,21 @@ export const useVerifyOtp = () => {
     });
 };
 
+export const useVerifyQBox = () => {
+    return useMutation({
+        mutationFn: (data: VerifyQBoxPayload) => Auth.verifyQBox(data),
+    });
+};
+
+export const useVerifyAddress = () => {
+    return useMutation({
+        mutationFn: (data: VerifyAddressPayload) => Auth.verifyAddress(data),
+    });
+};
 
 export const useSendOtpForResetPassword = () => {
     return useMutation({
-        mutationFn: (data: { contact: string; method: string }) => Auth.sendOtpForResetPassword(data),
+        mutationFn: (data: ResetInitiatePayload) => Auth.resetPasswordInitiate(data),
         onSuccess: (data) => {
             console.log("Send OTP Success Data:", JSON.stringify(data, null, 2));
             Toast.show({
@@ -164,9 +236,9 @@ export const useSendOtpForResetPassword = () => {
 
 export const useVerifyOtpForResetPassword = () => {
     return useMutation({
-        mutationFn: (data: { otp: string }) => {
+        mutationFn: (data: ResetVerifyPayload) => {
             console.log("useVerifyOtpForResetPassword mutationFn called with payload:", data);
-            return Auth.verifyOtpForResetPassword(data);
+            return Auth.resetPasswordVerify(data);
         },
         onSuccess: (data) => {
             console.log("Verify OTP Success Data:", JSON.stringify(data, null, 2));
@@ -195,25 +267,17 @@ export const useVerifyOtpForResetPassword = () => {
     });
 };
 
-
 export const useResetPassword = () => {
     return useMutation({
-        mutationFn: (data: { uid: string; new_password: string }) => {
+        mutationFn: (data: ResetConfirmPayload) => {
             console.log("this is the new password", data.new_password);
-
-            // CALL the API
-            return Auth.resetPassword(data);
+            return Auth.resetPasswordConfirm(data);
         },
-
         onSuccess: () => {
             console.log("Change password successfully");
         },
-
         onError: (error: any) => {
-            const errorMessage =
-                error.response?.data?.message ||
-                "Change password operation failed";
-
+            const errorMessage = error.response?.data?.message || "Change password operation failed";
             Toast.show({
                 type: "error",
                 text1: errorMessage,
@@ -226,7 +290,6 @@ export const useResetPassword = () => {
         },
     });
 };
-
 
 export const useCheckUser = () => {
     return useMutation({

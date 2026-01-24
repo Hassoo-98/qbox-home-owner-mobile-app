@@ -1,5 +1,5 @@
 import * as Locker from '@/services/api/modules/locker';
-import { CreateLockerPayload, UpdateLockerStatusPayload } from '@/services/api/types';
+import { LinkLockerPayload } from '@/services/api/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useLockers = () => {
@@ -9,28 +9,26 @@ export const useLockers = () => {
     });
 };
 
-export const useCreateLocker = () => {
+export const useLinkLocker = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (data: CreateLockerPayload) => Locker.createLocker(data),
+        mutationFn: (data: LinkLockerPayload) => Locker.linkLocker(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['lockers'] });
         },
+    });
+};
+
+export const useLockerStatus = (id: string) => {
+    return useQuery({
+        queryKey: ['locker-status', id],
+        queryFn: () => Locker.getLockerStatus(id),
+        enabled: !!id,
     });
 };
 
 export const useOpenLocker = () => {
     return useMutation({
         mutationFn: (lockerId: string) => Locker.openLocker(lockerId),
-    });
-};
-
-export const useUpdateLockerStatus = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (data: UpdateLockerStatusPayload) => Locker.updateLockerStatus(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['lockers'] });
-        },
     });
 };

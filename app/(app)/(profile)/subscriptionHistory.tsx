@@ -1,10 +1,13 @@
 import { Button, SubscriptionHistoryItem } from "@/components";
-import { Spacing, SUBSCRIPTION_HISTORY } from "@/constants";
+import { Colors, Spacing } from "@/constants";
+import { useSubscriptions } from "@/hooks/api/useHomeQueries";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
-import { FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 export const SubscriptionHistory = () => {
+  const { data: subscriptionsData, isLoading } = useSubscriptions();
+
   return (
     <View
       style={{
@@ -12,13 +15,17 @@ export const SubscriptionHistory = () => {
         paddingBottom: mvs(20),
       }}
     >
-      <FlatList
-        data={SUBSCRIPTION_HISTORY}
-        keyExtractor={(item) => item?.id?.toString()}
-        contentContainerStyle={{ padding: mvs(Spacing.lg) }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => <SubscriptionHistoryItem item={item} />}
-      />
+      {isLoading ? (
+        <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+      ) : (
+        <FlatList
+          data={subscriptionsData || []}
+          keyExtractor={(item) => item?.id?.toString()}
+          contentContainerStyle={{ padding: mvs(Spacing.lg) }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => <SubscriptionHistoryItem item={item as any} />}
+        />
+      )}
       <View
         style={{
           width: "100%",

@@ -4,14 +4,14 @@ import {
   BorderRadius,
   Colors,
   PACKAGE_TYPE,
-  PACKAGES,
   PACKAGES_OPTIONS,
   Spacing,
 } from "@/constants";
+import { usePackages } from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 export const Package = () => {
   const [selectedPackageType, setSelectedPackageType] = useState<string>(
@@ -19,6 +19,8 @@ export const Package = () => {
   );
   const [searchId, setSearchId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { data: packagesData, isLoading } = usePackages();
 
   const handlePackageTypeChange = (option: string) => {
     setSelectedPackageType(option);
@@ -33,7 +35,7 @@ export const Package = () => {
     setModalVisible(false);
   };
 
-  const filteredPackages = PACKAGES.filter(
+  const filteredPackages = (packagesData || []).filter(
     (item) =>
       item.type === selectedPackageType &&
       item.trackingId.toLowerCase().includes(searchId.toLowerCase())
@@ -56,7 +58,11 @@ export const Package = () => {
         placeholder="Search by tracking ID"
       />
 
-      <PackageList packages={filteredPackages} />
+      {isLoading ? (
+        <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+      ) : (
+        <PackageList packages={filteredPackages} />
+      )}
 
       <TouchableOpacity
         style={styles.fab}

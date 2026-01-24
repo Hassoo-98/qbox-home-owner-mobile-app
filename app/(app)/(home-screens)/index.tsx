@@ -1,11 +1,12 @@
 import { BoxInfo, Offer, QRSetting, Text } from "@/components";
 import {
   Colors,
-  OFFERS,
   QR_VALIDITY_DURATION_TYPE,
   Spacing,
 } from "@/constants";
 import { useModal, useShare } from "@/hooks";
+import { useOffers } from "@/hooks/api/useHomeQueries";
+import { useGenerateQR } from "@/hooks/api/useQRQueries";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
@@ -14,13 +15,14 @@ import { BlurView } from "expo-blur";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 
 export const Home = () => {
@@ -29,6 +31,9 @@ export const Home = () => {
 
   const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
   const { onRequestOTP } = useModal();
+
+  const { data: offersData, isLoading: offersLoading } = useOffers();
+  const generateQRMutation = useGenerateQR();
 
   const defaultFormValues = {
     qrName: "",
@@ -54,8 +59,12 @@ export const Home = () => {
       setIsGenerating(true);
 
       try {
-        // Simulate QR generation time
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await generateQRMutation.mutateAsync({
+          user_id: "current_user_id", // This should come from auth context
+          locker_id: "L-101", // This should be selected or default
+          guest_name: data.qrName || "Guest",
+          valid_hours: parseInt(data.validityDuration || "1") || 1,
+        });
 
         setIsGenerating(false);
         setShowSuccess(true);
@@ -65,7 +74,7 @@ export const Home = () => {
           setShowSuccess(false);
         }, 3000);
 
-        console.log("QR Code generated:", data);
+        console.log("QR Code generated successfully");
       } catch (error) {
         setIsGenerating(false);
         console.error("QR generation failed:", error);
@@ -97,17 +106,21 @@ export const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <BoxInfo />
-        <FlatList
-          data={OFFERS}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          style={{
-            flexGrow: 0,
-          }}
-          renderItem={({ item }) => <Offer item={item} />}
-        />
+        {offersLoading ? (
+          <ActivityIndicator size="small" color={Colors.primary} style={{ marginVertical: Spacing.md }} />
+        ) : (
+          <FlatList
+            data={offersData || []}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            style={{
+              flexGrow: 0,
+            }}
+            renderItem={({ item }) => <Offer item={item} />}
+          />
+        )}
         <QRSetting
           isGenerating={isGenerating}
           resetForm={resetForm}

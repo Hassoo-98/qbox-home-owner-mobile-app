@@ -68,109 +68,192 @@ export interface VerifyOtpPayload {
     otp: string;
 }
 
-
-// Forget Password
-export interface SendOtpPayloadForResetPassword {
-    contact: string,
-    method: string
-}
-
-export interface VerifyOtpPayloadForResetPassword {
-    otp: string
-}
-
-export interface ResetPassword {
-    uid: string,
-    new_password: string
-}
-
-
-// Locker Types
-export interface CreateLockerPayload {
-    locker_number: string;
-    location: string;
-}
-
-export interface Locker {
-    locker_id: string; // or _id depending on DB
-    locker_number: string;
-    location: string;
-    status: 'available' | 'occupied' | 'open' | 'closed'; // Example statuses
-}
-
-export interface UpdateLockerStatusPayload {
-    locker_id: string;
-    status: string;
-}
-
-export interface VerifyQrPayload {
-    qr_data: string;
-}
-
-// Camera Types
-export interface CameraActionPayload {
-    locker_id: string;
-}
-
-export interface VideoRecord {
-    id: string;
-    url: string;
-    timestamp: string;
-    locker_id: string;
-}
-
-// Notification Types
-export interface AlertPayload {
-    user_id: string;
-    title: string;
-    body: string;
-}
-
-// Shipment Types
-export interface CreateOrderPayload {
-    locker_id: string;
-    receiver_phone: string;
-}
-
-export interface Order {
-    id: string;
-    tracking_number: string;
-    status: string;
-    locker_id: string;
-}
-
-export interface UpdateOrderStatusPayload {
-    status: string;
-}
-
-// Admin Types
-export interface AdminStats {
-    totalUsers: number;
-    activeLockers: number;
-    // ...
-}
-
-// Profile Types
-export interface UserProfile {
-    avatar: string;
-    email: string;
-    full_name: string;
-    phone: string;
-    settings: {
-        language: string;
-        notifications: boolean;
-    };
-    stats: {
-        active_lockers: number;
-        total_deliveries: number;
-    };
-    uid: string;
-}
-
 export interface CheckUserPayload {
     email: string;
 }
 
 export interface CheckUserResponse {
     exists: boolean;
+}
+
+export interface VerifyQBoxPayload {
+    qbox_id: string;
+}
+
+export interface VerifyAddressPayload {
+    short_address: string;
+}
+
+// Forget Password
+export interface ResetInitiatePayload {
+    contact: string;
+    method: 'email' | 'phone';
+}
+
+export interface ResetVerifyPayload {
+    otp: string;
+}
+
+export interface ResetConfirmPayload {
+    uid: string;
+    new_password: string;
+}
+
+// Locker Types
+export interface Locker {
+    id: string;
+    locker_id: string;
+    locker_number: string;
+    location: string;
+    status: string;
+    last_activity?: string;
+}
+
+export interface LinkLockerPayload {
+    locker_id: string;
+}
+
+export interface LockerStatusResponse {
+    id: string;
+    status: string;
+    camera_status?: string;
+    led_status?: string;
+    power_status?: string;
+}
+
+// Package / Shipment Types
+export interface Package {
+    id: number;
+    title: string;
+    Subtitle: string;
+    trackingId: string;
+    createdAt: string;
+    city?: string | null;
+    status: string | null;
+    type: 'incoming' | 'outgoing' | 'delivered';
+}
+
+export interface PackageDetailAttribute {
+    type: string;
+    value: string;
+}
+
+export interface PackageDetails {
+    id: number;
+    type: 'incoming' | 'outgoing' | 'delivered';
+    trackingId: string;
+    courierName: string;
+    lastUpdate: string;
+    qrCode: string;
+    description: string;
+    imageUrl: any;
+    attributes: PackageDetailAttribute[];
+    status?: string;
+    phoneNumber?: string;
+    email?: string;
+    recepientName?: string;
+    paymentSummary?: {
+        paymentMethod: string;
+        charges: { key: string; value: number }[];
+        currency: string;
+    };
+}
+
+export interface PackageTimelineItem {
+    id: number;
+    packageId: number;
+    timestamp: string;
+    status: string;
+    location: string;
+}
+
+export interface CreatePackageSendRequest {
+    courier: string;
+    locker_id: string;
+}
+
+// QR Types
+import { QR_VALIDITY_DURATION_TYPE } from '@/constants/enums';
+
+export interface GenerateQRPayload {
+    user_id: string;
+    locker_id: string;
+    guest_name: string;
+    valid_hours: number;
+}
+
+export interface QRHistoryItem {
+    id: number;
+    title: string;
+    isActive: boolean;
+    createdAt: string;
+    validityDuration: number;
+    validityDurationType: QR_VALIDITY_DURATION_TYPE;
+    maxUsers: number;
+    usersLeft: number;
+}
+
+export interface QRScanItem {
+    id: number;
+    qrCodeId: number;
+    qrCodeScanTime: string;
+    qrCodeScanLocation: string;
+    qrCodeScanUser: string;
+    openedAt: string;
+    closedAt: string;
+    status: string;
+    videoUrl: string;
+}
+
+// Home / Dashboard Types
+export interface Offer {
+    id: number;
+    title: string;
+    description: string;
+    image: any;
+    buttonText: string;
+    buttonColor: string;
+}
+
+export interface Subscription {
+    id: number;
+    title: string;
+    startDate: string;
+    endDate: string;
+    transactionId: string;
+    paymentMethod: string;
+    amount: string;
+    currency: string;
+}
+
+// Profile & Settings
+export interface UserProfile {
+    uid: string;
+    full_name: string;
+    email: string;
+    phone: string;
+    secondary_phone?: string;
+    address_details?: any;
+    installation?: any;
+    language: string;
+    notifications_enabled: boolean;
+}
+
+export interface UpdateSettingsPayload {
+    language: string;
+    notifications_enabled: boolean;
+}
+
+export interface ChangePasswordPayload {
+    old_password: string;
+    new_password: string;
+}
+
+// Notifications
+export interface Notification {
+    id: string;
+    title: string;
+    body: string;
+    createdAt: string;
+    read: boolean;
 }

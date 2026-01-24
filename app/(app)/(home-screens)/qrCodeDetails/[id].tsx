@@ -9,61 +9,49 @@ import {
 } from "@/components";
 import {
   Colors,
-  QR_CODE_HISTORY,
-  QR_SCAN_HISTORY,
   QR_VALIDITY_DURATION_TYPE,
   Spacing,
 } from "@/constants";
+import { useQRHistory, useQRScans } from "@/hooks/api/useQRQueries";
 import { QRCode } from "@/types";
 import { mvs } from "@/utils/metrices";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 export const QRCodeDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const [qrCodeData, setQrCodeData] = useState<QRCode>();
   const [qrCodeDescription, setQrCodeDescription] = useState<string>("");
-  const [loading, setLoading] = useState(true);
+
+  const { data: qrHistoryData, isLoading: historyLoading } = useQRHistory();
+  const { data: qrScansData, isLoading: scansLoading } = useQRScans();
 
   useEffect(() => {
-    const fetchQRCodeData = () => {
-      try {
-        const qrCode = QR_CODE_HISTORY.find(
-          (item) => item.id.toString() === id
+    if (qrHistoryData && id) {
+      const qrCode = qrHistoryData.find(
+        (item) => item.id.toString() === id
+      );
+
+      if (qrCode) {
+        setQrCodeData(qrCode as any);
+        setQrCodeDescription(
+          `Valid for ${qrCode?.maxUsers} user${qrCode?.maxUsers > 1 ? "s" : ""
+          }, ${qrCode?.validityDuration} ${qrCode?.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN
+            ? "minute"
+            : qrCode?.validityDurationType ===
+              QR_VALIDITY_DURATION_TYPE.HOUR
+              ? "hour"
+              : "day"
+          }${qrCode?.validityDuration > 1 ? "s" : ""}`
         );
-
-        if (qrCode) {
-          setQrCodeData(qrCode);
-          setQrCodeDescription(
-            `Valid for ${qrCode?.maxUsers} user${
-              qrCode?.maxUsers > 1 ? "s" : ""
-            }, ${qrCode?.validityDuration} ${
-              qrCode?.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN
-                ? "minute"
-                : qrCode?.validityDurationType ===
-                  QR_VALIDITY_DURATION_TYPE.HOUR
-                ? "hour"
-                : "day"
-            }${qrCode?.validityDuration > 1 ? "s" : ""}`
-          );
-        } else {
-          console.error("QR Code not found");
-          router.back();
-        }
-      } catch (error) {
-        console.error("Error fetching QR code data:", error);
-        router.back();
-      } finally {
-        setLoading(false);
+      } else {
+        console.error("QR Code not found");
+        // No auto-back to allow user to see error or loading if it's transient
       }
-    };
-
-    if (id) {
-      fetchQRCodeData();
     }
-  }, [id]);
+  }, [id, qrHistoryData]);
 
   useLayoutEffect(() => {
     if (qrCodeData) {
@@ -107,10 +95,10 @@ export const QRCodeDetails = () => {
     }
   }, [qrCodeData, navigation]);
 
-  if (loading) {
+  if (historyLoading || scansLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -123,7 +111,7 @@ export const QRCodeDetails = () => {
     );
   }
 
-  const filteredScanHistory = QR_SCAN_HISTORY.filter(
+  const filteredScanHistory = (qrScansData || []).filter(
     (item) => item.qrCodeId === qrCodeData?.id
   );
 
@@ -140,7 +128,7 @@ export const QRCodeDetails = () => {
           qrCodeDescription={qrCodeDescription}
         />
       }
-      renderItem={({ item }) => <QRScanHistoryItem item={item} />}
+      renderItem={({ item }) => <QRScanHistoryItem item={item as any} />}
     />
   );
 };

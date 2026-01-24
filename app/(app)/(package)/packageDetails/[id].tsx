@@ -16,12 +16,10 @@ import {
 } from "@/components";
 import {
   Colors,
-  PACKAGE_DETAILS,
-  PACKAGE_TIMELINE,
   PACKAGE_TYPE,
   Spacing,
 } from "@/constants";
-import { PackageDetailsType } from "@/types";
+import { usePackageDetails, usePackageTimeline } from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
@@ -29,21 +27,21 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useVideoPlayer } from "expo-video";
 import {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
-import { Modal, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Modal, ScrollView, StyleSheet, View } from "react-native";
 
 export const PackageDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
-  const [packageData, setPackageData] = useState<PackageDetailsType>();
-  const [loading, setLoading] = useState<boolean>(true);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { data: packageData, isLoading: detailsLoading } = usePackageDetails(id || "");
+  const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(id || "");
 
   const { handleSubmit, control } = useForm({
     defaultValues: {
@@ -66,31 +64,14 @@ export const PackageDetails = () => {
   const shouldShowVideo = packageData?.type === PACKAGE_TYPE.DELIVERED;
 
   const timelineData = useMemo(() => {
-    if (!id) return [];
+    if (!timelineRawData) return [];
 
-    return PACKAGE_TIMELINE.filter(
-      (item) => item.packageId.toString() === id
-    ).map((item) => [format(item.timestamp, "Pp"), item.status, item.location]);
-  }, [id]);
-
-  useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    const packageDetail = PACKAGE_DETAILS.find(
-      (item) => item.id.toString() === id
-    );
-
-    if (packageDetail) {
-      setPackageData(packageDetail);
-    } else {
-      console.error("Package not found");
-    }
-
-    setLoading(false);
-  }, [id]);
+    return timelineRawData.map((item) => [
+      format(new Date(item.timestamp), "Pp"),
+      item.status,
+      item.location,
+    ]);
+  }, [timelineRawData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -107,7 +88,7 @@ export const PackageDetails = () => {
           <AppHeaderTitle
             title={
               packageData?.courierName || packageData
-                ? `${packageData.trackingId}`
+                ? `${packageData?.trackingId || id}`
                 : "Package Not Found"
             }
           />
@@ -121,7 +102,7 @@ export const PackageDetails = () => {
             )}
             {packageData?.type === PACKAGE_TYPE.OUTGOING && (
               <Chip
-                label={packageData.status}
+                label={packageData.status || ""}
                 size="small"
                 variant={
                   packageData.status === "Send"
@@ -165,10 +146,10 @@ export const PackageDetails = () => {
     setModalVisible(false);
   }, [videoPlayer]);
 
-  if (loading) {
+  if (detailsLoading || timelineLoading) {
     return (
       <View style={styles.centerContainer}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
