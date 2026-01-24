@@ -41,15 +41,6 @@ export const useLogin = () => {
 
             if (accessToken) {
                 login(accessToken);
-                Toast.show({
-                    type: "success",
-                    text1: "Login successful",
-                    position: "top",
-                    backgroundColor: Colors.white,
-                    textColor: Colors.text,
-                    progressBarColor: Colors.success,
-                    visibilityTime: 3000,
-                });
             } else {
                 const failureMessage = responseData?.message || "Login failed: Invalid server response";
                 console.warn("Login success but no token. Message:", failureMessage);
@@ -124,15 +115,6 @@ export const useVerifyOtp = () => {
         },
         onSuccess: (data) => {
             console.log("Verify OTP Success Data:", JSON.stringify(data, null, 2));
-            Toast.show({
-                type: "success",
-                text1: "OTP verified successfully",
-                position: "top",
-                backgroundColor: Colors.white,
-                textColor: Colors.text,
-                progressBarColor: Colors.success,
-                visibilityTime: 3000,
-            });
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message || 'OTP verification failed';
@@ -225,16 +207,6 @@ export const useResetPassword = () => {
 
         onSuccess: () => {
             console.log("Change password successfully");
-
-            Toast.show({
-                type: "success",
-                text1: "Change password successfully",
-                position: "top",
-                backgroundColor: Colors.white,
-                textColor: Colors.text,
-                progressBarColor: Colors.success,
-                visibilityTime: 3000,
-            });
         },
 
         onError: (error: any) => {

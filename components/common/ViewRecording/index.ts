@@ -1,2 +1,2 @@
-export { VedioRecording } from "./ViewRecording";
+export { VideoRecording } from "./VideoRecording";
 

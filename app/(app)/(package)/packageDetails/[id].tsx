@@ -12,7 +12,7 @@ import {
   PackageReportModal,
   SpecificInfoSection,
   Text,
-  VedioRecording,
+  VideoRecording,
 } from "@/components";
 import {
   Colors,
@@ -127,8 +127,8 @@ export const PackageDetails = () => {
                   packageData.status === "Send"
                     ? "warning"
                     : packageData.status === "Return"
-                    ? "info"
-                    : "default"
+                      ? "info"
+                      : "default"
                 }
               />
             )}
@@ -209,8 +209,8 @@ export const PackageDetails = () => {
 
         {(packageData?.type !== PACKAGE_TYPE.OUTGOING ||
           packageData?.status === "Send") && (
-          <PackageDetailsTimeLine timelineData={timelineData} />
-        )}
+            <PackageDetailsTimeLine timelineData={timelineData} />
+          )}
 
         {/* ✅ Only show video button for delivered packages */}
         {shouldShowVideo && (
@@ -284,7 +284,7 @@ export const PackageDetails = () => {
                   onPress={handleCloseModal}
                 />
               </View>
-              <VedioRecording player={videoPlayer} autoPlay={true} />
+              <VideoRecording player={videoPlayer} autoPlay={true} />
             </View>
           </View>
         </Modal>

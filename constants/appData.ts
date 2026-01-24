@@ -232,7 +232,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-10T10:15:00Z").toISOString(),
     closedAt: new Date("2025-01-10T10:15:30Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
   },
   {
     id: 2,
@@ -243,7 +243,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-11T14:22:00Z").toISOString(),
     closedAt: new Date("2025-01-11T14:22:45Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=9bZkp7q19f0",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
   },
   {
     id: 3,
@@ -254,7 +254,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-12T09:45:00Z").toISOString(),
     closedAt: new Date("2025-01-12T09:45:20Z").toISOString(),
     status: "failed",
-    videoUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
   },
   {
     id: 4,
@@ -265,7 +265,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-13T16:30:00Z").toISOString(),
     closedAt: new Date("2025-01-13T16:31:15Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
   },
   {
     id: 5,
@@ -276,7 +276,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-14T08:00:00Z").toISOString(),
     closedAt: new Date("2025-01-14T08:00:35Z").toISOString(),
     status: "failed",
-    videoUrl: "https://www.youtube.com/watch?v=hT_nvWreIhg",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
   },
   {
     id: 6,
@@ -287,7 +287,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-15T11:20:00Z").toISOString(),
     closedAt: new Date("2025-01-15T11:20:50Z").toISOString(),
     status: "Pending",
-    videoUrl: "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
   },
   {
     id: 7,
@@ -298,7 +298,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-16T13:45:00Z").toISOString(),
     closedAt: new Date("2025-01-16T13:45:25Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=ZbZSe6N_BXs",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
   },
   {
     id: 8,
@@ -309,7 +309,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-17T15:10:00Z").toISOString(),
     closedAt: new Date("2025-01-17T15:10:40Z").toISOString(),
     status: "failed",
-    videoUrl: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
   },
   {
     id: 9,
@@ -320,7 +320,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-18T07:30:00Z").toISOString(),
     closedAt: new Date("2025-01-18T07:31:00Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=lXMskKTw3Bc",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackAds.mp4",
   },
   {
     id: 10,
@@ -331,7 +331,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-19T12:00:00Z").toISOString(),
     closedAt: new Date("2025-01-19T12:00:55Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=kXYiU_JCYtU",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
   },
   {
     id: 11,
@@ -342,7 +342,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-20T09:15:00Z").toISOString(),
     closedAt: new Date("2025-01-20T09:15:30Z").toISOString(),
     status: "Pending",
-    videoUrl: "https://www.youtube.com/watch?v=SlPhMPnQ58k",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
   },
   {
     id: 12,
@@ -353,7 +353,7 @@ export const QR_SCAN_HISTORY = [
     openedAt: new Date("2025-01-21T17:25:00Z").toISOString(),
     closedAt: new Date("2025-01-21T17:25:45Z").toISOString(),
     status: "success",
-    videoUrl: "https://www.youtube.com/watch?v=OPf0YbXqDm0",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
   },
 ];
 
