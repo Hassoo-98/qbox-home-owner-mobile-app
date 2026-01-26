@@ -5,7 +5,8 @@ import {
   Chip,
   QRCodeDetailsHeader,
   QRScanHistoryItem,
-  Text,
+  QRScanHistoryItemSkeleton,
+  Text
 } from "@/components";
 import {
   Colors,
@@ -17,7 +18,7 @@ import { QRCode } from "@/types";
 import { mvs } from "@/utils/metrices";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
 export const QRCodeDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -97,8 +98,20 @@ export const QRCodeDetails = () => {
 
   if (historyLoading || scansLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+      <View style={styles.container}>
+        <FlatList
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          data={[1, 2, 3]}
+          keyExtractor={(item) => item.toString()}
+          ListHeaderComponent={
+            <View style={{ marginBottom: mvs(Spacing.xl) }}>
+              <View style={{ height: 100, backgroundColor: Colors.border, borderRadius: 12, opacity: 0.3 }} />
+            </View>
+          }
+          renderItem={() => <QRScanHistoryItemSkeleton />}
+        />
       </View>
     );
   }

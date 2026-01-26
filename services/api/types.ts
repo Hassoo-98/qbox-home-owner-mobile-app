@@ -42,6 +42,7 @@ export interface User {
     language: string;
     notifications_enabled: boolean;
     created_at: string;
+    avatar?: string;
     address_details: {
         short_address: string;
         city: string;
@@ -237,6 +238,7 @@ export interface UserProfile {
     installation?: any;
     language: string;
     notifications_enabled: boolean;
+    avatar?: string;
 }
 
 export interface UpdateSettingsPayload {

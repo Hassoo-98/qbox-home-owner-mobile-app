@@ -10,6 +10,7 @@ import {
   PackageDetailsPaymentSummary,
   PackageDetailsTimeLine,
   PackageReportModal,
+  Skeleton,
   SpecificInfoSection,
   Text,
   VideoRecording,
@@ -32,7 +33,7 @@ import {
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Modal, ScrollView, StyleSheet, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, View } from "react-native";
 
 export const PackageDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -148,8 +149,22 @@ export const PackageDetails = () => {
 
   if (detailsLoading || timelineLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+      <View style={styles.container}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: mvs(30) }}>
+          <View style={{ height: 180, backgroundColor: Colors.border, borderRadius: 16, opacity: 0.3, marginBottom: 20 }} />
+          <View style={{ marginBottom: 20 }}>
+            <Skeleton width="40%" height={24} style={{ marginBottom: 8 }} />
+            <Skeleton width="100%" height={16} />
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+          </View>
+          <Skeleton width="30%" height={24} style={{ marginBottom: 12 }} />
+          <Skeleton width="100%" height={80} variant="rounded" />
+        </ScrollView>
       </View>
     );
   }

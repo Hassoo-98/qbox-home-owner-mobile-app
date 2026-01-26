@@ -1,10 +1,10 @@
-import { QRCodeHistoryItem, Text } from "@/components";
-import { Colors, Spacing } from "@/constants";
+import { EmptyState, QRCodeHistoryItem, QRCodeHistoryItemSkeleton, Text } from "@/components";
+import { Spacing } from "@/constants";
 import { useQRHistory } from "@/hooks/api/useQRQueries";
 import { QRCode } from "@/types";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const QRCodeHistory = () => {
@@ -30,10 +30,21 @@ export const QRCodeHistory = () => {
         }}
       >
         {isLoading ? (
-          <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+          <FlatList
+            data={[1, 2, 3, 4, 5]}
+            keyExtractor={(item) => item.toString()}
+            renderItem={() => <QRCodeHistoryItemSkeleton />}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : !qrHistoryData || qrHistoryData.length === 0 ? (
+          <EmptyState
+            title="No QR Codes Yet"
+            description="Generated QR codes will appear here for your history."
+            iconName="qr-code-outline"
+          />
         ) : (
           <FlatList
-            data={qrHistoryData || []}
+            data={qrHistoryData}
             keyExtractor={(item) => item?.id?.toString()}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={

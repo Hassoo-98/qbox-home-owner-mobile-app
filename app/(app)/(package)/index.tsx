@@ -1,5 +1,5 @@
 import { Send } from "@/assets/icons";
-import { PackageList, PackageTypeModal, SegmentedControl } from "@/components";
+import { EmptyState, PackageItemSkeleton, PackageList, PackageTypeModal, SegmentedControl } from "@/components";
 import {
   BorderRadius,
   Colors,
@@ -11,7 +11,7 @@ import { usePackages } from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 export const Package = () => {
   const [selectedPackageType, setSelectedPackageType] = useState<string>(
@@ -59,7 +59,18 @@ export const Package = () => {
       />
 
       {isLoading ? (
-        <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+        <FlatList
+          data={[1, 2, 3, 4, 5]}
+          keyExtractor={(item) => item.toString()}
+          renderItem={() => <PackageItemSkeleton />}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : !filteredPackages || filteredPackages.length === 0 ? (
+        <EmptyState
+          title="No Shipments Found"
+          description="Your shipments will appear here once they are processed."
+          iconName="cube-outline"
+        />
       ) : (
         <PackageList packages={filteredPackages} />
       )}

@@ -1,4 +1,4 @@
-import { BoxInfo, Offer, QRSetting, Text } from "@/components";
+import { BoxInfo, EmptyState, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
 import {
   Colors,
   QR_VALIDITY_DURATION_TYPE,
@@ -15,7 +15,6 @@ import { BlurView } from "expo-blur";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -107,10 +106,23 @@ export const Home = () => {
       >
         <BoxInfo />
         {offersLoading ? (
-          <ActivityIndicator size="small" color={Colors.primary} style={{ marginVertical: Spacing.md }} />
+          <FlatList
+            data={[1, 2, 3]}
+            keyExtractor={(item) => item.toString()}
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            style={{ flexGrow: 0 }}
+            renderItem={() => <OfferSkeleton />}
+          />
+        ) : !offersData || offersData.length === 0 ? (
+          <EmptyState
+            title="No Offers Today"
+            description="Special offers will appear here when available."
+            containerStyle={{ height: 180, minHeight: 180 }}
+          />
         ) : (
           <FlatList
-            data={offersData || []}
+            data={offersData}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}

@@ -1,9 +1,9 @@
-import { Button, SubscriptionHistoryItem } from "@/components";
-import { Colors, Spacing } from "@/constants";
+import { Button, EmptyState, SubscriptionHistoryItem, SubscriptionHistoryItemSkeleton } from "@/components";
+import { Spacing } from "@/constants";
 import { useSubscriptions } from "@/hooks/api/useHomeQueries";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 export const SubscriptionHistory = () => {
   const { data: subscriptionsData, isLoading } = useSubscriptions();
@@ -16,10 +16,22 @@ export const SubscriptionHistory = () => {
       }}
     >
       {isLoading ? (
-        <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+        <FlatList
+          data={[1, 2, 3]}
+          keyExtractor={(item) => item.toString()}
+          renderItem={() => <SubscriptionHistoryItemSkeleton />}
+          contentContainerStyle={{ padding: mvs(Spacing.lg) }}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : !subscriptionsData || subscriptionsData.length === 0 ? (
+        <EmptyState
+          title="No Subscription History"
+          description="Your payment records and plans will appear here."
+          iconName="receipt-outline"
+        />
       ) : (
         <FlatList
-          data={subscriptionsData || []}
+          data={subscriptionsData}
           keyExtractor={(item) => item?.id?.toString()}
           contentContainerStyle={{ padding: mvs(Spacing.lg) }}
           showsVerticalScrollIndicator={false}

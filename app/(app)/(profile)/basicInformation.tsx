@@ -1,7 +1,8 @@
-import { PhoneNumberInput, TextInput } from "@/components";
+import { PhoneNumberInput, Skeleton, TextInput } from "@/components";
 import { MenuItem } from "@/components/containers/Profile";
 import { AUTH_PROVIDERS, Colors, emailPattern } from "@/constants";
 import { useModal } from "@/hooks";
+import { useUpdateProfileSettings, useUserProfile } from "@/hooks/api/useAuthQueries";
 import { useProfile } from "@/hooks/useProfile";
 import { mvs } from "@/utils/metrices";
 import { router, useLocalSearchParams } from "expo-router";
@@ -11,12 +12,14 @@ import {
 } from "libphonenumber-js";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 
 export const BasicInformation = () => {
   const { setOnSave } = useProfile();
+  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+  const updateProfileMutation = useUpdateProfileSettings();
 
-  const { control, watch, handleSubmit } = useForm({
+  const { control, watch, handleSubmit, reset } = useForm({
     defaultValues: {
       fullName: "",
       email: "",
@@ -25,6 +28,17 @@ export const BasicInformation = () => {
     },
     mode: "onChange",
   });
+
+  useEffect(() => {
+    if (userProfile) {
+      reset({
+        fullName: userProfile.full_name,
+        email: userProfile.email,
+        phone: userProfile.phone,
+        secondaryPhone: userProfile.secondary_phone || "",
+      });
+    }
+  }, [userProfile, reset]);
 
   const { onTriggerModal } = useModal();
 
@@ -130,19 +144,41 @@ export const BasicInformation = () => {
     }
   }, [params]);
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(
-      "this is the Basic information form data ",
-      JSON.stringify(data, null, 4)
-    );
-    router.dismiss();
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      await updateProfileMutation.mutateAsync({
+        language: userProfile?.language || "English",
+        notifications_enabled: userProfile?.notifications_enabled ?? true,
+      });
+      router.dismiss();
+    } catch (error) {
+      console.error("Profile update failed:", error);
+    }
   });
 
   useEffect(() => {
     setOnSave(() => onSubmit);
 
     return () => setOnSave(null);
-  }, []);
+  }, [onSubmit]);
+
+  if (profileLoading) {
+    return (
+      <View style={{ flex: 1, padding: mvs(20) }}>
+        <Skeleton width="40%" height={20} style={{ marginBottom: 10, alignSelf: 'flex-start' }} />
+        <Skeleton width="100%" height={50} variant="rounded" style={{ marginBottom: 20 }} />
+
+        <Skeleton width="40%" height={20} style={{ marginBottom: 10, alignSelf: 'flex-start' }} />
+        <Skeleton width="100%" height={50} variant="rounded" style={{ marginBottom: 20 }} />
+
+        <Skeleton width="40%" height={20} style={{ marginBottom: 10, alignSelf: 'flex-start' }} />
+        <Skeleton width="100%" height={50} variant="rounded" style={{ marginBottom: 20 }} />
+
+        <Skeleton width="40%" height={20} style={{ marginBottom: 10, alignSelf: 'flex-start' }} />
+        <Skeleton width="100%" height={50} variant="rounded" style={{ marginBottom: 20 }} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView

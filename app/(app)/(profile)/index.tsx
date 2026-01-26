@@ -1,9 +1,9 @@
-import { MenuList, ProfileCard, SubscriptionCard, Text } from "@/components";
+import { MenuList, ProfileCard, ProfileSkeleton, SubscriptionCard, Text } from "@/components";
 import { MENU_ITEM } from "@/constants";
 import { useUserProfile } from "@/hooks/api/useAuthQueries";
 import { mvs } from "@/utils/metrices";
 import React from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 export const Profile = () => {
   const { data: profile, isLoading, error } = useUserProfile();
@@ -14,10 +14,11 @@ export const Profile = () => {
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+        <ProfileSkeleton />
       </View>
     );
   }
+
 
   return (
     <ScrollView
