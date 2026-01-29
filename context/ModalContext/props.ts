@@ -11,7 +11,7 @@ export type ModalStateType = {
   footerText?: string;
   subtitle?: string;
   primaryButtonText?: string;
-  primaryButtonHandler: () => void;
+  primaryButtonHandler: (data?: any) => void;
   secondaryButtonText?: string;
   secondaryButtonHandler?: () => void;
   modalType?: "default" | "otp";
@@ -35,7 +35,7 @@ export interface ModalProps {
   subtitle?: string;
   isLoading?: boolean;
   primaryButtonText?: string;
-  primaryButtonHandler: () => void;
+  primaryButtonHandler: (data?: any) => void;
   secondaryButtonText?: string;
   secondaryButtonHandler?: () => void;
 }

@@ -2,11 +2,15 @@ import { Button, Card, OfferProps, Text } from "@/components";
 import { Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { Image } from "expo-image";
+import { useState } from "react";
 import { Dimensions, View } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
 
 export const Offer = ({ item }: OfferProps) => {
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage = require("@/assets/images/offer.jpg");
+
   return (
     <Card
       backgroundColor="transparent"
@@ -20,7 +24,8 @@ export const Offer = ({ item }: OfferProps) => {
       contentStyle={{ padding: 0, position: "relative" }}
     >
       <Image
-        source={item.image}
+        source={!imageError && item.image_url ? item.image_url : fallbackImage}
+        onError={() => setImageError(true)}
         style={{
           width: screenWidth - 32,
           height: 200,
@@ -62,9 +67,9 @@ export const Offer = ({ item }: OfferProps) => {
           </Text>
         </View>
         <Button
-          title={item.buttonText}
+          title={item.button_text}
           size="xs"
-          style={{ borderRadius: 100, backgroundColor: item?.buttonColor }}
+          style={{ borderRadius: 100, backgroundColor: item?.button_color }}
         />
       </View>
     </Card>

@@ -1,17 +1,17 @@
 import { Send } from "@/assets/icons";
-import { PackageList, PackageTypeModal, SegmentedControl } from "@/components";
+import { EmptyState, PackageItemSkeleton, PackageList, PackageTypeModal, SegmentedControl } from "@/components";
 import {
   BorderRadius,
   Colors,
   PACKAGE_TYPE,
-  PACKAGES,
   PACKAGES_OPTIONS,
   Spacing,
 } from "@/constants";
+import { usePackages } from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 export const Package = () => {
   const [selectedPackageType, setSelectedPackageType] = useState<string>(
@@ -19,6 +19,8 @@ export const Package = () => {
   );
   const [searchId, setSearchId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { data: packagesData, isLoading } = usePackages();
 
   const handlePackageTypeChange = (option: string) => {
     setSelectedPackageType(option);
@@ -33,7 +35,7 @@ export const Package = () => {
     setModalVisible(false);
   };
 
-  const filteredPackages = PACKAGES.filter(
+  const filteredPackages = (packagesData || []).filter(
     (item) =>
       item.type === selectedPackageType &&
       item.trackingId.toLowerCase().includes(searchId.toLowerCase())
@@ -56,7 +58,22 @@ export const Package = () => {
         placeholder="Search by tracking ID"
       />
 
-      <PackageList packages={filteredPackages} />
+      {isLoading ? (
+        <FlatList
+          data={[1, 2, 3, 4, 5]}
+          keyExtractor={(item) => item.toString()}
+          renderItem={() => <PackageItemSkeleton />}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : !filteredPackages || filteredPackages.length === 0 ? (
+        <EmptyState
+          title="No Shipments Found"
+          description="Your shipments will appear here once they are processed."
+          iconName="cube-outline"
+        />
+      ) : (
+        <PackageList packages={filteredPackages} />
+      )}
 
       <TouchableOpacity
         style={styles.fab}

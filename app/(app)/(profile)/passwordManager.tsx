@@ -1,14 +1,15 @@
 import { PasswordInput } from "@/components";
+import { useChangePassword } from "@/hooks/api/useAuthQueries";
 import { useProfile } from "@/hooks/useProfile";
 import { PasswordFormResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
-import { router } from "expo-router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native";
 
 export const Password = () => {
   const { setOnSave } = useProfile();
+  const changePasswordMutation = useChangePassword();
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -22,7 +23,10 @@ export const Password = () => {
 
   const onSubmit = handleSubmit((data) => {
     console.log("this is password form data", data);
-    router.dismissTo("/(app)/(profile)");
+    changePasswordMutation.mutate({
+      old_password: data.oldPassword,
+      new_password: data.password,
+    });
   });
 
   useEffect(() => {

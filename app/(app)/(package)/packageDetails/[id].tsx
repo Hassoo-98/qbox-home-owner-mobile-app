@@ -10,18 +10,17 @@ import {
   PackageDetailsPaymentSummary,
   PackageDetailsTimeLine,
   PackageReportModal,
+  Skeleton,
   SpecificInfoSection,
   Text,
-  VedioRecording,
+  VideoRecording,
 } from "@/components";
 import {
   Colors,
-  PACKAGE_DETAILS,
-  PACKAGE_TIMELINE,
   PACKAGE_TYPE,
   Spacing,
 } from "@/constants";
-import { PackageDetailsType } from "@/types";
+import { usePackageDetails, usePackageTimeline } from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
@@ -29,7 +28,6 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useVideoPlayer } from "expo-video";
 import {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -40,10 +38,11 @@ import { Modal, ScrollView, StyleSheet, View } from "react-native";
 export const PackageDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
-  const [packageData, setPackageData] = useState<PackageDetailsType>();
-  const [loading, setLoading] = useState<boolean>(true);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { data: packageData, isLoading: detailsLoading } = usePackageDetails(id || "");
+  const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(id || "");
 
   const { handleSubmit, control } = useForm({
     defaultValues: {
@@ -66,31 +65,14 @@ export const PackageDetails = () => {
   const shouldShowVideo = packageData?.type === PACKAGE_TYPE.DELIVERED;
 
   const timelineData = useMemo(() => {
-    if (!id) return [];
+    if (!timelineRawData) return [];
 
-    return PACKAGE_TIMELINE.filter(
-      (item) => item.packageId.toString() === id
-    ).map((item) => [format(item.timestamp, "Pp"), item.status, item.location]);
-  }, [id]);
-
-  useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    const packageDetail = PACKAGE_DETAILS.find(
-      (item) => item.id.toString() === id
-    );
-
-    if (packageDetail) {
-      setPackageData(packageDetail);
-    } else {
-      console.error("Package not found");
-    }
-
-    setLoading(false);
-  }, [id]);
+    return timelineRawData.map((item) => [
+      format(new Date(item.timestamp), "Pp"),
+      item.status,
+      item.location,
+    ]);
+  }, [timelineRawData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -107,7 +89,7 @@ export const PackageDetails = () => {
           <AppHeaderTitle
             title={
               packageData?.courierName || packageData
-                ? `${packageData.trackingId}`
+                ? `${packageData?.trackingId || id}`
                 : "Package Not Found"
             }
           />
@@ -121,14 +103,14 @@ export const PackageDetails = () => {
             )}
             {packageData?.type === PACKAGE_TYPE.OUTGOING && (
               <Chip
-                label={packageData.status}
+                label={packageData.status || ""}
                 size="small"
                 variant={
                   packageData.status === "Send"
                     ? "warning"
                     : packageData.status === "Return"
-                    ? "info"
-                    : "default"
+                      ? "info"
+                      : "default"
                 }
               />
             )}
@@ -165,10 +147,24 @@ export const PackageDetails = () => {
     setModalVisible(false);
   }, [videoPlayer]);
 
-  if (loading) {
+  if (detailsLoading || timelineLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <Text>Loading...</Text>
+      <View style={styles.container}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: mvs(30) }}>
+          <View style={{ height: 180, backgroundColor: Colors.border, borderRadius: 16, opacity: 0.3, marginBottom: 20 }} />
+          <View style={{ marginBottom: 20 }}>
+            <Skeleton width="40%" height={24} style={{ marginBottom: 8 }} />
+            <Skeleton width="100%" height={16} />
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+            <Skeleton width="45%" height={60} variant="rounded" />
+          </View>
+          <Skeleton width="30%" height={24} style={{ marginBottom: 12 }} />
+          <Skeleton width="100%" height={80} variant="rounded" />
+        </ScrollView>
       </View>
     );
   }
@@ -209,8 +205,8 @@ export const PackageDetails = () => {
 
         {(packageData?.type !== PACKAGE_TYPE.OUTGOING ||
           packageData?.status === "Send") && (
-          <PackageDetailsTimeLine timelineData={timelineData} />
-        )}
+            <PackageDetailsTimeLine timelineData={timelineData} />
+          )}
 
         {/* ✅ Only show video button for delivered packages */}
         {shouldShowVideo && (
@@ -284,7 +280,7 @@ export const PackageDetails = () => {
                   onPress={handleCloseModal}
                 />
               </View>
-              <VedioRecording player={videoPlayer} autoPlay={true} />
+              <VideoRecording player={videoPlayer} autoPlay={true} />
             </View>
           </View>
         </Modal>

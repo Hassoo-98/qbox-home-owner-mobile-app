@@ -1,28 +1,39 @@
 import * as Shipment from '@/services/api/modules/shipment';
-import { CreateOrderPayload, UpdateOrderStatusPayload } from '@/services/api/types';
+import { CreatePackageSendRequest } from '@/services/api/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const useCreateOrder = () => {
-    return useMutation({
-        mutationFn: (data: CreateOrderPayload) => Shipment.createOrder(data),
-    });
-};
-
-export const useTrackOrder = (trackingId: string) => {
+export const usePackages = () => {
     return useQuery({
-        queryKey: ['shipment', trackingId],
-        queryFn: () => Shipment.trackOrder(trackingId),
-        enabled: !!trackingId,
+        queryKey: ['packages'],
+        queryFn: Shipment.listPackages,
     });
 };
 
-export const useUpdateOrderStatus = () => {
+export const usePackageDetails = (id: string | number) => {
+    return useQuery({
+        queryKey: ['package-details', id],
+        queryFn: () => Shipment.getPackageDetails(id),
+        enabled: !!id,
+    });
+};
+
+export const usePackageTimeline = (id: string | number) => {
+    return useQuery({
+        queryKey: ['package-timeline', id],
+        queryFn: () => Shipment.getPackageTimeline(id),
+        enabled: !!id,
+    });
+};
+
+export const useCreateSendRequest = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: UpdateOrderStatusPayload }) =>
-            Shipment.updateOrderStatus(id, data),
-        onSuccess: (_, { id }) => {
-            queryClient.invalidateQueries({ queryKey: ['shipment', id] });
+        mutationFn: (data: CreatePackageSendRequest) => Shipment.createSendRequest(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['packages'] });
         },
     });
 };
+
+// Backward compatibility for createOrder
+export const useCreateOrder = useCreateSendRequest;

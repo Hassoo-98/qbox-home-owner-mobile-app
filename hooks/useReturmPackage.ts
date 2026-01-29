@@ -38,7 +38,7 @@ export const useReturnPackage = () => {
 
   const onSubmit = handleSubmit((data: ReturnPackageFormValues) => {
     console.log(
-      "sendPackage submission submission: ",
+      "returnPackage submission submission: ",
       JSON.stringify(data, null, 4)
     );
     reset();

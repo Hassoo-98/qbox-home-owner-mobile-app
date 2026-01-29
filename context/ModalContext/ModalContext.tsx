@@ -1,13 +1,12 @@
 import { DriverOTPRequestModal, Modal, OTPModal } from "@/components";
 import React, { useState } from "react";
 import { ModalContextType, ModalProviderProps, ModalStateType } from "./props";
-
 export const ModalContext = React.createContext<ModalContextType>({
   isOpen: false,
-  onOpen: () => {},
-  onClose: () => {},
-  setLoading: () => {},
-  onRequestOTP: () => {},
+  onOpen: () => { },
+  onClose: () => { },
+  setLoading: () => { },
+  onRequestOTP: () => { },
 });
 
 export const ModalProvider = ({ children }: ModalProviderProps) => {
@@ -20,7 +19,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     title: "",
     subtitle: "",
     primaryButtonText: "Confirm",
-    primaryButtonHandler: () => {},
+    primaryButtonHandler: () => { },
     modalType: "default", // Add this to distinguish modal types
   });
 
@@ -43,9 +42,9 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     setOpen(false);
   };
 
-  const handlePrimaryAction = () => {
+  const handlePrimaryAction = (data?: any) => {
     setLoading(true);
-    modal.primaryButtonHandler();
+    modal.primaryButtonHandler(data);
   };
 
   const handleSecondaryAction = () => {
@@ -88,7 +87,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
           footerText={modal.footerText}
           footerAction={modal.footerAction}
           isForgotPassowrd={modal.isForgotPassowrd}
-          onSubmit={handlePrimaryAction}
+          onSubmit={(otp: string) => handlePrimaryAction(otp)}
           secondaryButtonHandler={handleSecondaryAction}
           primaryButtonText={modal.primaryButtonText}
           isLoading={isLoading}

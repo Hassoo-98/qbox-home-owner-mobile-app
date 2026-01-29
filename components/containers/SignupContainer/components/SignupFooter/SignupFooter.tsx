@@ -13,10 +13,15 @@ export const SignupFooter = ({
   isFormValid,
   onSubmit,
   phoneNumber,
+  handleSendOtp,
+  handleVerifyOtp,
 }: SignupFooterProps) => {
-  const { onTriggerModal } = useModal();
+  const { onTriggerModal, onCloseModal } = useModal();
 
   const handleVerify = () => {
+    // Send OTP when modal triggers
+    handleSendOtp(phoneNumber);
+
     onTriggerModal({
       modalType: "otp",
       title: "OTP Verification",
@@ -24,10 +29,14 @@ export const SignupFooter = ({
       footerText: "Didn’t receive the code?",
       footerAction: "Resend OTP",
       primaryButtonText: "Verify",
-      secondaryButtonHandler: () => console.log("Resend OTP"),
-      primaryButtonHandler: () => {
-        console.log("otp verified: ", currentStep);
-        setCurrentStep((prev) => ++prev);
+      secondaryButtonHandler: () => handleSendOtp(phoneNumber),
+      primaryButtonHandler: (otpValue?: any) => {
+        console.log("otp verification triggered: ", otpValue);
+        // The modal should pass the OTP value here
+        handleVerifyOtp(phoneNumber, otpValue as string, () => {
+          setCurrentStep((prev) => ++prev);
+          onCloseModal?.();
+        });
       },
     });
   };

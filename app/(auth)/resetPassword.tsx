@@ -1,14 +1,16 @@
 import { Button, Form, FormLayout, PasswordInput } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
+import { useResetPassword } from "@/hooks/api/useAuthQueries";
 import { useModal } from "@/hooks/useModal";
 import { ResetPasswordFormResolver } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const ResetPassword = () => {
-  const { control, handleSubmit, reset } = useForm({
+  const { uid } = useLocalSearchParams<{ uid: string }>();
+  const { control, handleSubmit, reset, formState: { isValid } } = useForm({
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -17,38 +19,51 @@ export const ResetPassword = () => {
     mode: "onChange",
   });
   const { onTriggerModal, onCloseModal } = useModal();
+  const resetPasswordMutation = useResetPassword();
 
   const handleConfirm = () => {
-    router.navigate("/(auth)");
+    router.dismissTo("/(auth)");
     onCloseModal();
   };
 
   const onSubmit = handleSubmit((data: any) => {
     console.log("new password submission: ", data);
 
-    onTriggerModal({
-      icon: (
-        <View
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: BorderRadius.full,
-            backgroundColor: Colors.success,
-            justifyContent: "center",
-            alignItems: "center",
-            alignSelf: "center",
-          }}
-        >
-          <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
-        </View>
-      ),
-      title: "Your request has been submitted for approval.",
-      primaryButtonText: "Confirm",
-      primaryButtonHandler: handleConfirm,
-      secondaryButtonHandler: onCloseModal,
-      subtitle: "Once approved, we’ll send you confirmation email.",
-    });
-    reset();
+    if (!uid) {
+      console.error("No UID provided for password reset");
+      return;
+    }
+
+    resetPasswordMutation.mutate(
+      { uid, new_password: data.password },
+      {
+        onSuccess: () => {
+          onTriggerModal({
+            icon: (
+              <View
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: BorderRadius.full,
+                  backgroundColor: Colors.success,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center",
+                }}
+              >
+                <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
+              </View>
+            ),
+            title: "Password Reset Successful!",
+            primaryButtonText: "Go to Login",
+            primaryButtonHandler: handleConfirm,
+            secondaryButtonHandler: onCloseModal,
+            subtitle: "Your password has been successfully reset. You can now login with your new password.",
+          });
+          reset();
+        },
+      }
+    );
   });
 
   return (
@@ -73,6 +88,8 @@ export const ResetPassword = () => {
         <Button
           style={{ marginTop: Spacing.xl }}
           title="Update"
+          disabled={!isValid}
+          loading={resetPasswordMutation.isPending}
           onPress={onSubmit}
         />
       </Form>

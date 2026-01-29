@@ -1,7 +1,8 @@
 import { Text } from "@/components/ui";
 import { mvs } from "@/utils/metrices";
+import { Image } from "expo-image";
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ProfileCardProps } from "./props";
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -24,7 +25,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
           <Image
             source={{ uri: imageUri }}
             style={styles.avatarImage}
-            onError={() => console.log("Image failed to load")}
+            contentFit="cover"
+            transition={200}
+            onError={() => console.log("Image failed to load:", imageUri)}
           />
         ) : (
           <Text size="xl" style={styles.initialsText} variant="primary">

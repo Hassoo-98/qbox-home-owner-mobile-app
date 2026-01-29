@@ -1,19 +1,30 @@
 import api from '../config';
-import { CreateOrderPayload, UpdateOrderStatusPayload } from '../types';
+import {
+    CreatePackageSendRequest,
+    Package,
+    PackageDetails,
+    PackageTimelineItem
+} from '../types';
 
-export const createOrder = async (data: CreateOrderPayload) => {
-    const response = await api.post('/api/shipment/create', data);
+export const listPackages = async (): Promise<Package[]> => {
+    const response = await api.get('/packages');
     return response.data;
 };
 
-export const trackOrder = async (trackingId: string) => {
-    const response = await api.get(`/api/shipment/track/${trackingId}`);
+export const getPackageDetails = async (id: string | number): Promise<PackageDetails> => {
+    const response = await api.get(`/packages/${id}/details`);
     return response.data;
 };
 
-export const updateOrderStatus = async (trackingId: string, data: UpdateOrderStatusPayload) => {
-    // Assuming the API expects the ID in the URL and status in the body
-    // Or it could be PUT according to docs
-    const response = await api.put(`/api/shipment/update/${trackingId}`, data);
+export const getPackageTimeline = async (id: string | number): Promise<PackageTimelineItem[]> => {
+    const response = await api.get(`/packages/${id}/timeline`);
     return response.data;
 };
+
+export const createSendRequest = async (data: CreatePackageSendRequest) => {
+    const response = await api.post('/packages/send', data);
+    return response.data;
+};
+
+// Maintaining backward compatibility if needed, but the API seems to have changed
+export const createOrder = createSendRequest;

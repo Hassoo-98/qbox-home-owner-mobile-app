@@ -1,23 +1,39 @@
-import { MenuList, ProfileCard, SubscriptionCard, Text } from "@/components";
+import { MenuList, ProfileCard, ProfileSkeleton, SubscriptionCard, Text } from "@/components";
 import { MENU_ITEM } from "@/constants";
+import { useUserProfile } from "@/hooks/api/useAuthQueries";
 import { mvs } from "@/utils/metrices";
 import React from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 
 export const Profile = () => {
+  const { data: profile, isLoading, error } = useUserProfile();
+
+
+  console.log("profile", JSON.stringify(profile, null, 2));
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ProfileSkeleton />
+      </View>
+    );
+  }
+
+
   return (
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={{
         alignItems: "center",
         paddingHorizontal: mvs(20),
-        paddingBottom: mvs(30), // use padding instead of margin for contentContainer
+        paddingBottom: mvs(30),
       }}
     >
       <ProfileCard
-        name="Ibrahim Ali"
-        email="ibrahim@gmail.com"
-        phone="+966 54 678 6543"
+        name={profile?.full_name}
+        email={profile?.email}
+        phone={profile?.phone}
+        imageUri={profile?.avatar}
       />
 
       <SubscriptionCard />

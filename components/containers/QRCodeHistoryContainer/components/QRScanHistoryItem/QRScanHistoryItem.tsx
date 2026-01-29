@@ -1,5 +1,5 @@
 import { RecordingIcon } from "@/assets/icons";
-import { Button, Card, Chip, Text, VedioRecording } from "@/components";
+import { Button, Card, Chip, Text, VideoRecording } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
@@ -119,7 +119,7 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <VedioRecording
+            <VideoRecording
               player={player}
               onShare={() => console.log("Share")}
               onDownload={() => console.log("Download")}

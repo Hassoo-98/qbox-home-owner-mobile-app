@@ -8,7 +8,7 @@ export interface OTPModalProps {
   subtitle?: string;
   title: string;
   isForgotPassowrd?: boolean;
-  onSubmit: () => void;
+  onSubmit: (otp: string) => void;
   secondaryButtonHandler?: () => void;
   isLoading?: boolean;
   primaryButtonText?: string;

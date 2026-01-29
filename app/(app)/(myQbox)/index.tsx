@@ -2,7 +2,7 @@ import {
   DatePickerModal,
   QBoxAlarmCard,
   StatusCardsGrid,
-  VedioRecording,
+  VideoRecording,
 } from "@/components";
 import { useShare } from "@/hooks";
 import { mvs } from "@/utils/metrices";
@@ -87,7 +87,7 @@ export const MyQBox = () => {
 
       <StatusCardsGrid />
 
-      <VedioRecording
+      <VideoRecording
         player={externalPlayer}
         onShare={handleShare}
         onDownload={() => console.log("Download external")}
@@ -100,7 +100,7 @@ export const MyQBox = () => {
         }}
       />
 
-      <VedioRecording
+      <VideoRecording
         player={internalPlayer}
         onShare={handleShare}
         onDownload={() => console.log("Download internal")}

@@ -16,7 +16,7 @@ interface HeaderConfig {
   onRightIconPress?: () => void;
 }
 
-interface VedioRecordingProps {
+interface VideoRecordingProps {
   player: VideoPlayer;
   onShare?: () => void;
   onDownload?: () => void;
@@ -26,7 +26,7 @@ interface VedioRecordingProps {
   customHeader?: ReactNode;
 }
 
-export const VedioRecording = ({
+export const VideoRecording = ({
   player,
   onShare,
   onDownload,
@@ -34,7 +34,7 @@ export const VedioRecording = ({
   style,
   header,
   customHeader,
-}: VedioRecordingProps) => {
+}: VideoRecordingProps) => {
   useEffect(() => {
     if (autoPlay) {
       const timer = setTimeout(() => player.play(), 200);
