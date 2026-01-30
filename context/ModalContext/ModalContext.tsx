@@ -33,7 +33,6 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   };
 
   const onRequestOTP = () => {
-    console.log("pressed: ");
     setIsOTPRequested(true);
   };
 

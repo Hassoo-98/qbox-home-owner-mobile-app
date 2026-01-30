@@ -1,4 +1,20 @@
 // Auth Types
+export interface AddressDetails {
+    short_address: string;
+    city: string;
+    district: string;
+    street: string;
+    postal_code: string;
+    building_number: string;
+    secondary_number: string;
+}
+
+export interface InstallationDetails {
+    location_preference: string;
+    access_instruction: string;
+    qbox_image_url: string;
+}
+
 export interface RegisterPayload {
     full_name: string;
     email: string;
@@ -8,21 +24,9 @@ export interface RegisterPayload {
     role?: string;
     qbox_id?: string;
 
-    address_details: {
-        short_address: string;
-        city: string;
-        district: string;
-        street: string;
-        postal_code: string;
-        building_number: string;
-        secondary_number: string;
-    };
+    address_details: AddressDetails;
 
-    installation: {
-        location_preference: string;
-        access_instruction: string;
-        qbox_image_url: string;
-    };
+    installation: InstallationDetails;
 }
 
 export interface LoginPayload {
@@ -43,15 +47,7 @@ export interface User {
     notifications_enabled: boolean;
     created_at: string;
     avatar?: string;
-    address_details: {
-        short_address: string;
-        city: string;
-        district: string;
-        street: string;
-        postal_code: string;
-        building_number: string;
-        secondary_number: string;
-    };
+    address_details: AddressDetails;
 }
 
 export interface AuthResponse {
@@ -147,7 +143,7 @@ export interface PackageDetails {
     lastUpdate: string;
     qrCode: string;
     description: string;
-    imageUrl: any;
+    imageUrl: string | number; // Changed from any to string (URL) or number (require result)
     attributes: PackageDetailAttribute[];
     status?: string;
     phoneNumber?: string;
@@ -211,7 +207,7 @@ export interface Offer {
     id: number;
     title: string;
     description: string;
-    image_url: any;
+    image_url: string | number;
     button_text: string;
     button_color: string;
 }
@@ -234,8 +230,8 @@ export interface UserProfile {
     email: string;
     phone: string;
     secondary_phone?: string;
-    address_details?: any;
-    installation?: any;
+    address_details?: AddressDetails;
+    installation?: InstallationDetails;
     language: string;
     notifications_enabled: boolean;
     avatar?: string;

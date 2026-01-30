@@ -3,23 +3,17 @@ import { Colors } from "@/constants";
 import { router } from "expo-router";
 import React from "react";
 import { View } from "react-native";
+import { styles } from "./styles";
 
 export const SubscriptionCard = () => {
   return (
     <Card variant="filled" backgroundColor={Colors.primary}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
+      <View style={styles.row}>
         <View>
-          <Text size="xs" style={{ color: Colors.white }}>
+          <Text size="xs" style={styles.expiryText}>
             Expires on 11/02/2025
           </Text>
-          <Text style={{ fontWeight: "600", color: Colors.white }}>
+          <Text style={styles.planText}>
             Standard Subscription Plan
           </Text>
         </View>
@@ -28,7 +22,7 @@ export const SubscriptionCard = () => {
           variant="default"
           size="sm"
           title="Renew"
-          textStyle={{ color: Colors.secondary }}
+          textStyle={styles.buttonText}
           onPress={() => router.navigate("/renewSubscription")}
         />
       </View>

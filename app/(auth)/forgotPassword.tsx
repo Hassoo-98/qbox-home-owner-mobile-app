@@ -92,7 +92,6 @@ export const ForgotPassword = () => {
       { contact, method },
       {
         onSuccess: (response) => {
-          console.log("OTP sent response:", response);
           // Store temp_uid for later use
           if (response.temp_uid) {
             tempUidRef.current = response.temp_uid;

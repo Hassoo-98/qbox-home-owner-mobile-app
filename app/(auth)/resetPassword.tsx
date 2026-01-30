@@ -27,10 +27,7 @@ export const ResetPassword = () => {
   };
 
   const onSubmit = handleSubmit((data: any) => {
-    console.log("new password submission: ", data);
-
     if (!uid) {
-      console.error("No UID provided for password reset");
       return;
     }
 

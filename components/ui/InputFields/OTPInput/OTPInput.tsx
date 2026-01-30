@@ -36,7 +36,6 @@ export const OTPInput = ({
             <OtpInput
               numberOfDigits={numberOfDigits}
               onTextChange={(text) => {
-                console.log("OTPInput onTextChange:", text);
                 onChange(text);
               }}
               focusColor="#6B7A8F"

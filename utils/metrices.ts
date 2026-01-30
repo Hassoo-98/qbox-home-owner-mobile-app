@@ -1,8 +1,4 @@
-import { ScreenHeight, ScreenWidth } from "@rneui/base";
 import { Dimensions, PixelRatio } from "react-native";
-console.log("🚀 ~ ScreenWidth:", ScreenWidth);
-console.log("🚀 ~ ScreenWidth:", ScreenHeight);
-
 const width = Math.round(Dimensions.get("window").width);
 const height = Math.round(Dimensions.get("window").height);
 const guidelineBaseWidth = 393;
@@ -12,7 +8,7 @@ const xdHeight = (xdHeight: number) => {
   return PixelRatio.roundToNearestPixel((height * heightPercent) / 100);
 };
 
-const xdWith = (xdWidth: number) => {
+const xdWidth = (xdWidth: number) => {
   const widthPercent = Math.round((xdWidth / guidelineBaseWidth) * 100);
   return PixelRatio.roundToNearestPixel((width * widthPercent) / 100);
 };
@@ -22,4 +18,4 @@ const vs = (size: number) => (height / guidelineBaseHeight) * size;
 const ms = (size: number, factor = 0.5) => size + (scale(size) - size) * factor;
 const mvs = (size: number, factor = 0.5) => size + (vs(size) - size) * factor;
 
-export { height, ms, mvs, scale, vs, width, xdHeight, xdWith };
+export { height, ms, mvs, scale, vs, width, xdHeight, xdWidth };

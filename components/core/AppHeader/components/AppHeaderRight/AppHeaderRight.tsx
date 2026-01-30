@@ -10,7 +10,6 @@ export const AppHeaderRight = ({
   handleNotificationPress,
 }: AppHeaderRightProps) => {
   const notificationCount = 3;
-  console.log("active tab: ", activeTab);
   return (
     <View style={styles.headerRight}>
       {activeTab === "(home-screens)" && (
