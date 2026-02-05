@@ -8,36 +8,45 @@ export const AuthContext = createContext<{
   isLoading: boolean;
 }>({
   userToken: null,
-  login: async () => {},
-  logout: async () => {},
+  login: async () => { },
+  logout: async () => { },
   isLoading: true,
 });
 
-export const AuthProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const loadToken = async () => {
       try {
         const token = await SecureStore.getItemAsync("token");
         setUserToken(token);
       } catch (e) {
-        console.log("error while getting token", e);
+        console.error("Error while getting token from SecureStore:", e);
       } finally {
         setIsLoading(false);
       }
-    })();
+    };
+    loadToken();
   }, []);
 
   const login = async (token: string) => {
-    await SecureStore.setItemAsync("token", token);
-    setUserToken(token);
+    try {
+      await SecureStore.setItemAsync("token", token);
+      setUserToken(token);
+    } catch (e) {
+      console.error("Error while saving token to SecureStore:", e);
+    }
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("token");
-    setUserToken(null);
+    try {
+      await SecureStore.deleteItemAsync("token");
+      setUserToken(null);
+    } catch (e) {
+      console.error("Error while deleting token from SecureStore:", e);
+    }
   };
 
   return (

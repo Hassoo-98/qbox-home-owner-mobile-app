@@ -5,9 +5,9 @@ import {
   RecipientInformation,
   SendPackageFooter,
 } from "@/components";
-import { Spacing } from "@/constants";
 import { useSendPackage } from "@/hooks";
 import { View } from "react-native";
+import { styles } from "./form.styles";
 
 export const SendPackage = () => {
   const {
@@ -27,13 +27,13 @@ export const SendPackage = () => {
         currentStep === 1
           ? "Recipient Information"
           : currentStep === 2
-          ? "Package Information "
-          : "Delivery Information "
+            ? "Package Information "
+            : "Delivery Information "
       }
       description={"Let’s begin with basic information. "}
       currentStep={currentStep}
       totalSteps={3}
-      stepperStyle={{ marginBottom: Spacing.md }}
+      stepperStyle={styles.stepper}
       footer={
         <SendPackageFooter
           currentStep={currentStep}
@@ -44,12 +44,7 @@ export const SendPackage = () => {
         />
       }
     >
-      <View
-        style={{
-          marginTop: Spacing.md,
-          paddingHorizontal: Spacing.xl,
-        }}
-      >
+      <View style={styles.container}>
         {currentStep === 1 ? (
           <RecipientInformation control={control} />
         ) : currentStep === 2 ? (

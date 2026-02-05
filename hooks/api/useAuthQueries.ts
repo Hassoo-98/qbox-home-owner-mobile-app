@@ -7,7 +7,6 @@ import {
     RegisterPayload,
     ResetConfirmPayload,
     ResetInitiatePayload,
-    ResetVerifyPayload,
     UpdateSettingsPayload,
     VerifyAddressPayload,
     VerifyQBoxPayload
@@ -46,9 +45,9 @@ export const useLogin = () => {
         onSuccess: (data) => {
             console.log("Login Success Data:", JSON.stringify(data, null, 2));
 
-            // Content is in 'token' field directly in new API structure
+            // Content is in 'data.access' field in new API structure
             const responseData = Array.isArray(data) ? data[0] : data;
-            const accessToken = responseData?.token;
+            const accessToken = responseData?.data?.access || responseData?.token;
 
             if (accessToken) {
                 login(accessToken);
@@ -140,7 +139,7 @@ export const useChangePassword = () => {
 
 export const useSendOtp = () => {
     return useMutation({
-        mutationFn: (data: { contact: string }) => Auth.sendOtp(data),
+        mutationFn: (data: { email?: string, phone_number?: string }) => Auth.sendOtp({ ...data, is_home_owner: true }),
         onSuccess: (data) => {
             console.log("Send OTP Success Data:", JSON.stringify(data, null, 2));
             Toast.show({
@@ -170,9 +169,9 @@ export const useSendOtp = () => {
 
 export const useVerifyOtp = () => {
     return useMutation({
-        mutationFn: (data: { contact: string, otp: string }) => {
+        mutationFn: (data: { email?: string, phone_number?: string, otp: string }) => {
             console.log("useVerifyOtp mutationFn called with payload:", data);
-            return Auth.verifyOtp(data);
+            return Auth.verifyOtp({ ...data, is_home_owner: true });
         },
         onSuccess: (data) => {
             console.log("Verify OTP Success Data:", JSON.stringify(data, null, 2));
@@ -236,9 +235,9 @@ export const useSendOtpForResetPassword = () => {
 
 export const useVerifyOtpForResetPassword = () => {
     return useMutation({
-        mutationFn: (data: ResetVerifyPayload) => {
+        mutationFn: (data: { email?: string, phone_number?: string, otp: string }) => {
             console.log("useVerifyOtpForResetPassword mutationFn called with payload:", data);
-            return Auth.resetPasswordVerify(data);
+            return Auth.verifyOtp({ ...data, is_home_owner: true, is_forget_otp: true });
         },
         onSuccess: (data) => {
             console.log("Verify OTP Success Data:", JSON.stringify(data, null, 2));
@@ -278,6 +277,7 @@ export const useResetPassword = () => {
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message || "Change password operation failed";
+            console.log(error.response?.data?.message)
             Toast.show({
                 type: "error",
                 text1: errorMessage,

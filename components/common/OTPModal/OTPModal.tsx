@@ -64,7 +64,7 @@ export const OTPModal = ({
               <OTPInput
                 name="otp"
                 control={control}
-                numberOfDigits={5}
+                numberOfDigits={6}
                 rules={{
                   required: "OTP is required",
                 }}

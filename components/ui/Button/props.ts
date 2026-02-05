@@ -1,6 +1,6 @@
 import { HapticPressableProps } from "@/components";
 import { ElementSize, ElementVariant } from "@/constants";
-import { TextStyle, ViewStyle } from "react-native";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
 
 export interface ButtonProps extends Omit<HapticPressableProps, "children"> {
   title?: string;
@@ -11,6 +11,6 @@ export interface ButtonProps extends Omit<HapticPressableProps, "children"> {
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
   fullWidth?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }

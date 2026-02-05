@@ -4,9 +4,9 @@ import {
   ReturnPackageFooter,
   TextInput,
 } from "@/components";
-import { Spacing } from "@/constants";
 import { useReturnPackage } from "@/hooks";
 import { View } from "react-native";
+import { styles } from "./form.styles";
 
 export const ReturnPackage = () => {
   const {
@@ -25,7 +25,7 @@ export const ReturnPackage = () => {
       description={"Enter the infromation bellow."}
       currentStep={currentStep}
       totalSteps={2}
-      stepperStyle={{ marginBottom: Spacing.md }}
+      stepperStyle={styles.stepper}
       footer={
         <ReturnPackageFooter
           currentStep={currentStep}
@@ -35,12 +35,7 @@ export const ReturnPackage = () => {
         />
       }
     >
-      <View
-        style={{
-          marginTop: Spacing.md,
-          paddingHorizontal: Spacing.xl,
-        }}
-      >
+      <View style={styles.container}>
         {currentStep === 1 ? (
           <TextInput
             name="pinCode"

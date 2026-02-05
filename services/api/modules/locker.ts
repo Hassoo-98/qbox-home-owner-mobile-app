@@ -2,17 +2,17 @@ import api from '../config';
 import { LinkLockerPayload, Locker, LockerStatusResponse } from '../types';
 
 export const listLockers = async (): Promise<Locker[]> => {
-    const response = await api.get('/lockers');
+    const response = await api.get('/home_owner/lockers');
     return response.data;
 };
 
 export const linkLocker = async (data: LinkLockerPayload) => {
-    const response = await api.post('/lockers/link', data);
+    const response = await api.post('/home_owner/lockers/link', data);
     return response.data;
 };
 
 export const getLockerStatus = async (id: string): Promise<LockerStatusResponse> => {
-    const response = await api.get(`/lockers/${id}/status`);
+    const response = await api.get(`/home_owner/lockers/${id}/status`);
     return response.data;
 };
 
@@ -23,11 +23,11 @@ export const openLocker = async (lockerId: string) => {
     // Actually, there is a global "open locker" in Postman root: POST /api/locker/open
     // But in Home Owner App folder, I don't see "open".
     // Wait, let me check line 562 again.
-    const response = await api.post('/locker/open', { locker_id: lockerId });
+    const response = await api.post('/home_owner/locker/open', { locker_id: lockerId });
     return response.data;
 };
 
 export const verifyQr = async (data: { qr_data: string }) => {
-    const response = await api.post('/locker/verify_qr', data);
+    const response = await api.post('/home_owner/locker/verify_qr', data);
     return response.data;
 };

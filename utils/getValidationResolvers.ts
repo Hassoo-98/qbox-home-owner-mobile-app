@@ -64,7 +64,7 @@ export const LoginFormResolver = yupResolver(
                     );
                     return isValid;
                   } catch (error) {
-                    console.log("error while validating phone number", error);
+                    // error handling
                     return false;
                   }
                 }
@@ -76,11 +76,11 @@ export const LoginFormResolver = yupResolver(
         .string()
         .matches(passwordPattern, ERROR_MESSAGES.INVALID_PASSWORD)
         .required(ERROR_MESSAGES.REQUIRED_FIELD) as yup.StringSchema<
-        string,
-        yup.AnyObject,
-        undefined,
-        ""
-      >,
+          string,
+          yup.AnyObject,
+          undefined,
+          ""
+        >,
     },
     [["email", "phone"]]
   ) as yup.ObjectSchema<LoginFormValues>
@@ -127,7 +127,7 @@ export const ForgotPasswordFormResolver = yupResolver(
                     );
                     return isValid;
                   } catch (error) {
-                    console.log("error while validating phone number", error);
+                    // error handling
                     return false;
                   }
                 }

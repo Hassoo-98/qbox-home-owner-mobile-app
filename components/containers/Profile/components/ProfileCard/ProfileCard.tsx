@@ -27,7 +27,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             style={styles.avatarImage}
             contentFit="cover"
             transition={200}
-            onError={() => console.log("Image failed to load:", imageUri)}
+            onError={() => { }}
           />
         ) : (
           <Text size="xl" style={styles.initialsText} variant="primary">

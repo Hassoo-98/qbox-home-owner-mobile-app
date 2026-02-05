@@ -1,33 +1,25 @@
 import { MenuList, ProfileCard, ProfileSkeleton, SubscriptionCard, Text } from "@/components";
 import { MENU_ITEM } from "@/constants";
-import { useUserProfile } from "@/hooks/api/useAuthQueries";
-import { mvs } from "@/utils/metrices";
 import React from "react";
 import { ScrollView, View } from "react-native";
+import { styles } from "./styles";
+import { useProfileLogic } from "./useProfileLogic";
 
 export const Profile = () => {
-  const { data: profile, isLoading, error } = useUserProfile();
-
-
-  console.log("profile", JSON.stringify(profile, null, 2));
+  const { profile, isLoading } = useProfileLogic();
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.loadingContainer}>
         <ProfileSkeleton />
       </View>
     );
   }
 
-
   return (
     <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{
-        alignItems: "center",
-        paddingHorizontal: mvs(20),
-        paddingBottom: mvs(30),
-      }}
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
     >
       <ProfileCard
         name={profile?.full_name}
@@ -40,7 +32,7 @@ export const Profile = () => {
 
       <MenuList menuData={MENU_ITEM} />
 
-      <Text variant="secondary" size="xs" style={{ marginVertical: mvs(20) }}>
+      <Text variant="secondary" size="xs" style={styles.maintenanceText}>
         Developed and Maintained by REPLA Technologies PVT Ltd
       </Text>
     </ScrollView>

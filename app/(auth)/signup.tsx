@@ -16,7 +16,7 @@ export const SignUp = () => {
     isFormValid,
     onSubmit,
     control,
-    phoneNumber,
+    contact,
     pickImage,
     qboxImage,
     isSecondStepFormValid,
@@ -24,6 +24,9 @@ export const SignUp = () => {
     isLastStepFormValid,
     handleSendOtp,
     handleVerifyOtp,
+    handleCheckQBox,
+    isQBoxVerified,
+    isQBoxChecking,
   } = useSignup();
 
   return (
@@ -53,13 +56,13 @@ export const SignUp = () => {
             currentStep === 1
               ? isFirstStepFormValid
               : currentStep === 2
-                ? isSecondStepFormValid
+                ? isSecondStepFormValid && isQBoxVerified
                 : currentStep === 3
                   ? isLastStepFormValid
                   : isFormValid
           }
           onSubmit={onSubmit}
-          phoneNumber={phoneNumber}
+          phoneNumber={contact}
           handleSendOtp={handleSendOtp}
           handleVerifyOtp={handleVerifyOtp}
         />
@@ -78,10 +81,16 @@ export const SignUp = () => {
             name="qBoxId"
             inputMode="text"
             control={control}
-            endButtonText="Check"
+            endButtonText={isQBoxVerified ? "Verified" : "Check"}
+            onEndButtonClick={handleCheckQBox}
+            endButtonProps={{
+              disabled: isQBoxVerified || isQBoxChecking,
+              loading: isQBoxChecking,
+              variant: isQBoxVerified ? "outline" : "primary"
+            }}
             autoCorrect={false}
             label="QBox ID"
-            placeholder="Enter your full name"
+            placeholder="Enter QBox ID"
           />
         ) : (
           <QBoxLocation

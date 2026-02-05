@@ -15,6 +15,7 @@ import { ForgotPasswordFormResolver } from "@/utils";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Alert } from "react-native";
 
 export const ForgotPassword = () => {
   const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
@@ -48,14 +49,26 @@ export const ForgotPassword = () => {
   const verifyOtpMutation = useVerifyOtpForResetPassword();
 
   const handleVerifyOtp = (otp: string) => {
+    const contact = selectedAuthProvider === "phone" ? (getValues("phone") || "") : (getValues("email") || "");
+    const method = selectedAuthProvider === "phone" ? "phone" : "email";
+
     verifyOtpMutation.mutate(
-      { otp },
       {
-        onSuccess: () => {
+        otp,
+        [method === "phone" ? "phone_number" : "email"]: contact,
+      },
+      {
+        onSuccess: (response) => {
+          console.log("Forgot password OTP verify success:", response);
           // Navigate to reset password screen with the uid
+          const uid = response?.temp_uid || response?.data?.temp_uid || tempUidRef.current;
           router.push({
             pathname: "/resetPassword",
-            params: { uid: tempUidRef.current }
+            params: {
+              uid,
+              contact,
+              method
+            }
           });
         },
       }
@@ -65,8 +78,8 @@ export const ForgotPassword = () => {
   const handleSendOtp = (type: string, contact: string) => {
     const subtitle =
       type === "phone"
-        ? `Enter the 5-digit code sent to your phone number ${contact}`
-        : `Enter the 5-digit code sent to your ${contact} email.`;
+        ? `Enter the 6-digit code sent to your phone number ${contact}`
+        : `Enter the 6-digit code sent to your ${contact} email.`;
 
     onTriggerModal({
       modalType: "otp",
@@ -78,7 +91,7 @@ export const ForgotPassword = () => {
       secondaryButtonHandler: () => {
         router.dismissTo("/login");
       },
-      primaryButtonHandler: handleVerifyOtp,
+      primaryButtonHandler: (otpValue?: any) => handleVerifyOtp(otpValue as string),
     });
   };
 
@@ -86,16 +99,30 @@ export const ForgotPassword = () => {
     const contact = selectedAuthProvider === "phone" ? (data.phone || "") : (data.email || "");
     const method = selectedAuthProvider === "phone" ? "phone" : "email";
 
+    if (!contact) {
+      Alert.alert("Error", `Please enter your ${method === "phone" ? "phone number" : "email address"}.`);
+      return;
+    }
+
     contactRef.current = contact;
 
+    const payload: any = {
+      [method === "phone" ? "phone_number" : "email"]: contact,
+      is_forget_otp: true,
+      is_home_owner: true,
+    };
+
+    console.log("Forgot password OTP request payload:", JSON.stringify(payload, null, 2));
+
     sendOtpMutation.mutate(
-      { contact, method },
+      payload,
       {
         onSuccess: (response) => {
-          console.log("OTP sent response:", response);
-          // Store temp_uid for later use
-          if (response.temp_uid) {
-            tempUidRef.current = response.temp_uid;
+          console.log("Forgot password OTP send success:", response);
+          // Store temp_uid for later use (if provided by server)
+          const uid = response?.temp_uid || response?.data?.temp_uid;
+          if (uid) {
+            tempUidRef.current = uid;
           }
           handleSendOtp(method, contact);
         },
