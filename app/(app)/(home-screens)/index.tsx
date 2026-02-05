@@ -1,4 +1,4 @@
-import { BoxInfo, EmptyState, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
+import { BoxInfo, Button, EmptyState, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
 import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -70,6 +70,11 @@ export const Home = () => {
           onGenerateQR={handleGenerateQR}
           isQrCodeGenerated={isQrCodeGenerated}
         />
+
+        <Button
+          title="Test OTA update"
+        />
+
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={showSuccess}>

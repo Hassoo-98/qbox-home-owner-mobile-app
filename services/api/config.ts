@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 
-const BASE_URL = 'https://backend.qbox.sa/api/mobile';
+const BASE_URL = 'https://c446354ac112.ngrok-free.app/api';
 
 const api = axios.create({
     baseURL: BASE_URL,

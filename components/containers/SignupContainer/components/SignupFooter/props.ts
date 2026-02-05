@@ -5,6 +5,6 @@ export interface SignupFooterProps {
     isFormValid: boolean,
     onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>,
     phoneNumber: string,
-    handleSendOtp: (contact: string) => void,
+    handleSendOtp: (contact: string, onSuccess?: () => void) => void,
     handleVerifyOtp: (contact: string, otp: string, onSuccess: () => void) => void
 }

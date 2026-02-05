@@ -1,6 +1,7 @@
 import { BorderRadius, Colors } from "@/constants";
 import { useModal } from "@/hooks";
 import { useRegister, useSendOtp, useVerifyOtp } from "@/hooks/api/useAuthQueries";
+import { useVerifyQBoxId } from "@/hooks/api/useQBoxQueries";
 import { RegisterPayload } from "@/services/api/types";
 import { SignUpFormValues } from "@/types";
 import { SignUpFormResolver } from "@/utils";
@@ -16,8 +17,10 @@ export const useSignup = () => {
   const registerMutation = useRegister();
   const sendOtpMutation = useSendOtp();
   const verifyOtpMutation = useVerifyOtp();
+  const verifyQBoxMutation = useVerifyQBoxId();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [isQBoxVerified, setIsQBoxVerified] = useState(false);
 
   const {
     control,
@@ -50,6 +53,8 @@ export const useSignup = () => {
     mode: "all",
   });
 
+  const qBoxId = watch("qBoxId");
+
   const isFormValid = isDirty;
 
   const isFirstStepFormValid = !!(
@@ -81,27 +86,22 @@ export const useSignup = () => {
   };
 
   const onSubmit = handleSubmit((data: SignUpFormValues) => {
-    console.log(
-      "signup form submission: ",
-      JSON.stringify(data, null, 4)
-    );
 
     const payload: RegisterPayload = {
       full_name: data.fullName,
       email: data.email,
-      phone: data.phone,
-      secondary_phone: data.secondaryPhone,
+      phone_number: data.phone,
+      secondary_phone_number: data.secondaryPhone,
       password: data.password,
-      role: 'homeowner',
       qbox_id: data.qBoxId,
-      address_details: {
+      address: {
         short_address: data.shortId,
         city: data.city,
         district: data.district,
         street: data.street,
         postal_code: data.postalCode,
         building_number: data.buildingNumber,
-        secondary_number: data.secondaryNumber,
+        secondary_building_number: data.secondaryNumber,
       },
       installation: {
         location_preference: data.installationLocation,
@@ -109,6 +109,11 @@ export const useSignup = () => {
         qbox_image_url: data.qboxImage,
       },
     };
+
+    console.log(
+      "signup form submission: ",
+      JSON.stringify(payload, null, 4)
+    );
 
     registerMutation.mutate(payload, {
       onSuccess: () => {
@@ -139,7 +144,9 @@ export const useSignup = () => {
     });
   });
 
-  const phoneNumber = watch("phone");
+  const email = watch("email");
+  const phone = watch("phone");
+  const contact = phone || email;
   const qboxImage = watch("qboxImage");
 
   // Request permissions and pick image
@@ -175,14 +182,42 @@ export const useSignup = () => {
     }
   };
 
-  const handleSendOtp = (contact: string) => {
-    sendOtpMutation.mutate({ contact });
+  const handleSendOtp = (contact: string, onSuccess?: () => void) => {
+    const isEmail = contact.includes("@");
+    sendOtpMutation.mutate(
+      isEmail ? { email: contact } : { phone_number: contact },
+      {
+        onSuccess: (data: any) => {
+          console.log("OTP sent successfully, response data:", data);
+          onSuccess?.();
+        },
+      }
+    );
   };
 
   const handleVerifyOtp = (contact: string, otp: string, onSuccess: () => void) => {
-    verifyOtpMutation.mutate({ contact, otp }, {
+    const isEmail = contact.includes("@");
+    verifyOtpMutation.mutate(
+      isEmail ? { email: contact, otp } : { phone_number: contact, otp },
+      {
+        onSuccess: () => {
+          onSuccess();
+        },
+      }
+    );
+  };
+
+  const handleCheckQBox = () => {
+    if (!qBoxId) {
+      Alert.alert("Error", "Please enter QBox ID first");
+      return;
+    }
+    verifyQBoxMutation.mutate({ qbox_id: qBoxId }, {
       onSuccess: () => {
-        onSuccess();
+        setIsQBoxVerified(true);
+      },
+      onError: () => {
+        setIsQBoxVerified(false);
       }
     });
   };
@@ -196,10 +231,13 @@ export const useSignup = () => {
     isLastStepFormValid,
     onSubmit,
     control,
-    phoneNumber,
+    contact,
     pickImage,
     qboxImage,
     handleSendOtp,
     handleVerifyOtp,
+    handleCheckQBox,
+    isQBoxVerified,
+    isQBoxChecking: verifyQBoxMutation.isPending,
   };
 };

@@ -6,7 +6,7 @@ export interface AddressDetails {
     street: string;
     postal_code: string;
     building_number: string;
-    secondary_number: string;
+    secondary_building_number: string;
 }
 
 export interface InstallationDetails {
@@ -19,19 +19,19 @@ export interface RegisterPayload {
     full_name: string;
     email: string;
     password?: string;
-    phone: string;
-    secondary_phone?: string;
+    phone_number: string;
+    secondary_phone_number?: string;
     role?: string;
     qbox_id?: string;
 
-    address_details: AddressDetails;
+    address: AddressDetails;
 
     installation: InstallationDetails;
 }
 
 export interface LoginPayload {
     email?: string;
-    phone?: string;
+    phone_number?: string;
     password: string;
 }
 
@@ -51,18 +51,28 @@ export interface User {
 }
 
 export interface AuthResponse {
+    success: boolean;
+    statusCode: number;
     message: string;
-    token: string;
-    user: User;
+    data?: {
+        access: string;
+        user: User;
+    };
+    token?: string;
 }
 
 export interface SendOtpPayload {
-    contact: string;
+    email?: string;
+    phone_number?: string;
+    is_home_owner: boolean;
 }
 
 export interface VerifyOtpPayload {
-    contact: string;
+    email?: string;
+    phone_number?: string;
     otp: string;
+    is_home_owner: boolean;
+    is_forget_otp?: boolean;
 }
 
 export interface CheckUserPayload {
@@ -83,8 +93,10 @@ export interface VerifyAddressPayload {
 
 // Forget Password
 export interface ResetInitiatePayload {
-    contact: string;
-    method: 'email' | 'phone';
+    email?: string;
+    phone_number?: string;
+    is_forget_otp: boolean;
+    is_home_owner: boolean;
 }
 
 export interface ResetVerifyPayload {
@@ -92,7 +104,8 @@ export interface ResetVerifyPayload {
 }
 
 export interface ResetConfirmPayload {
-    uid: string;
+    email?: string;
+    phone_number?: string;
     new_password: string;
 }
 
@@ -254,4 +267,10 @@ export interface Notification {
     body: string;
     createdAt: string;
     read: boolean;
+}
+
+export interface AlertPayload {
+    title: string;
+    body: string;
+    user_id: string;
 }

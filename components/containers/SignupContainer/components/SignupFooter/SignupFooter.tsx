@@ -20,24 +20,25 @@ export const SignupFooter = ({
 
   const handleVerify = () => {
     // Send OTP when modal triggers
-    handleSendOtp(phoneNumber);
-
-    onTriggerModal({
-      modalType: "otp",
-      title: "OTP Verification",
-      subtitle: `Enter the 5-digit code sent to your phone number. ${phoneNumber}`,
-      footerText: "Didn’t receive the code?",
-      footerAction: "Resend OTP",
-      primaryButtonText: "Verify",
-      secondaryButtonHandler: () => handleSendOtp(phoneNumber),
-      primaryButtonHandler: (otpValue?: any) => {
-        console.log("otp verification triggered: ", otpValue);
-        // The modal should pass the OTP value here
-        handleVerifyOtp(phoneNumber, otpValue as string, () => {
-          setCurrentStep((prev) => ++prev);
-          onCloseModal?.();
-        });
-      },
+    handleSendOtp(phoneNumber, () => {
+      onTriggerModal({
+        modalType: "otp",
+        title: "OTP Verification",
+        subtitle: `Enter the 6-digit code sent to your ${phoneNumber.includes("@") ? "email" : "phone number"
+          }. ${phoneNumber}`,
+        footerText: "Didn’t receive the code?",
+        footerAction: "Resend OTP",
+        primaryButtonText: "Verify",
+        secondaryButtonHandler: () => handleSendOtp(phoneNumber),
+        primaryButtonHandler: (otpValue?: any) => {
+          console.log("otp verification triggered: ", otpValue);
+          // The modal should pass the OTP value here
+          handleVerifyOtp(phoneNumber, otpValue as string, () => {
+            setCurrentStep((prev) => ++prev);
+            onCloseModal?.();
+          });
+        },
+      });
     });
   };
 

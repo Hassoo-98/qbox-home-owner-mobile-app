@@ -8,6 +8,7 @@ import {
     ResetConfirmPayload,
     ResetInitiatePayload,
     ResetVerifyPayload,
+    SendOtpPayload,
     UpdateSettingsPayload,
     UserProfile,
     VerifyAddressPayload,
@@ -16,27 +17,27 @@ import {
 } from '../types';
 
 export const registerUser = async (data: RegisterPayload) => {
-    const response = await api.post('/auth/register', data);
+    const response = await api.post('/home_owner/create', data);
     return response.data;
 };
 
 export const loginUser = async (data: LoginPayload) => {
-    const response = await api.post('/auth/login', data);
+    const response = await api.post('/home_owner/login', data);
     return response.data;
 };
 
 export const getUserProfile = async (): Promise<UserProfile> => {
-    const response = await api.get('/profile');
+    const response = await api.get('/home_owner/profile');
     return response.data;
 };
 
 export const updateProfileSettings = async (data: UpdateSettingsPayload) => {
-    const response = await api.put('/profile/settings', data);
+    const response = await api.put('/home_owner/profile/settings', data);
     return response.data;
 };
 
 export const changePassword = async (data: ChangePasswordPayload) => {
-    const response = await api.post('/profile/change_password', data);
+    const response = await api.post('/home_owner/profile/change_password', data);
     return response.data;
 };
 
@@ -45,13 +46,13 @@ export const checkUser = async (data: CheckUserPayload): Promise<CheckUserRespon
     return response.data;
 };
 
-export const sendOtp = async (data: { contact: string }) => {
-    const response = await api.post('/auth/send_otp', data);
+export const sendOtp = async (data: SendOtpPayload) => {
+    const response = await api.post('/auth/send-otp', data);
     return response.data;
 };
 
 export const verifyOtp = async (data: VerifyOtpPayload) => {
-    const response = await api.post('/auth/verify_otp', data);
+    const response = await api.post('/auth/otp-verify', data);
     return response.data;
 };
 
@@ -66,7 +67,7 @@ export const verifyAddress = async (data: VerifyAddressPayload) => {
 };
 
 export const resetPasswordInitiate = async (data: ResetInitiatePayload) => {
-    const response = await api.post('/auth/reset/initiate', data);
+    const response = await api.post('/auth/send-otp', data);
     return response.data;
 };
 
@@ -76,6 +77,6 @@ export const resetPasswordVerify = async (data: ResetVerifyPayload) => {
 };
 
 export const resetPasswordConfirm = async (data: ResetConfirmPayload) => {
-    const response = await api.post('/auth/reset/confirm', data);
+    const response = await api.post('/home_owner/reset-password', data);
     return response.data;
 };

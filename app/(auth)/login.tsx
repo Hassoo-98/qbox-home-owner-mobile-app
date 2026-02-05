@@ -51,7 +51,7 @@ export const Login = () => {
       // If email provider is selected, send email, otherwise send phone
       ...(selectedAuthProvider === AUTH_PROVIDERS.EMAIL
         ? { email: data.email }
-        : { phone: data.phone } // Ensure your API supports 'phone' as a key or adjust accordingly
+        : { phone_number: data.phone } // Updated to phone_number
       )
     };
 

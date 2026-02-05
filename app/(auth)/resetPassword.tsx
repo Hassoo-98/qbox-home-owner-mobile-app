@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const ResetPassword = () => {
-  const { uid } = useLocalSearchParams<{ uid: string }>();
+  const { uid, contact, method } = useLocalSearchParams<{ uid: string, contact: string, method: string }>();
   const { control, handleSubmit, reset, formState: { isValid } } = useForm({
     defaultValues: {
       password: "",
@@ -27,12 +27,13 @@ export const ResetPassword = () => {
   };
 
   const onSubmit = handleSubmit((data: any) => {
-    if (!uid) {
-      return;
-    }
+
 
     resetPasswordMutation.mutate(
-      { uid, new_password: data.password },
+      {
+        [method === "phone" ? "phone_number" : "email"]: contact,
+        new_password: data.password
+      },
       {
         onSuccess: () => {
           onTriggerModal({
