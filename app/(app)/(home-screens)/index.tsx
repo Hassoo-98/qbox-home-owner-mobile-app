@@ -1,4 +1,4 @@
-import { BoxInfo, Button, EmptyState, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
+import { BoxInfo, Button, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
 import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -23,6 +23,7 @@ export const Home = () => {
     control,
     handleGenerateQR,
     resetForm,
+    homeOwner,
   } = useHomeLogic();
 
   return (
@@ -36,7 +37,12 @@ export const Home = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <BoxInfo />
+        <BoxInfo
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          address={homeOwner?.address?.short_address || "No Address"}
+          packageCount={0} // Placeholder until package API is integrated
+          status={homeOwner?.qboxes?.[0]?.status || "Offline"}
+        />
         {offersLoading ? (
           <FlatList
             data={[1, 2, 3]}
@@ -47,11 +53,7 @@ export const Home = () => {
             renderItem={() => <OfferSkeleton />}
           />
         ) : !offersData || offersData.length === 0 ? (
-          <EmptyState
-            title="No Offers Today"
-            description="Special offers will appear here when available."
-            containerStyle={{ height: 180, minHeight: 180 }}
-          />
+          null
         ) : (
           <FlatList
             data={offersData}
@@ -64,6 +66,9 @@ export const Home = () => {
           />
         )}
         <QRSetting
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          address={homeOwner?.address?.short_address || "No Address"}
+          image={homeOwner?.qboxes?.[0]?.image || ""}
           isGenerating={isGenerating}
           resetForm={resetForm}
           control={control}

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useMemo, useState } from "react";
 
 type ProfileContextType = {
   onSave: (() => void) | null;
@@ -7,15 +7,18 @@ type ProfileContextType = {
 
 export const ProfileContext = createContext<ProfileContextType>({
   onSave: null,
-  setOnSave: () => {},
+  setOnSave: () => { },
 });
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [onSave, setOnSave] = useState<(() => void) | null>(null);
 
+  const value = useMemo(() => ({ onSave, setOnSave }), [onSave]);
+
   return (
-    <ProfileContext.Provider value={{ onSave, setOnSave }}>
+    <ProfileContext.Provider value={value}>
       {children}
     </ProfileContext.Provider>
   );
 }
+

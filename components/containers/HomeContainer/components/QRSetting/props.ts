@@ -7,4 +7,7 @@ export interface QRSettingProps {
   onGenerateQR: () => void;
   resetForm: () => void;
   control: Control<QRGenerationFormValues, any, QRGenerationFormValues>;
+  boxId: string;
+  address: string;
+  image: string;
 }

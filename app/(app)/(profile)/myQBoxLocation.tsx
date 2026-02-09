@@ -19,8 +19,12 @@ import {
   View,
 } from "react-native";
 
+import { useHomeOwner } from "@/hooks/useHomeOwner";
+
 export const MyQBoxLocation = () => {
   const { setOnSave } = useProfile();
+  const { data: homeOwnerResponse } = useHomeOwner();
+  const homeOwner = homeOwnerResponse?.data;
 
   const { onTriggerModal, onCloseModal } = useModal();
 
@@ -29,12 +33,30 @@ export const MyQBoxLocation = () => {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<QBoxLocationFormFormValues>({
     defaultValues: {},
     resolver: MyQBoxLocationResolver,
     mode: "onChange",
   });
+
+  useEffect(() => {
+    if (homeOwner) {
+      reset({
+        shortId: homeOwner.address?.short_address || "",
+        city: homeOwner.address?.city || "",
+        district: homeOwner.address?.district || "",
+        street: homeOwner.address?.street || "",
+        postalCode: homeOwner.address?.postal_code || "",
+        buildingNumber: homeOwner.address?.building_number || "",
+        secondaryNumber: homeOwner.address?.secondary_building_number || "",
+        installationLocation: homeOwner.installation_location_preference || "",
+        accessInstruction: homeOwner.installation_access_instruction || "",
+        qboxImage: homeOwner.installation_qbox_image_url || "",
+      });
+    }
+  }, [homeOwner, reset]);
 
   const qboxImage = watch("qboxImage");
 

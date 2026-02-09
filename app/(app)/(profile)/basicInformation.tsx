@@ -2,7 +2,8 @@ import { PhoneNumberInput, Skeleton, TextInput } from "@/components";
 import { MenuItem } from "@/components/containers/Profile";
 import { AUTH_PROVIDERS, Colors, emailPattern } from "@/constants";
 import { useModal } from "@/hooks";
-import { useUpdateProfileSettings, useUserProfile } from "@/hooks/api/useAuthQueries";
+import { useUpdateProfileSettings } from "@/hooks/api/useAuthQueries";
+import { useHomeOwner } from "@/hooks/useHomeOwner";
 import { useProfile } from "@/hooks/useProfile";
 import { mvs } from "@/utils/metrices";
 import { router, useLocalSearchParams } from "expo-router";
@@ -16,8 +17,9 @@ import { ScrollView, View } from "react-native";
 
 export const BasicInformation = () => {
   const { setOnSave } = useProfile();
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
-  const updateProfileMutation = useUpdateProfileSettings();
+  const { data: homeOwnerResponse, isLoading: profileLoading } = useHomeOwner();
+  const userProfile = homeOwnerResponse?.data;
+  const { mutateAsync: updateProfile } = useUpdateProfileSettings();
 
   const { control, watch, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -34,8 +36,8 @@ export const BasicInformation = () => {
       reset({
         fullName: userProfile.full_name,
         email: userProfile.email,
-        phone: userProfile.phone,
-        secondaryPhone: userProfile.secondary_phone || "",
+        phone: userProfile.phone_number,
+        secondaryPhone: userProfile.secondary_phone_number || "",
       });
     }
   }, [userProfile, reset]);
@@ -144,23 +146,24 @@ export const BasicInformation = () => {
     }
   }, [params]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = useCallback(async (data: any) => {
     try {
-      await updateProfileMutation.mutateAsync({
-        language: userProfile?.language || "English",
-        notifications_enabled: userProfile?.notifications_enabled ?? true,
+      await updateProfile({
+        language: "English", // Defaulting as not available in HomeOwner API
+        notifications_enabled: true, // Defaulting as not available in HomeOwner API
       });
       router.dismiss();
     } catch (error) {
       console.error("Profile update failed:", error);
     }
-  });
+  }, [updateProfile, router]);
 
   useEffect(() => {
     setOnSave(() => onSubmit);
 
+    // Cleanup isn't strictly necessary if setOnSave handles it, but good practice
     return () => setOnSave(null);
-  }, [onSubmit]);
+  }, [setOnSave, onSubmit]);
 
   if (profileLoading) {
     return (
@@ -222,10 +225,11 @@ export const BasicInformation = () => {
       />
 
       <PhoneNumberInput
+        key={`${userProfile?.phone_number}-primary`}
         name="phone"
         control={control}
         label="Phone Number"
-        placeholder="+966 XX XXX XXXX"
+        placeholder="+92 XX XXX XXXX"
         defaultCode="PK"
         endButtonText={phoneButtonConfig.text}
         endButtonProps={{
@@ -241,10 +245,11 @@ export const BasicInformation = () => {
       />
 
       <PhoneNumberInput
+        key={`${userProfile?.secondary_phone_number}-secondary`}
         name="secondaryPhone"
         control={control}
         label="Secondary Number"
-        placeholder="+966 XX XXX XXXX"
+        placeholder="+92 XX XXX XXXX"
         defaultCode="PK"
       />
 

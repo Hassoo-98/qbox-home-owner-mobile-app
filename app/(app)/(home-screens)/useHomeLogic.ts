@@ -7,12 +7,17 @@ import { QRGenerationFormResolver } from "@/utils/getValidationResolvers";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { useHomeOwner } from "@/hooks/useHomeOwner";
+
 export const useHomeLogic = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
 
     const { data: offersData, isLoading: offersLoading } = useOffers();
+    const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
+    const homeOwner = homeOwnerResponse?.data;
+
     const generateQRMutation = useGenerateQR();
     const { onShare } = useShare();
 
@@ -38,8 +43,8 @@ export const useHomeLogic = () => {
 
             try {
                 await generateQRMutation.mutateAsync({
-                    user_id: "current_user_id", // This should come from auth context
-                    locker_id: "L-101", // This should be selected or default
+                    user_id: homeOwner?.id || "",
+                    locker_id: homeOwner?.qboxes?.[0]?.id || "L-101", // Use actual locker ID
                     guest_name: data.qrName || "Guest",
                     valid_hours: parseInt(data.validityDuration || "1") || 1,
                 });
@@ -73,5 +78,7 @@ export const useHomeLogic = () => {
         handleGenerateQR,
         resetForm,
         setShowSuccess,
+        homeOwner,
+        homeOwnerLoading,
     };
 };

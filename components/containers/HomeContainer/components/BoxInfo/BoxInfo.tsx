@@ -2,7 +2,17 @@ import { Card, ItemInfo } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { BoxDetails, BoxStatus } from "./components";
 
-export const BoxInfo = () => {
+export const BoxInfo = ({
+  boxId,
+  address,
+  packageCount,
+  status,
+}: {
+  boxId: string;
+  address: string;
+  packageCount: number;
+  status: string;
+}) => {
   return (
     <Card
       backgroundColor={Colors.darkGray}
@@ -14,12 +24,12 @@ export const BoxInfo = () => {
     >
       <ItemInfo
         title="Box ID"
-        description="AB5432"
+        description={boxId}
         style={{
           padding: 0,
         }}
-        leftContent={<BoxDetails address="National Address" noOfPackages={1} />}
-        rightContent={<BoxStatus status="Online" />}
+        leftContent={<BoxDetails address={address} noOfPackages={packageCount} />}
+        rightContent={<BoxStatus status={status} />}
       />
     </Card>
   );

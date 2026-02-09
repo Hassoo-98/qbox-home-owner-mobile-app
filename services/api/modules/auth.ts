@@ -26,6 +26,11 @@ export const loginUser = async (data: LoginPayload) => {
     return response.data;
 };
 
+export const refreshToken = async (refresh: string) => {
+    const response = await api.post('/auth/token/refresh', { refresh });
+    return response.data;
+};
+
 export const getUserProfile = async (): Promise<UserProfile> => {
     const response = await api.get('/home_owner/profile');
     return response.data;
