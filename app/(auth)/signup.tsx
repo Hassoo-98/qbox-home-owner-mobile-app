@@ -86,11 +86,12 @@ export const SignUp = () => {
             endButtonProps={{
               disabled: isQBoxVerified || isQBoxChecking,
               loading: isQBoxChecking,
-              variant: isQBoxVerified ? "outline" : "primary"
+              variant: isQBoxVerified ? "success" : "primary"
             }}
             autoCorrect={false}
             label="QBox ID"
             placeholder="Enter QBox ID"
+
           />
         ) : (
           <QBoxLocation

@@ -2,7 +2,7 @@ export type SignUpFormValues = {
   fullName: string;
   email: string;
   phone: string;
-  secondaryPhone: string;
+  secondaryPhone?: string;
   password: string;
   confirmPassword: string;
   qBoxId: string;

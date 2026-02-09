@@ -40,15 +40,15 @@ export const QRCodeHistoryItem = ({
       <Card
         variant="filled"
         showSideBorder
-        sideBorderColor={item.isActive ? Colors.success : Colors.danger}
+        sideBorderColor={item.status === "Active" ? Colors.success : Colors.danger}
         style={{ marginBottom: mvs(Spacing.md) }}
         onPress={handleCardPress}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ fontWeight: "bold" }}>{item?.title}</Text>
+          <Text style={{ fontWeight: "bold" }}>{item?.name}</Text>
           <Chip
-            variant={item.isActive ? "success" : "error"}
-            label={item.isActive ? "Active" : "Expired"}
+            variant={item.status === "Active" ? "success" : "error"}
+            label={item.status}
             size="small"
           />
         </View>
@@ -58,7 +58,7 @@ export const QRCodeHistoryItem = ({
           size="sm"
           style={{ marginTop: mvs(Spacing.sm) }}
         >
-          {format(item?.createdAt, "Pp")}
+          {item?.created_at ? format(new Date(item.created_at), "Pp") : "N/A"}
         </Text>
       </Card>
     </Swipeable>

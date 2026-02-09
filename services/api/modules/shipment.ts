@@ -1,23 +1,23 @@
 import api from '../config';
 import {
     CreatePackageSendRequest,
-    Package,
-    PackageDetails,
+    GetPackageDetailsResponse,
+    PackageListResponse,
     PackageTimelineItem
 } from '../types';
 
-export const listPackages = async (): Promise<Package[]> => {
-    const response = await api.get('/home_owner/packages');
+export const listPackages = async (): Promise<PackageListResponse> => {
+    const response = await api.get('/packages/');
     return response.data;
 };
 
-export const getPackageDetails = async (id: string | number): Promise<PackageDetails> => {
-    const response = await api.get(`/home_owner/packages/${id}/details`);
+export const getPackageDetails = async (id: string | number): Promise<GetPackageDetailsResponse> => {
+    const response = await api.get(`/packages/${id}`);
     return response.data;
 };
 
 export const getPackageTimeline = async (id: string | number): Promise<PackageTimelineItem[]> => {
-    const response = await api.get(`/home_owner/packages/${id}/timeline`);
+    const response = await api.get(`/packages/${id}/timeline`);
     return response.data;
 };
 

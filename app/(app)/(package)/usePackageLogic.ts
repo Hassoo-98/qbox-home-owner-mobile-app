@@ -25,10 +25,10 @@ export const usePackageLogic = () => {
         setModalVisible(false);
     };
 
-    const filteredPackages = (packagesData || []).filter(
+    const filteredPackages = (packagesData?.data?.items || []).filter(
         (item) =>
-            item.type === selectedPackageType &&
-            item.trackingId.toLowerCase().includes(searchId.toLowerCase())
+            item.package_status.toLowerCase() === selectedPackageType.toLowerCase() &&
+            item.tracking_id.toLowerCase().includes(searchId.toLowerCase())
     );
 
     return {

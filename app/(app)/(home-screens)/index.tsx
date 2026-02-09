@@ -26,6 +26,8 @@ export const Home = () => {
     homeOwner,
   } = useHomeLogic();
 
+
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -68,7 +70,7 @@ export const Home = () => {
         <QRSetting
           boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
           address={homeOwner?.address?.short_address || "No Address"}
-          image={homeOwner?.qboxes?.[0]?.image || ""}
+          image={homeOwner?.installation_qbox_image_url || ""}
           isGenerating={isGenerating}
           resetForm={resetForm}
           control={control}

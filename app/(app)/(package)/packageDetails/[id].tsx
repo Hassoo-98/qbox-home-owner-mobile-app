@@ -7,13 +7,12 @@ import {
   PackageDetailsAttribute,
   PackageDetailsDescription,
   PackageDetailsHeader,
-  PackageDetailsPaymentSummary,
   PackageDetailsTimeLine,
   PackageReportModal,
   Skeleton,
   SpecificInfoSection,
   Text,
-  VideoRecording,
+  VideoRecording
 } from "@/components";
 import {
   Colors,
@@ -41,7 +40,8 @@ export const PackageDetails = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const { data: packageData, isLoading: detailsLoading } = usePackageDetails(id || "");
+  const { data: response, isLoading: detailsLoading, error } = usePackageDetails(id || "");
+  const packageData = response?.data;
   const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(id || "");
 
   const { handleSubmit, control } = useForm({
@@ -61,8 +61,30 @@ export const PackageDetails = () => {
     }
   );
 
+  // Map new data structure to UI expectations
+  const mappedPackageData = useMemo(() => {
+    if (!packageData) return null;
+    return {
+      ...packageData,
+      trackingId: packageData.tracking_id,
+      courierName: packageData.merchant_name || packageData.service_provider,
+      lastUpdate: packageData.last_update ? new Date(packageData.last_update) : new Date(),
+      createdAt: packageData.created_at ? new Date(packageData.created_at) : new Date(),
+      type: packageData.package_status.toLowerCase() as any,
+      qrCode: packageData.qr_code,
+      description: packageData.details?.summary || "No description available",
+      attributes: [
+        { type: "Type", value: packageData.details?.package_type || "N/A" },
+        { type: "Size", value: packageData.details?.package_size || "N/A" },
+        { type: "Weight", value: packageData.details?.package_weight || "N/A" },
+      ],
+      // Fallback or placeholder for image if not in API
+      imageUrl: "",
+    };
+  }, [packageData]);
+
   // Determine if we should show video features
-  const shouldShowVideo = packageData?.type === PACKAGE_TYPE.DELIVERED;
+  const shouldShowVideo = !!mappedPackageData && mappedPackageData.type === PACKAGE_TYPE.DELIVERED;
 
   const timelineData = useMemo(() => {
     if (!timelineRawData) return [];
@@ -88,8 +110,8 @@ export const PackageDetails = () => {
           <AppHeaderLeft canGoBack />
           <AppHeaderTitle
             title={
-              packageData?.courierName || packageData
-                ? `${packageData?.trackingId || id}`
+              mappedPackageData?.courierName || mappedPackageData
+                ? `${mappedPackageData?.trackingId || id}`
                 : "Package Not Found"
             }
           />
@@ -98,27 +120,21 @@ export const PackageDetails = () => {
       headerRight: () => {
         return (
           <View style={{ flexDirection: "row", gap: mvs(10) }}>
-            {packageData?.type === PACKAGE_TYPE.INCOMING && (
+            {mappedPackageData?.type === PACKAGE_TYPE.INCOMING && (
               <Feather name="phone" size={24} color="black" />
             )}
-            {packageData?.type === PACKAGE_TYPE.OUTGOING && (
+            {mappedPackageData?.type === PACKAGE_TYPE.OUTGOING && (
               <Chip
-                label={packageData.status || ""}
+                label={mappedPackageData.package_status}
                 size="small"
-                variant={
-                  packageData.status === "Send"
-                    ? "warning"
-                    : packageData.status === "Return"
-                      ? "info"
-                      : "default"
-                }
+                variant="info"
               />
             )}
           </View>
         );
       },
     });
-  }, [packageData, navigation]);
+  }, [mappedPackageData, navigation, id]);
 
   const onCloseReportModal = () => {
     setIsReportModalOpen(false);
@@ -147,7 +163,7 @@ export const PackageDetails = () => {
     setModalVisible(false);
   }, [videoPlayer]);
 
-  if (detailsLoading || timelineLoading) {
+  if (detailsLoading && !packageData) {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: mvs(30) }}>
@@ -169,7 +185,7 @@ export const PackageDetails = () => {
     );
   }
 
-  if (!packageData) {
+  if (!packageData || !mappedPackageData) {
     return (
       <View style={styles.centerContainer}>
         <Text>Package not found</Text>
@@ -183,30 +199,29 @@ export const PackageDetails = () => {
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: mvs(30) }}
       >
-        <PackageDetailsHeader packageData={packageData} />
+        <PackageDetailsHeader packageData={mappedPackageData as any} />
 
         <SpecificInfoSection
           title="Assigned QR Code"
           description="QR Code"
-          value={packageData.qrCode}
+          value={mappedPackageData.qrCode}
         />
 
-        <PackageDetailsAttribute attributes={packageData.attributes} />
+        <PackageDetailsAttribute attributes={mappedPackageData.attributes} />
 
-        <PackageDetailsDescription description={packageData.description} />
+        <PackageDetailsDescription description={mappedPackageData.description} />
 
-        {packageData?.type === PACKAGE_TYPE.OUTGOING &&
-          packageData.status === "Send" &&
-          packageData.paymentSummary && (
-            <PackageDetailsPaymentSummary
-              paymentSummary={packageData.paymentSummary}
-            />
-          )}
-
-        {(packageData?.type !== PACKAGE_TYPE.OUTGOING ||
-          packageData?.status === "Send") && (
+        {timelineLoading ? (
+          <View style={{ marginTop: 20 }}>
+            <Skeleton width="30%" height={24} style={{ marginBottom: 12 }} />
+            <Skeleton width="100%" height={80} variant="rounded" />
+          </View>
+        ) : (
+          (mappedPackageData.type !== PACKAGE_TYPE.OUTGOING ||
+            mappedPackageData.shipment_status === "Send") && (
             <PackageDetailsTimeLine timelineData={timelineData} />
-          )}
+          )
+        )}
 
         {/* ✅ Only show video button for delivered packages */}
         {shouldShowVideo && (
@@ -227,13 +242,13 @@ export const PackageDetails = () => {
             <SpecificInfoSection
               title="Returning PIN"
               description="PIN Code"
-              value={packageData.qrCode}
+              value={mappedPackageData.qrCode}
             />
           </View>
         )}
       </ScrollView>
 
-      {packageData.type === PACKAGE_TYPE.INCOMING && (
+      {mappedPackageData.type === PACKAGE_TYPE.INCOMING && (
         <View style={styles.footer}>
           <Button
             title="Report an Issue"

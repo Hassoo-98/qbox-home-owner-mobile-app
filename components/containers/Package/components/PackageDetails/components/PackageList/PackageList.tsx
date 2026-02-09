@@ -7,14 +7,15 @@ import { router } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
 
 interface Package {
-  id: number;
-  title: string;
-  Subtitle: string;
-  trackingId: string;
-  createdAt: string;
-  type: string;
-  city?: string | null;
-  status?: string | null;
+  id: string;
+  tracking_id: string;
+  merchant_name: string;
+  service_provider: string;
+  package_status: string;
+  created_at: string;
+  details: {
+    summary: string;
+  } | null;
 }
 
 interface PackageListProps {
@@ -22,7 +23,7 @@ interface PackageListProps {
 }
 
 export const PackageList = ({ packages }: PackageListProps) => {
-  const handleCardPress = (id: number) => {
+  const handleCardPress = (id: string) => {
     router.navigate(`/packageDetails/${id}`);
   };
 
@@ -37,44 +38,38 @@ export const PackageList = ({ packages }: PackageListProps) => {
         <View style={styles.iconContainer}>
           <PackageItemIcon />
         </View>
-
         {/* Content */}
         <View style={styles.packageInfo}>
           {/* Title + Chip */}
           <View style={styles.titleRow}>
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.title}>{item.merchant_name || item.service_provider || "Unknown Merchant"}</Text>
 
-            {item.type === PACKAGE_TYPE.INCOMING && item.city && (
-              <Chip label={item.city} size="medium" />
+            {item.package_status.toLowerCase() === PACKAGE_TYPE.INCOMING.toLowerCase() && (
+              <Chip label={item.package_status} size="medium" />
             )}
 
-            {item.type === PACKAGE_TYPE.OUTGOING && item.status && (
+            {item.package_status.toLowerCase() === PACKAGE_TYPE.OUTGOING.toLowerCase() && (
               <Chip
-                label={item.status}
+                label={item.package_status}
                 size="medium"
-                variant={
-                  item.status === "Send"
-                    ? "warning"
-                    : item.status === "Return"
-                    ? "info"
-                    : "default"
-                }
+                variant="info"
               />
             )}
           </View>
 
           {/* Subtitle */}
-          <Text size="sm">{item.Subtitle}</Text>
+          <Text size="sm">{item.details?.summary || "No details available"}</Text>
 
           {/* Tracking ID */}
-          <Text variant="secondary" size="sm" style={styles.trackingId}>
-            {item.trackingId}
-          </Text>
-
-          {/* Created Date */}
-          <Text variant="secondary" size="sm">
-            {format(new Date(item.createdAt), "Pp")}
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text variant="secondary" size="sm" style={styles.trackingId}>
+              {item.tracking_id}
+            </Text>
+            {/* Created Date */}
+            <Text variant="secondary" size="xs">
+              {format(new Date(item.created_at), "Pp")}
+            </Text>
+          </View>
         </View>
       </View>
     </Card>
@@ -83,7 +78,7 @@ export const PackageList = ({ packages }: PackageListProps) => {
   return (
     <FlatList
       data={packages}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.id}
       showsVerticalScrollIndicator={false}
       renderItem={renderPackageCard}
     />

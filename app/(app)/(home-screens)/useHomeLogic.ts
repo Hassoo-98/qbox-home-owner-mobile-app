@@ -1,9 +1,10 @@
 import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 import { useOffers } from "@/hooks/api/useHomeQueries";
-import { useGenerateQR } from "@/hooks/api/useQRQueries";
+import { useCreateQRCode } from "@/hooks/api/useQRQueries";
 import { useShare } from "@/hooks/useShare";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils/getValidationResolvers";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -18,7 +19,8 @@ export const useHomeLogic = () => {
     const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
     const homeOwner = homeOwnerResponse?.data;
 
-    const generateQRMutation = useGenerateQR();
+    const createQRMutation = useCreateQRCode();
+    const queryClient = useQueryClient();
     const { onShare } = useShare();
 
     const defaultFormValues: QRGenerationFormValues = {
@@ -42,12 +44,20 @@ export const useHomeLogic = () => {
             setIsGenerating(true);
 
             try {
-                await generateQRMutation.mutateAsync({
-                    user_id: homeOwner?.id || "",
-                    locker_id: homeOwner?.qboxes?.[0]?.id || "L-101", // Use actual locker ID
-                    guest_name: data.qrName || "Guest",
-                    valid_hours: parseInt(data.validityDuration || "1") || 1,
-                });
+                const payload = {
+                    qbox_id: homeOwner?.qboxes?.[0]?.qbox_id || "DEVICE123",
+                    max_users: parseInt(data.maxUsers) || 0,
+                    duration_type: data.validityDurationType === QR_VALIDITY_DURATION_TYPE.DAY ? "days" :
+                        data.validityDurationType === QR_VALIDITY_DURATION_TYPE.HOUR ? "hours" :
+                            data.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN ? "minutes" : data.validityDurationType,
+                    valid_duration: parseInt(data.validityDuration) || 1,
+                    name: data.qrName || "qrcode",
+                };
+
+                await createQRMutation.mutateAsync(payload);
+
+                // Refresh home owner data to get the latest QR image
+                queryClient.invalidateQueries({ queryKey: ['homeOwner'] });
 
                 setIsGenerating(false);
                 setShowSuccess(true);

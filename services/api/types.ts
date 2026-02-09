@@ -143,6 +143,49 @@ export interface Package {
     type: 'incoming' | 'outgoing' | 'delivered';
 }
 
+export interface PackageListItemDetails {
+    id: number;
+    package_type: string;
+    package_size: string;
+    package_weight: string;
+    summary: string;
+}
+
+export interface PackageListItem {
+    id: string;
+    qbox: string | null;
+    tracking_id: string;
+    merchant_name: string;
+    service_provider: string;
+    driver_name: string;
+    qr_code: string;
+    package_status: string;
+    shipment_status: string;
+    last_update: string;
+    created_at: string;
+    details: PackageListItemDetails | null;
+}
+
+export interface PackageListResponse {
+    success: boolean;
+    statusCode: number;
+    data: {
+        items: PackageListItem[];
+        total: number;
+        page: number;
+        limit: number;
+        hasMore: boolean;
+    };
+    message: string;
+}
+
+export interface GetPackageDetailsResponse {
+    success: boolean;
+    statusCode: number;
+    data: PackageListItem;
+    message: string;
+}
+
 export interface PackageDetailAttribute {
     type: string;
     value: string;
@@ -190,6 +233,68 @@ export interface GenerateQRPayload {
     locker_id: string;
     guest_name: string;
     valid_hours: number;
+}
+
+export interface CreateQRCodePayload {
+    qbox_id: string;
+    max_users: number;
+    duration_type: string;
+    valid_duration: number;
+    name: string;
+}
+
+export interface QRCodeData {
+    id: string;
+    qbox: string;
+    qbox_id: string;
+    homeowner: string | null;
+    name: string;
+    location: string;
+    address: string;
+    max_users: number;
+    current_users: number;
+    remaining_users: number;
+    duration_type: string;
+    valid_duration: number;
+    expires_at: string;
+    access_token: string;
+    qr_code_image: string;
+    is_active: boolean;
+    status: string;
+    expiresIn: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateQRCodeResponse {
+    success: boolean;
+    statusCode: number;
+    data: QRCodeData;
+    message: string;
+}
+
+export interface GetQRCodeDetailsResponse {
+    success: boolean;
+    statusCode: number;
+    data: QRCodeData;
+    message: string;
+}
+
+export interface QRHistoryResult {
+    id: string;
+    qbox_id: string;
+    name: string;
+    status: string;
+    validforUsers: number;
+    expiresIn: string;
+    created_at: string;
+}
+
+export interface QRHistoryResponse {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: QRHistoryResult[];
 }
 
 export interface QRHistoryItem {

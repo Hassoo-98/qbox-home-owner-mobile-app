@@ -28,6 +28,8 @@ export const QRSetting = ({
 
   const imageWidth = screenWidth * 0.25;
 
+
+
   return (
     <Card
       backgroundColor={Colors.darkGray}

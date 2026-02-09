@@ -12,7 +12,7 @@ export const QRCodeHistory = () => {
 
   const handleShare = (item: QRCode) => {
     // Implement share functionality
-    console.log("Sharing QR Code:", item.title);
+    console.log("Sharing QR Code:", item.name);
   };
 
   const handleMarkAsExpire = (item: QRCode) => {
@@ -36,7 +36,7 @@ export const QRCodeHistory = () => {
             renderItem={() => <QRCodeHistoryItemSkeleton />}
             showsVerticalScrollIndicator={false}
           />
-        ) : !qrHistoryData || qrHistoryData.length === 0 ? (
+        ) : !qrHistoryData || qrHistoryData.results.length === 0 ? (
           <EmptyState
             title="No QR Codes Yet"
             description="Generated QR codes will appear here for your history."
@@ -44,7 +44,7 @@ export const QRCodeHistory = () => {
           />
         ) : (
           <FlatList
-            data={qrHistoryData}
+            data={qrHistoryData.results}
             keyExtractor={(item) => item?.id?.toString()}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={

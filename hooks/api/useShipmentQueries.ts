@@ -1,19 +1,34 @@
 import * as Shipment from '@/services/api/modules/shipment';
-import { CreatePackageSendRequest } from '@/services/api/types';
+import { CreatePackageSendRequest, GetPackageDetailsResponse, PackageListResponse } from '@/services/api/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const usePackages = () => {
-    return useQuery({
+    return useQuery<PackageListResponse>({
         queryKey: ['packages'],
         queryFn: Shipment.listPackages,
     });
 };
 
 export const usePackageDetails = (id: string | number) => {
-    return useQuery({
+    const queryClient = useQueryClient();
+    return useQuery<GetPackageDetailsResponse>({
         queryKey: ['package-details', id],
         queryFn: () => Shipment.getPackageDetails(id),
         enabled: !!id,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        initialData: () => {
+            const listData = queryClient.getQueryData<PackageListResponse>(['packages']);
+            const item = listData?.data.items.find(pkg => pkg.id === id);
+            if (item) {
+                return {
+                    success: true,
+                    statusCode: 200,
+                    data: item,
+                    message: "Initial data from cache",
+                } as GetPackageDetailsResponse;
+            }
+            return undefined;
+        }
     });
 };
 

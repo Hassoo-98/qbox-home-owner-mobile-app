@@ -22,7 +22,7 @@ export const useRegister = () => {
             console.log("Registration Success Data:", JSON.stringify(data, null, 2));
         },
         onError: (error: any) => {
-            const errorMessage = error.response?.data?.message || 'Something went wrong during registration';
+            const errorMessage = error?.message || 'Something went wrong during registration';
             console.log("Registration Error Data:", JSON.stringify(error, null, 2));
             Toast.show({
                 type: "error",
