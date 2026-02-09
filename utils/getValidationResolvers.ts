@@ -206,27 +206,31 @@ export const SignUpFormResolver = yupResolver(
 
     secondaryPhone: yup
       .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .nullable()
       .test(
         "valid-phone",
         "Please enter a valid phone number",
         function (value) {
-          if (!value) return false;
+          // ✅ empty = OK (optional field)
+          if (!value) return true;
+
           const preFixedValue = value.startsWith("+") ? value : `+${value}`;
+
           try {
             const phoneNumber = parsePhoneNumberWithError(preFixedValue);
             if (!phoneNumber) return false;
-            const isValid = isValidPhoneNumber(
+
+            return isValidPhoneNumber(
               preFixedValue,
               phoneNumber.country as any
             );
-            return isValid;
           } catch (error) {
             console.log("error while validating phone number", error);
             return false;
           }
         }
       ),
+
 
     password: yup
       .string()
@@ -272,13 +276,11 @@ export const SignUpFormResolver = yupResolver(
 
     buildingNumber: yup
       .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .matches(/^[0-9]+$/, "Building number must be numeric"),
+      .optional(),
 
     secondaryNumber: yup
       .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .matches(/^[0-9]+$/, "Secondary number must be numeric"),
+      .optional(),
 
     installationLocation: yup
       .string()

@@ -25,6 +25,7 @@ export const useSignup = () => {
   const {
     control,
     formState: { isDirty, errors, dirtyFields },
+    trigger,
     reset,
     watch,
     setValue,
@@ -50,35 +51,45 @@ export const useSignup = () => {
       accessInstruction: "",
       qboxImage: "",
     },
-    mode: "all",
+    mode: "all", // Optimized for better UX with multi-step
   });
 
   const qBoxId = watch("qBoxId");
 
-  const isFormValid = isDirty;
+  const validateStep = async (step: number) => {
+    let fieldsToValidate: (keyof SignUpFormValues)[] = [];
 
-  const isFirstStepFormValid = !!(
-    dirtyFields.fullName &&
-    dirtyFields.email &&
-    dirtyFields.phone &&
-    dirtyFields.secondaryPhone &&
-    dirtyFields.password &&
-    dirtyFields.confirmPassword
-  );
+    switch (step) {
+      case 1:
+        fieldsToValidate = [
+          "fullName",
+          "email",
+          "phone",
+          "password",
+          "confirmPassword",
+        ];
+        break;
+      case 2:
+        fieldsToValidate = ["qBoxId"];
+        break;
+      case 3:
+        fieldsToValidate = [
+          "shortId",
+          "city",
+          "district",
+          "street",
+          "postalCode",
+          "buildingNumber",
+          "installationLocation",
+          "accessInstruction",
+          "qboxImage",
+        ];
+        break;
+    }
 
-  const isSecondStepFormValid = !!dirtyFields.qBoxId;
-
-  const isLastStepFormValid = !!(
-    dirtyFields.shortId &&
-    dirtyFields.city &&
-    dirtyFields.district &&
-    dirtyFields.street &&
-    dirtyFields.postalCode &&
-    dirtyFields.buildingNumber &&
-    dirtyFields.installationLocation &&
-    dirtyFields.accessInstruction &&
-    dirtyFields.buildingNumber
-  );
+    const isValid = await trigger(fieldsToValidate);
+    return isValid;
+  };
 
   const handleConfirm = () => {
     onCloseModal();
@@ -225,10 +236,7 @@ export const useSignup = () => {
   return {
     currentStep,
     setCurrentStep,
-    isFormValid,
-    isFirstStepFormValid,
-    isSecondStepFormValid,
-    isLastStepFormValid,
+    validateStep,
     onSubmit,
     control,
     contact,

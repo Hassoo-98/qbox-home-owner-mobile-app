@@ -13,15 +13,12 @@ export const SignUp = () => {
   const {
     currentStep,
     setCurrentStep,
-    isFormValid,
+    validateStep,
     onSubmit,
     control,
     contact,
     pickImage,
     qboxImage,
-    isSecondStepFormValid,
-    isFirstStepFormValid,
-    isLastStepFormValid,
     handleSendOtp,
     handleVerifyOtp,
     handleCheckQBox,
@@ -52,19 +49,12 @@ export const SignUp = () => {
         <SignupFooter
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
-          isFormValid={
-            currentStep === 1
-              ? isFirstStepFormValid
-              : currentStep === 2
-                ? isSecondStepFormValid && isQBoxVerified
-                : currentStep === 3
-                  ? isLastStepFormValid
-                  : isFormValid
-          }
+          validateStep={validateStep}
           onSubmit={onSubmit}
           phoneNumber={contact}
           handleSendOtp={handleSendOtp}
           handleVerifyOtp={handleVerifyOtp}
+          isQBoxVerified={isQBoxVerified}
         />
       }
     >

@@ -10,11 +10,12 @@ import { SignupFooterProps } from "./props";
 export const SignupFooter = ({
   currentStep,
   setCurrentStep,
-  isFormValid,
+  validateStep,
   onSubmit,
   phoneNumber,
   handleSendOtp,
   handleVerifyOtp,
+  isQBoxVerified,
 }: SignupFooterProps) => {
   const { onTriggerModal, onCloseModal } = useModal();
 
@@ -34,12 +35,31 @@ export const SignupFooter = ({
           console.log("otp verification triggered: ", otpValue);
           // The modal should pass the OTP value here
           handleVerifyOtp(phoneNumber, otpValue as string, () => {
-            setCurrentStep((prev) => ++prev);
+            setCurrentStep((prev) => prev + 1);
             onCloseModal?.();
           });
         },
       });
     });
+  };
+
+  const handleNext = async () => {
+    const isValid = await validateStep(currentStep);
+    if (!isValid) return;
+
+    switch (currentStep) {
+      case 1:
+        handleVerify();
+        break;
+      case 2:
+        if (isQBoxVerified) {
+          setCurrentStep((prev) => prev + 1);
+        }
+        break;
+      case 3:
+        onSubmit();
+        break;
+    }
   };
 
   return (
@@ -64,26 +84,12 @@ export const SignupFooter = ({
           disabled={currentStep === 1}
           variant="default"
           onPress={() => {
-            setCurrentStep((prev) => --prev);
+            setCurrentStep((prev) => prev - 1);
           }}
         />
         <Button
           title={currentStep === 3 ? "Complete" : "Next"}
-          disabled={!isFormValid}
-          onPress={() => {
-            console.log("current step: ", currentStep);
-            switch (currentStep) {
-              case 1:
-                handleVerify();
-                return;
-              case 2:
-                setCurrentStep((prev) => ++prev);
-                return;
-              case 3:
-                onSubmit();
-                return;
-            }
-          }}
+          onPress={handleNext}
         />
       </View>
 
