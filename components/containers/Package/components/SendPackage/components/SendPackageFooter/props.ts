@@ -4,4 +4,5 @@ export interface SendPackageFooterProps {
   isFormValid: boolean;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   phoneNumber: string;
+  isPending?: boolean;
 }

@@ -159,7 +159,9 @@ export interface PackageListItem {
     service_provider: string;
     driver_name: string;
     qr_code: string;
-    package_status: string;
+    package_type: string;
+    outgoing_status: string | null;
+    city: string;
     shipment_status: string;
     last_update: string;
     created_at: string;
@@ -220,9 +222,86 @@ export interface PackageTimelineItem {
     location: string;
 }
 
-export interface CreatePackageSendRequest {
-    courier: string;
-    locker_id: string;
+export interface SendPackageRequest {
+    shippingCompany: string;
+    qboxImage: string;
+    packageDescription: string;
+    packageItemValue: number;
+    currency: string;
+    packageWeight: number;
+    packageType: string;
+    qBoxId: string;
+    phone: string;
+    email: string;
+    fullName: string;
+}
+
+export interface SendPackageResponse {
+    success: boolean;
+    statusCode: number;
+    data: any;
+    message: string;
+}
+
+export interface Address {
+    short_address: string;
+    city: string;
+    district: string;
+    street: string;
+    postal_code: string;
+    building_number: string;
+    secondary_building_number: string;
+}
+
+export interface HomeOwner {
+    id: string;
+    full_name: string;
+    email: string;
+    phone_number: string;
+    secondary_phone_number: string | null;
+    is_verified: boolean;
+    email_verified: boolean;
+    phone_verified: boolean;
+    address: Address;
+    installation_location_preference: string;
+    installation_access_instruction: string;
+    installation_qbox_image_url: string;
+    is_active: boolean;
+    date_joined: string;
+    qboxes: any[];
+}
+
+export interface HomeOwnerResponse {
+    success: boolean;
+    statusCode: number;
+    data: HomeOwner;
+    message: string;
+}
+
+export interface UpdateHomeOwnerRequest {
+    full_name: string;
+    email: string;
+    phone_number?: string;
+    secondary_phone_number?: string;
+    address?: {
+        short_address?: string;
+        city?: string;
+        district?: string;
+        street?: string;
+        postal_code?: string;
+        building_number?: string;
+        secondary_building_number?: string;
+    };
+    installation_location_preference?: string;
+    installation_access_instruction?: string;
+    is_active?: boolean;
+}
+
+export interface UpdateHomeOwnerResponse {
+    success: boolean;
+    statusCode: number;
+    data: HomeOwner;
+    message: string;
 }
 
 // QR Types

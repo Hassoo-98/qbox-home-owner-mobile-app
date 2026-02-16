@@ -39,4 +39,9 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         marginLeft: mvs(8),
     },
+    errorContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
 });

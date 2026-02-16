@@ -117,7 +117,7 @@ export const useSignup = () => {
       installation: {
         location_preference: data.installationLocation,
         access_instruction: data.accessInstruction,
-        qbox_image_url: data.qboxImage,
+        qbox_image_url: data.qboxImage, // This will now be the base64 string
       },
     };
 
@@ -181,11 +181,13 @@ export const useSignup = () => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        // Set the image URI to form
-        setValue("qboxImage", result.assets[0].uri, { shouldDirty: true });
+        // Set the image base64 to form
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        setValue("qboxImage", base64Image, { shouldDirty: true });
       }
     } catch (error) {
       console.error("Error picking image:", error);

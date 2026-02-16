@@ -4,6 +4,7 @@ import {
   StatusCardsGrid,
   VideoRecording,
 } from "@/components";
+import { useHomeOwner } from "@/hooks/useHomeOwner";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView } from "react-native";
@@ -27,6 +28,12 @@ export const MyQBox = () => {
     handleShare,
   } = useMyQBoxLogic();
 
+  const { data: homeOwnerResponse, isLoading, error } = useHomeOwner();
+
+
+  const qboxesDetails = homeOwnerResponse?.data?.qboxes;
+  console.log("homeOwnerResponse", JSON.stringify(qboxesDetails, null, 4));
+
   return (
     <ScrollView
       style={styles.container}
@@ -37,7 +44,7 @@ export const MyQBox = () => {
         onToggle={() => setIsAlarmEnabled(!isAlarmEnabled)}
       />
 
-      <StatusCardsGrid />
+      <StatusCardsGrid qboxesDetails={qboxesDetails} />
 
       <VideoRecording
         player={externalPlayer}

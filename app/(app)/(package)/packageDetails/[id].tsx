@@ -7,6 +7,7 @@ import {
   PackageDetailsAttribute,
   PackageDetailsDescription,
   PackageDetailsHeader,
+  PackageDetailsPaymentSummary,
   PackageDetailsTimeLine,
   PackageReportModal,
   Skeleton,
@@ -19,7 +20,12 @@ import {
   PACKAGE_TYPE,
   Spacing,
 } from "@/constants";
-import { usePackageDetails, usePackageTimeline } from "@/hooks/api/useShipmentQueries";
+import {
+  useDeliveredPackagesDetails,
+  useIncomingPackagesDetails,
+  useOutgoingPackagesDetails,
+  usePackageTimeline
+} from "@/hooks/api/useShipmentQueries";
 import { mvs } from "@/utils/metrices";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
@@ -35,13 +41,42 @@ import { useForm } from "react-hook-form";
 import { Modal, ScrollView, StyleSheet, View } from "react-native";
 
 export const PackageDetails = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
   const navigation = useNavigation();
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const { data: response, isLoading: detailsLoading, error } = usePackageDetails(id || "");
-  const packageData = response?.data;
+  const incomingDetails = useIncomingPackagesDetails(id || "");
+  const outgoingDetails = useOutgoingPackagesDetails(id || "");
+  const deliveredDetails = useDeliveredPackagesDetails(id || "");
+
+  const activeDetails = useMemo(() => {
+    switch (type) {
+      case PACKAGE_TYPE.INCOMING.toLowerCase():
+        return incomingDetails;
+      case PACKAGE_TYPE.OUTGOING.toLowerCase():
+        return outgoingDetails;
+      case PACKAGE_TYPE.DELIVERED.toLowerCase():
+        return deliveredDetails;
+      default:
+        return { data: null, isLoading: false, error: null };
+    }
+  }, [type, incomingDetails, outgoingDetails, deliveredDetails]);
+
+  const { data: response, isLoading: detailsLoading, error } = activeDetails;
+
+  // Normalize response data: some might be wrapped in .data, some not
+  const rawPackageData = useMemo(() => {
+    if (!response) return null;
+    // Check if it's the wrapped format (like outgoing) or direct (like incoming/delivered)
+    // If it has 'data' and NO 'id' at the top level, it's likely wrapped
+    if ("data" in response && response.data && !("id" in response)) {
+      return response.data;
+    }
+    return response;
+  }, [response]);
+
+  const packageData = rawPackageData;
   const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(id || "");
 
   const { handleSubmit, control } = useForm({
@@ -66,20 +101,26 @@ export const PackageDetails = () => {
     if (!packageData) return null;
     return {
       ...packageData,
-      trackingId: packageData.tracking_id,
-      courierName: packageData.merchant_name || packageData.service_provider,
-      lastUpdate: packageData.last_update ? new Date(packageData.last_update) : new Date(),
-      createdAt: packageData.created_at ? new Date(packageData.created_at) : new Date(),
-      type: packageData.package_status.toLowerCase() as any,
-      qrCode: packageData.qr_code,
-      description: packageData.details?.summary || "No description available",
-      attributes: [
+      trackingId: packageData.trackingId || packageData.tracking_id,
+      courierName: packageData.courierName || packageData.merchant_name || packageData.service_provider,
+      lastUpdate: (packageData.lastUpdate || packageData.last_update) ? new Date(packageData.lastUpdate || packageData.last_update) : new Date(),
+      createdAt: (packageData.created_at || packageData.createdAt) ? new Date(packageData.created_at || packageData.createdAt) : new Date(),
+      type: (() => {
+        const t = (packageData.type || packageData.package_status || "").toLowerCase();
+        if (t.includes("incoming")) return PACKAGE_TYPE.INCOMING;
+        if (t.includes("outgoing")) return PACKAGE_TYPE.OUTGOING;
+        if (t.includes("delivered")) return PACKAGE_TYPE.DELIVERED;
+        return t as any;
+      })(),
+      status: packageData.status || packageData.outgoing_status || packageData.shipment_status,
+      qrCode: packageData.qrCode || packageData.qr_code,
+      description: packageData.description || packageData.details?.summary || "No description available",
+      attributes: packageData.attributes || [
         { type: "Type", value: packageData.details?.package_type || "N/A" },
         { type: "Size", value: packageData.details?.package_size || "N/A" },
         { type: "Weight", value: packageData.details?.package_weight || "N/A" },
       ],
-      // Fallback or placeholder for image if not in API
-      imageUrl: "",
+      imageUrl: packageData.imageUrl || "",
     };
   }, [packageData]);
 
@@ -125,9 +166,14 @@ export const PackageDetails = () => {
             )}
             {mappedPackageData?.type === PACKAGE_TYPE.OUTGOING && (
               <Chip
-                label={mappedPackageData.package_status}
+                label={mappedPackageData.outgoing_status || ""}
                 size="small"
-                variant="info"
+                variant={
+                  mappedPackageData.outgoing_status?.toLowerCase().includes("sent") ||
+                    mappedPackageData.outgoing_status?.toLowerCase().includes("send")
+                    ? "warning"
+                    : "info"
+                }
               />
             )}
           </View>
@@ -211,6 +257,13 @@ export const PackageDetails = () => {
 
         <PackageDetailsDescription description={mappedPackageData.description} />
 
+
+        {
+          packageData.paymentSummary && (
+            <PackageDetailsPaymentSummary
+              paymentSummary={packageData.paymentSummary}
+            />
+          )}
         {timelineLoading ? (
           <View style={{ marginTop: 20 }}>
             <Skeleton width="30%" height={24} style={{ marginBottom: 12 }} />

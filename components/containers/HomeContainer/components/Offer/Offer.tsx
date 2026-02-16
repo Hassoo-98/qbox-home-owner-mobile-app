@@ -18,7 +18,7 @@ export const Offer = ({ item }: OfferProps) => {
       contentStyle={styles.content}
     >
       <Image
-        source={!imageError && item.image_url ? item.image_url : fallbackImage}
+        source={fallbackImage}
         onError={() => setImageError(true)}
         style={[styles.image, { width: screenWidth - 32 }]}
         contentFit="cover"
@@ -33,9 +33,9 @@ export const Offer = ({ item }: OfferProps) => {
           </Text>
         </View>
         <Button
-          title={item.button_text}
+          title="Claim Offer"
           size="xs"
-          style={[styles.button, { backgroundColor: item?.button_color }]}
+          style={styles.button}
         />
       </View>
     </Card>

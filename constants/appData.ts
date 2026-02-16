@@ -1,17 +1,13 @@
 import {
-  CameraIcon,
   ContactIcon,
   LanguageIcon,
-  LED_IndicatorIcon,
   LocationIcon,
   LogoutIcon,
-  OnlineStatusIcon,
   PackageTypeIcon,
   PackageValueIcon,
   PackageWeightIcon,
-  PowerStatusIcom,
   ProfileIcon,
-  SubscriptionHistoryIcon,
+  SubscriptionHistoryIcon
 } from "@/assets/icons";
 import { PackageDetailsType, ProfileItem } from "@/types";
 import { PACKAGE_TYPE, QR_VALIDITY_DURATION_TYPE } from "./enums";
@@ -357,36 +353,7 @@ export const QR_SCAN_HISTORY = [
   },
 ];
 
-export const STATUS_CARDS_DATA = [
-  {
-    id: "1",
-    icon: OnlineStatusIcon,
-    title: "QBox Status",
-    statusText: "Online",
-    statusColor: Colors.success,
-  },
-  {
-    id: "2",
-    icon: CameraIcon,
-    title: "Camera",
-    statusText: "Working",
-    statusColor: Colors.success,
-  },
-  {
-    id: "3",
-    icon: LED_IndicatorIcon,
-    title: "LED Indicator",
-    statusText: "Red",
-    statusColor: Colors.danger,
-  },
-  {
-    id: "4",
-    icon: PowerStatusIcom,
-    title: "Power Status",
-    statusText: "Plugged",
-    statusColor: Colors.primary,
-  },
-];
+
 
 export const PACKAGE_ATTRIBUTE_DATA = [
   {
@@ -512,9 +479,6 @@ export const PACKAGES = [
   },
 ];
 
-// Add these new constants to your existing appData.ts file
-
-// Package timeline/history data
 export const PACKAGE_TIMELINE = [
   {
     id: 1,

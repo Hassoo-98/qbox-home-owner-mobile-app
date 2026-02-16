@@ -2,7 +2,7 @@ import { PhoneNumberInput, Skeleton, TextInput } from "@/components";
 import { MenuItem } from "@/components/containers/Profile";
 import { AUTH_PROVIDERS, Colors, emailPattern } from "@/constants";
 import { useModal } from "@/hooks";
-import { useUpdateProfileSettings } from "@/hooks/api/useAuthQueries";
+import { useUpdateHomeOwner } from "@/hooks/api/useHomeOwnerQueries";
 import { useHomeOwner } from "@/hooks/useHomeOwner";
 import { useProfile } from "@/hooks/useProfile";
 import { mvs } from "@/utils/metrices";
@@ -13,13 +13,13 @@ import {
 } from "libphonenumber-js";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 export const BasicInformation = () => {
   const { setOnSave } = useProfile();
   const { data: homeOwnerResponse, isLoading: profileLoading } = useHomeOwner();
   const userProfile = homeOwnerResponse?.data;
-  const { mutateAsync: updateProfile } = useUpdateProfileSettings();
+  const { mutateAsync: updateHomeOwner } = useUpdateHomeOwner(userProfile?.id || "");
 
   const { control, watch, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -146,24 +146,35 @@ export const BasicInformation = () => {
     }
   }, [params]);
 
-  const onSubmit = useCallback(async (data: any) => {
+  const submitHandler = useCallback(async (data: any) => {
     try {
-      await updateProfile({
-        language: "English", // Defaulting as not available in HomeOwner API
-        notifications_enabled: true, // Defaulting as not available in HomeOwner API
+      if (!data.fullName || !data.email) {
+        Alert.alert("Error", "Name and email are required.");
+        return;
+      }
+
+      await updateHomeOwner({
+        full_name: data.fullName,
+        email: data.email,
+        phone_number: data.phone,
+        secondary_phone_number: data.secondaryPhone,
       });
+
+      Alert.alert("Success", "Profile updated successfully.");
       router.dismiss();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Profile update failed:", error);
+      Alert.alert("Error", error?.response?.data?.message || "Failed to update profile.");
     }
-  }, [updateProfile, router]);
+  }, [updateHomeOwner, router]);
+
+  const onSaveProfile = useMemo(() => handleSubmit(submitHandler), [handleSubmit, submitHandler]);
 
   useEffect(() => {
-    setOnSave(() => onSubmit);
+    setOnSave(() => onSaveProfile);
 
-    // Cleanup isn't strictly necessary if setOnSave handles it, but good practice
     return () => setOnSave(null);
-  }, [setOnSave, onSubmit]);
+  }, [setOnSave, onSaveProfile]);
 
   if (profileLoading) {
     return (
@@ -186,10 +197,11 @@ export const BasicInformation = () => {
   return (
     <ScrollView
       contentContainerStyle={{
-        flex: 1,
         alignItems: "center",
         padding: mvs(20),
       }}
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true} // 👈 this alone won't fix the warning but suppresses behavior issues
     >
       <TextInput
         name="fullName"
@@ -231,7 +243,10 @@ export const BasicInformation = () => {
         label="Phone Number"
         placeholder="+92 XX XXX XXXX"
         defaultCode="PK"
+        defaultValue={userProfile?.phone_number ?? ""}
+        value={userProfile?.phone_number ?? ""}
         endButtonText={phoneButtonConfig.text}
+        disableCountryPicker={true}
         endButtonProps={{
           variant: phoneButtonConfig.variant,
           textStyle: { color: phoneButtonConfig.textColor },
@@ -249,8 +264,12 @@ export const BasicInformation = () => {
         name="secondaryPhone"
         control={control}
         label="Secondary Number"
+        disableCountryPicker={true}
         placeholder="+92 XX XXX XXXX"
         defaultCode="PK"
+        // Add these two props:
+        defaultValue={userProfile?.secondary_phone_number ?? ""}
+        value={userProfile?.secondary_phone_number ?? ""}
       />
 
       <MenuItem title="Password" path="/passwordManager" />

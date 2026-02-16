@@ -25,7 +25,6 @@ export const Profile = () => {
         name={profile?.full_name}
         email={profile?.email}
         phone={profile?.phone}
-        imageUri={profile?.avatar}
       />
 
       <SubscriptionCard />

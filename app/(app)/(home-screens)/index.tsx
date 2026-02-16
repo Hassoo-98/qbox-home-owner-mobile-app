@@ -17,6 +17,7 @@ export const Home = () => {
   const {
     offersData,
     offersLoading,
+    offersError,
     isGenerating,
     showSuccess,
     isQrCodeGenerated,
@@ -25,6 +26,34 @@ export const Home = () => {
     resetForm,
     homeOwner,
   } = useHomeLogic();
+
+
+
+  // Extract offers safely
+  const offers = Array.isArray(offersData) ? offersData : [];
+
+  // Render loading state
+  if (offersLoading) {
+    return (
+      <FlatList
+        data={[1, 2, 3]}
+        keyExtractor={(item) => item.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.flatList}
+        renderItem={() => <OfferSkeleton />}
+      />
+    );
+  }
+
+  // Render error state (optional)
+  if (offersError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>Failed to load offers</Text>
+      </View>
+    );
+  }
 
 
 
@@ -45,28 +74,16 @@ export const Home = () => {
           packageCount={0} // Placeholder until package API is integrated
           status={homeOwner?.qboxes?.[0]?.status || "Offline"}
         />
-        {offersLoading ? (
+        {offers.length > 0 &&
           <FlatList
-            data={[1, 2, 3]}
-            keyExtractor={(item) => item.toString()}
+            data={offers}
+            keyExtractor={(item, index) => item.id?.toString() || `offer-${index}`}
+            horizontal
             showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            style={styles.flatList}
-            renderItem={() => <OfferSkeleton />}
-          />
-        ) : !offersData || offersData.length === 0 ? (
-          null
-        ) : (
-          <FlatList
-            data={offersData}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
             style={styles.flatList}
             renderItem={({ item }) => <Offer item={item} />}
           />
-        )}
+        }
         <QRSetting
           boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
           address={homeOwner?.address?.short_address || "No Address"}

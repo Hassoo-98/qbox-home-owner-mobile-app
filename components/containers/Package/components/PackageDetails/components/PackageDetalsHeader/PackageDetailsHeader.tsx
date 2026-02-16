@@ -13,7 +13,7 @@ export const PackageDetailsHeader = ({ packageData }: any) => {
   return (
     <ItemInfo
       title={packageData.courierName}
-      description={`Last update: ${format(packageData.lastUpdate, "Pp")}`}
+      description={`Sender Name`}
       titleProps={{
         size: "lg",
         style: { fontWeight: "bold", color: Colors.dark },
@@ -21,6 +21,11 @@ export const PackageDetailsHeader = ({ packageData }: any) => {
       descriptionProps={{ size: "sm", style: { fontWeight: "medium" } }}
       rightContent={
         <Image source={packageData.imageUrl} style={styles.packageImage} />
+      }
+      leftContent={
+        <View>
+          <Text size="sm">{`Last update: ${format(packageData.lastUpdate, "Pp")}`}</Text>
+        </View>
       }
     />
   );

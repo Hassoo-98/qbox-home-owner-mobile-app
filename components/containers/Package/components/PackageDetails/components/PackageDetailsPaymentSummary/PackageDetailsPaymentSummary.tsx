@@ -21,7 +21,7 @@ export const PackageDetailsPaymentSummary = ({
     <View style={styles.sectionContainer}>
       <View style={styles.summaryHeader}>
         <Text bold color={Colors.dark}>
-          Package Summary
+          Payment Summary
         </Text>
         <Chip label={paymentSummary.paymentMethod} variant="info" />
       </View>

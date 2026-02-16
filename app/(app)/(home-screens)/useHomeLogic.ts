@@ -15,7 +15,7 @@ export const useHomeLogic = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
 
-    const { data: offersData, isLoading: offersLoading } = useOffers();
+    const { data: offersData, isLoading: offersLoading, error: offersError } = useOffers();
     const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
     const homeOwner = homeOwnerResponse?.data;
 
@@ -81,6 +81,7 @@ export const useHomeLogic = () => {
     return {
         offersData,
         offersLoading,
+        offersError,
         isGenerating,
         showSuccess,
         isQrCodeGenerated,
