@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
     height: 44,
-    paddingLeft: 0,
+    paddingLeft: 10,
   },
 
   phoneInputCodeText: {

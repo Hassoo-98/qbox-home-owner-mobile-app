@@ -9,7 +9,7 @@ import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -19,8 +19,14 @@ import {
   View,
 } from "react-native";
 
+import { useUpdateHomeOwner } from "@/hooks/api/useHomeOwnerQueries";
+import { useHomeOwner } from "@/hooks/useHomeOwner";
+
 export const MyQBoxLocation = () => {
   const { setOnSave } = useProfile();
+  const { data: homeOwnerResponse } = useHomeOwner();
+  const homeOwner = homeOwnerResponse?.data;
+  const { mutateAsync: updateHomeOwner } = useUpdateHomeOwner(homeOwner?.id || "");
 
   const { onTriggerModal, onCloseModal } = useModal();
 
@@ -29,12 +35,30 @@ export const MyQBoxLocation = () => {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<QBoxLocationFormFormValues>({
     defaultValues: {},
     resolver: MyQBoxLocationResolver,
     mode: "onChange",
   });
+
+  useEffect(() => {
+    if (homeOwner) {
+      reset({
+        shortId: homeOwner.address?.short_address || "",
+        city: homeOwner.address?.city || "",
+        district: homeOwner.address?.district || "",
+        street: homeOwner.address?.street || "",
+        postalCode: homeOwner.address?.postal_code || "",
+        buildingNumber: homeOwner.address?.building_number || "",
+        secondaryNumber: homeOwner.address?.secondary_building_number || "",
+        installationLocation: homeOwner.installation_location_preference || "",
+        accessInstruction: homeOwner.installation_access_instruction || "",
+        qboxImage: homeOwner.installation_qbox_image_url || "",
+      });
+    }
+  }, [homeOwner, reset]);
 
   const qboxImage = watch("qboxImage");
 
@@ -72,39 +96,61 @@ export const MyQBoxLocation = () => {
 
   console.log("form errros: ", errors);
 
-  const onSubmit = handleSubmit((data: QBoxLocationFormFormValues) => {
-    console.log("this is address data: ", data);
-    onTriggerModal({
-      icon: (
-        <View
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: BorderRadius.full,
-            backgroundColor: Colors.success,
-            justifyContent: "center",
-            alignItems: "center",
-            alignSelf: "center",
-          }}
-        >
-          <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
-        </View>
-      ),
-      title: "Your location change request has been submitted for approval.",
-      primaryButtonText: "Confirm",
-      primaryButtonHandler: () => {
-        onCloseModal();
-        router.dismiss();
-      },
-      subtitle: "Once approved, our team will contact you within 24 hours .",
-    });
-  });
+  const submitHandler = useCallback(async (data: QBoxLocationFormFormValues) => {
+    try {
+      await updateHomeOwner({
+        full_name: homeOwner?.full_name || "",
+        email: homeOwner?.email || "",
+        address: {
+          short_address: data.shortId,
+          city: data.city,
+          district: data.district,
+          street: data.street,
+          postal_code: data.postalCode,
+          building_number: data.buildingNumber,
+          secondary_building_number: data.secondaryNumber,
+        },
+        installation_location_preference: data.installationLocation,
+        installation_access_instruction: data.accessInstruction,
+      });
+
+      onTriggerModal({
+        icon: (
+          <View
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: BorderRadius.full,
+              backgroundColor: Colors.success,
+              justifyContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+            }}
+          >
+            <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
+          </View>
+        ),
+        title: "Your location change request has been submitted for approval.",
+        primaryButtonText: "Confirm",
+        primaryButtonHandler: () => {
+          onCloseModal();
+          router.dismiss();
+        },
+        subtitle: "Once approved, our team will contact you within 24 hours .",
+      });
+    } catch (error: any) {
+      console.error("Location update failed:", error);
+      Alert.alert("Error", error?.response?.data?.message || "Failed to update location.");
+    }
+  }, [updateHomeOwner, homeOwner, onTriggerModal, onCloseModal, router]);
+
+  const onSaveLocation = useMemo(() => handleSubmit(submitHandler), [handleSubmit, submitHandler]);
 
   useEffect(() => {
-    setOnSave(() => onSubmit);
+    setOnSave(() => onSaveLocation);
 
     return () => setOnSave(null);
-  }, []);
+  }, [setOnSave, onSaveLocation]);
 
   return (
     <KeyboardAvoidingView

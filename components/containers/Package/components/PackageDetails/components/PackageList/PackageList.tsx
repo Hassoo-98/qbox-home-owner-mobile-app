@@ -1,91 +1,101 @@
 import { PackageItemIcon } from "@/assets/icons";
 import { Card, Chip, Text } from "@/components";
-import { BorderRadius, Colors, PACKAGE_TYPE, Spacing } from "@/constants";
+import { BorderRadius, Colors, Spacing } from "@/constants";
+import { PackageListItem } from "@/services/api/types";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
 import { router } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
 
-interface Package {
-  id: number;
-  title: string;
-  Subtitle: string;
-  trackingId: string;
-  createdAt: string;
-  type: string;
-  city?: string | null;
-  status?: string | null;
-}
-
 interface PackageListProps {
-  packages: Package[];
+  packages: PackageListItem[];
+  type: string;
 }
 
-export const PackageList = ({ packages }: PackageListProps) => {
-  const handleCardPress = (id: number) => {
-    router.navigate(`/packageDetails/${id}`);
+export const PackageList = ({ packages, type }: PackageListProps) => {
+  const handleCardPress = (id: string) => {
+    router.navigate({
+      pathname: "/packageDetails/[id]",
+      params: { id, type: type.toLowerCase() },
+    });
   };
 
-  const renderPackageCard = ({ item }: { item: Package }) => (
-    <Card
-      variant="filled"
-      style={styles.packageCard}
-      onPress={() => handleCardPress(item.id)}
-    >
-      <View style={styles.cardContent}>
-        {/* Icon */}
-        <View style={styles.iconContainer}>
-          <PackageItemIcon />
-        </View>
+  const renderPackageCard = ({ item }: { item: PackageListItem }) => {
+    const isOutgoing = !!item.outgoing_status;
 
-        {/* Content */}
-        <View style={styles.packageInfo}>
-          {/* Title + Chip */}
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>{item.title}</Text>
-
-            {item.type === PACKAGE_TYPE.INCOMING && item.city && (
-              <Chip label={item.city} size="medium" />
-            )}
-
-            {item.type === PACKAGE_TYPE.OUTGOING && item.status && (
-              <Chip
-                label={item.status}
-                size="medium"
-                variant={
-                  item.status === "Send"
-                    ? "warning"
-                    : item.status === "Return"
-                    ? "info"
-                    : "default"
-                }
-              />
-            )}
+    return (
+      <Card
+        variant="filled"
+        style={styles.packageCard}
+        onPress={() => handleCardPress(item.id)}
+      >
+        <View style={styles.cardContent}>
+          {/* Icon */}
+          <View style={styles.iconContainer}>
+            <PackageItemIcon />
           </View>
+          {/* Content */}
+          <View style={styles.packageInfo}>
+            {/* Title + Chip */}
+            <View style={styles.titleRow}>
+              <Text style={styles.title} numberOfLines={1}>
+                {isOutgoing
+                  ? item.merchant_name || item.service_provider || "Recipient Name"
+                  : item.merchant_name ||
+                  item.service_provider ||
+                  "Courier Name"}
+              </Text>
 
-          {/* Subtitle */}
-          <Text size="sm">{item.Subtitle}</Text>
+              {isOutgoing ? (
+                <Chip
+                  label={item.outgoing_status || ""}
+                  size="small"
+                  variant={
+                    item.outgoing_status?.toLowerCase().includes("sent") ||
+                      item.outgoing_status?.toLowerCase().includes("send")
+                      ? "warning"
+                      : "info"
+                  }
+                />
+              ) : (
+                <Chip
+                  label={item.city || "City"}
+                  size="small"
+                  variant="default"
+                />
+              )}
+            </View>
 
-          {/* Tracking ID */}
-          <Text variant="secondary" size="sm" style={styles.trackingId}>
-            {item.trackingId}
-          </Text>
+            {/* Subtitle */}
+            <Text size="sm" variant="secondary" numberOfLines={1}>
+              {isOutgoing
+                ? item.details?.summary || "Delivery Speed"
+                : item.driver_name || "Driver Name / Sender Name"}
+            </Text>
 
-          {/* Created Date */}
-          <Text variant="secondary" size="sm">
-            {format(new Date(item.createdAt), "Pp")}
-          </Text>
+            {/* Tracking ID */}
+            <Text variant="secondary" size="sm" style={styles.trackingId}>
+              {item.tracking_id}
+            </Text>
+            {/* Created Date */}
+            <Text variant="secondary" size="xs">
+              {item.created_at
+                ? format(new Date(item.created_at), "dd/MM/yyyy hh:mm a")
+                : "Date & Time"}
+            </Text>
+          </View>
         </View>
-      </View>
-    </Card>
-  );
+      </Card>
+    );
+  };
 
   return (
     <FlatList
       data={packages}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.id}
       showsVerticalScrollIndicator={false}
       renderItem={renderPackageCard}
+      contentContainerStyle={{ paddingBottom: mvs(100) }}
     />
   );
 };
@@ -107,17 +117,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary,
   },
+  iconOutgoing: {
+    backgroundColor: Colors.darkGray,
+  },
   packageInfo: {
     flex: 1,
   },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontWeight: "bold",
+    flex: 1,
+    marginRight: 8,
   },
   trackingId: {
-    marginTop: mvs(Spacing.sm),
+    marginTop: mvs(Spacing.xs),
   },
 });

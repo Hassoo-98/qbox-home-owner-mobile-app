@@ -15,6 +15,9 @@ export const QRSetting = ({
   isQrCodeGenerated,
   control,
   resetForm,
+  boxId,
+  address,
+  image,
 }: QRSettingProps) => {
   const maxUsers = useWatch({ control, name: "maxUsers" });
   const validityDuration = useWatch({ control, name: "validityDuration" });
@@ -24,6 +27,8 @@ export const QRSetting = ({
   });
 
   const imageWidth = screenWidth * 0.25;
+
+
 
   return (
     <Card
@@ -38,7 +43,7 @@ export const QRSetting = ({
     >
       <ItemInfo
         title="Box ID"
-        description="AB5432"
+        description={boxId}
         style={{
           padding: 0,
         }}
@@ -50,14 +55,14 @@ export const QRSetting = ({
                 marginBottom: Spacing.sm,
               }}
             >
-              {"National Address"}
+              {address}
             </Text>
           </View>
         }
         rightContent={
           <View>
             <Image
-              source={require("@/assets/images/packageItem.jpg")}
+              source={{ uri: image }}
               style={{
                 width: imageWidth,
                 height: imageWidth,

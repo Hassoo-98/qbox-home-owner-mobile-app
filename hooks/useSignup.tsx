@@ -25,6 +25,7 @@ export const useSignup = () => {
   const {
     control,
     formState: { isDirty, errors, dirtyFields },
+    trigger,
     reset,
     watch,
     setValue,
@@ -50,35 +51,45 @@ export const useSignup = () => {
       accessInstruction: "",
       qboxImage: "",
     },
-    mode: "all",
+    mode: "all", // Optimized for better UX with multi-step
   });
 
   const qBoxId = watch("qBoxId");
 
-  const isFormValid = isDirty;
+  const validateStep = async (step: number) => {
+    let fieldsToValidate: (keyof SignUpFormValues)[] = [];
 
-  const isFirstStepFormValid = !!(
-    dirtyFields.fullName &&
-    dirtyFields.email &&
-    dirtyFields.phone &&
-    dirtyFields.secondaryPhone &&
-    dirtyFields.password &&
-    dirtyFields.confirmPassword
-  );
+    switch (step) {
+      case 1:
+        fieldsToValidate = [
+          "fullName",
+          "email",
+          "phone",
+          "password",
+          "confirmPassword",
+        ];
+        break;
+      case 2:
+        fieldsToValidate = ["qBoxId"];
+        break;
+      case 3:
+        fieldsToValidate = [
+          "shortId",
+          "city",
+          "district",
+          "street",
+          "postalCode",
+          "buildingNumber",
+          "installationLocation",
+          "accessInstruction",
+          "qboxImage",
+        ];
+        break;
+    }
 
-  const isSecondStepFormValid = !!dirtyFields.qBoxId;
-
-  const isLastStepFormValid = !!(
-    dirtyFields.shortId &&
-    dirtyFields.city &&
-    dirtyFields.district &&
-    dirtyFields.street &&
-    dirtyFields.postalCode &&
-    dirtyFields.buildingNumber &&
-    dirtyFields.installationLocation &&
-    dirtyFields.accessInstruction &&
-    dirtyFields.buildingNumber
-  );
+    const isValid = await trigger(fieldsToValidate);
+    return isValid;
+  };
 
   const handleConfirm = () => {
     onCloseModal();
@@ -106,7 +117,7 @@ export const useSignup = () => {
       installation: {
         location_preference: data.installationLocation,
         access_instruction: data.accessInstruction,
-        qbox_image_url: data.qboxImage,
+        qbox_image_url: data.qboxImage, // This will now be the base64 string
       },
     };
 
@@ -170,11 +181,13 @@ export const useSignup = () => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        // Set the image URI to form
-        setValue("qboxImage", result.assets[0].uri, { shouldDirty: true });
+        // Set the image base64 to form
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        setValue("qboxImage", base64Image, { shouldDirty: true });
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -225,10 +238,7 @@ export const useSignup = () => {
   return {
     currentStep,
     setCurrentStep,
-    isFormValid,
-    isFirstStepFormValid,
-    isSecondStepFormValid,
-    isLastStepFormValid,
+    validateStep,
     onSubmit,
     control,
     contact,

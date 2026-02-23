@@ -1,11 +1,10 @@
 import { Button, Text } from "@/components";
 import React, { useRef } from "react";
 import { Controller } from "react-hook-form";
-import { Image, View } from "react-native";
+import { Image, TextInput as RNTextInput, View } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
 import { PhoneInputProps } from "./props";
 import { styles } from "./styles";
-
 export const PhoneNumberInput = ({
   name,
   label,
@@ -15,6 +14,8 @@ export const PhoneNumberInput = ({
   endButtonText,
   onEndButtonClick,
   endButtonProps,
+  defaultCode: propDefaultCode,
+  disableCountryPicker = false,
   ...restProps
 }: PhoneInputProps) => {
   const phoneInput = useRef<PhoneInput>(null);
@@ -35,49 +36,69 @@ export const PhoneNumberInput = ({
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <>
-            <View style={styles.phoneInputWrapper}>
-              <PhoneInput
-                ref={phoneInput}
-                value={value}
-                onChangeFormattedText={onChange}
-                defaultCode="US"
-                layout="second"
-                placeholder={placeholder}
-                containerStyle={[
-                  styles.phoneInputContainer,
-                  error && styles.phoneInputContainerError,
-                ]}
-                textContainerStyle={styles.phoneInputTextContainer}
-                textInputStyle={styles.phoneInputText}
-                codeTextStyle={styles.phoneInputCodeText}
-                flagButtonStyle={styles.phoneInputCountryPickerButton}
-                textInputProps={{
-                  placeholderTextColor: "#777E90",
-                }}
-                {...restProps}
-              />
-              {endButtonText && (
-                <Button
-                  onPress={onEndButtonClick}
-                  size="sm"
-                  {...endButtonProps}
-                  title={endButtonText}
-                />
-              )}
-            </View>
+        render={({ field: { onChange, value }, fieldState: { error } }) => {
+          return (
+            <>
+              <View style={styles.phoneInputWrapper}>
 
-            {error && (
-              <Text size="xs" variant="danger" style={styles.errorText}>
-                {error.message}
-              </Text>
-            )}
-          </>
-        )}
+                {disableCountryPicker ? (
+                  // 👇 Simple TextInput — no FlatList, no VirtualizedList warning
+                  <RNTextInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder={placeholder}
+                    placeholderTextColor="#777E90"
+                    keyboardType="phone-pad"
+                    style={[
+                      styles.phoneInputContainer,
+                      styles.phoneInputText,
+                      error && styles.phoneInputContainerError,
+                    ]}
+                  />
+                ) : (
+                  // 👇 Full picker — used where ScrollView is not a parent
+                  <PhoneInput
+                    ref={phoneInput}
+                    value={value}
+                    onChangeFormattedText={onChange}
+                    defaultCode={propDefaultCode || "US"}
+                    layout="second"
+                    placeholder={placeholder}
+                    containerStyle={[
+                      styles.phoneInputContainer,
+                      error && styles.phoneInputContainerError,
+                    ]}
+                    textContainerStyle={styles.phoneInputTextContainer}
+                    textInputStyle={styles.phoneInputText}
+                    codeTextStyle={styles.phoneInputCodeText}
+                    flagButtonStyle={styles.phoneInputCountryPickerButton}
+                    textInputProps={{
+                      placeholderTextColor: "#777E90",
+                    }}
+                    {...restProps}
+                  />
+                )}
+
+                {endButtonText && (
+                  <Button
+                    onPress={onEndButtonClick}
+                    size="sm"
+                    {...endButtonProps}
+                    title={endButtonText}
+                  />
+                )}
+              </View>
+
+              {error && (
+                <Text size="xs" variant="danger" style={styles.errorText}>
+                  {error.message}
+                </Text>
+              )}
+            </>
+          );
+        }}
       />
     </View>
   );
 };
-
 export default PhoneNumberInput;

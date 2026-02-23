@@ -19,6 +19,7 @@ export const SendPackage = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    isPending,
   } = useSendPackage();
 
   return (
@@ -41,6 +42,7 @@ export const SendPackage = () => {
           isFormValid={isFormValid}
           onSubmit={onSubmit}
           phoneNumber={phoneNumber}
+          isPending={isPending}
         />
       }
     >

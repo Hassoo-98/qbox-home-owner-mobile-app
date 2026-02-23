@@ -4,6 +4,7 @@ import { mvs } from "@/utils/metrices";
 import { StyleSheet, View } from "react-native";
 
 export const AttributeView = ({ item, width = "48%", style }: any) => {
+  console.log("item", JSON.stringify(item, null, 4));
   const Icon = item.icon;
   return (
     <Card variant="filled" style={[styles.card, { width }, style]}>

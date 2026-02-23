@@ -12,6 +12,7 @@ export const SendPackageFooter = ({
   isFormValid,
   onSubmit,
   phoneNumber,
+  isPending,
 }: SendPackageFooterProps) => {
   const packageGuidelines = [
     "Maximum weight: 5kg",
@@ -62,6 +63,7 @@ export const SendPackageFooter = ({
                 return;
             }
           }}
+          loading={currentStep === 3 && isPending}
         />
       </View>
 

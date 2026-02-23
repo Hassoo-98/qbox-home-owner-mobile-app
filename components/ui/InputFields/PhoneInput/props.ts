@@ -11,4 +11,5 @@ export interface PhoneInputProps extends Partial<RNPhoneInputProps> {
   endButtonText?: string;
   onEndButtonClick?: () => void;
   endButtonProps?: ButtonProps;
+  disableCountryPicker?: boolean;
 }

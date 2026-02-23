@@ -1,4 +1,4 @@
-import { BoxInfo, Button, EmptyState, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
+import { BoxInfo, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
 import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -17,13 +17,45 @@ export const Home = () => {
   const {
     offersData,
     offersLoading,
+    offersError,
     isGenerating,
     showSuccess,
     isQrCodeGenerated,
     control,
     handleGenerateQR,
     resetForm,
+    homeOwner,
   } = useHomeLogic();
+
+
+
+  // Extract offers safely
+  const offers = Array.isArray(offersData) ? offersData : [];
+
+  // Render loading state
+  if (offersLoading) {
+    return (
+      <FlatList
+        data={[1, 2, 3]}
+        keyExtractor={(item) => item.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.flatList}
+        renderItem={() => <OfferSkeleton />}
+      />
+    );
+  }
+
+  // Render error state (optional)
+  if (offersError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>Failed to load offers</Text>
+      </View>
+    );
+  }
+
+
 
   return (
     <KeyboardAvoidingView
@@ -36,43 +68,31 @@ export const Home = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <BoxInfo />
-        {offersLoading ? (
+        <BoxInfo
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          address={homeOwner?.address?.short_address || "No Address"}
+          packageCount={0} // Placeholder until package API is integrated
+          status={homeOwner?.qboxes?.[0]?.status || "Offline"}
+        />
+        {offers.length > 0 &&
           <FlatList
-            data={[1, 2, 3]}
-            keyExtractor={(item) => item.toString()}
+            data={offers}
+            keyExtractor={(item, index) => item.id?.toString() || `offer-${index}`}
+            horizontal
             showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            style={styles.flatList}
-            renderItem={() => <OfferSkeleton />}
-          />
-        ) : !offersData || offersData.length === 0 ? (
-          <EmptyState
-            title="No Offers Today"
-            description="Special offers will appear here when available."
-            containerStyle={{ height: 180, minHeight: 180 }}
-          />
-        ) : (
-          <FlatList
-            data={offersData}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
             style={styles.flatList}
             renderItem={({ item }) => <Offer item={item} />}
           />
-        )}
+        }
         <QRSetting
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          address={homeOwner?.address?.short_address || "No Address"}
+          image={homeOwner?.installation_qbox_image_url || ""}
           isGenerating={isGenerating}
           resetForm={resetForm}
           control={control}
           onGenerateQR={handleGenerateQR}
           isQrCodeGenerated={isQrCodeGenerated}
-        />
-
-        <Button
-          title="Test OTA update"
         />
 
       </ScrollView>

@@ -45,5 +45,6 @@ export const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 100,
+        backgroundColor: "#11A543",
     },
 });

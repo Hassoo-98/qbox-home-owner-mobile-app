@@ -143,6 +143,51 @@ export interface Package {
     type: 'incoming' | 'outgoing' | 'delivered';
 }
 
+export interface PackageListItemDetails {
+    id: number;
+    package_type: string;
+    package_size: string;
+    package_weight: string;
+    summary: string;
+}
+
+export interface PackageListItem {
+    id: string;
+    qbox: string | null;
+    tracking_id: string;
+    merchant_name: string;
+    service_provider: string;
+    driver_name: string;
+    qr_code: string;
+    package_type: string;
+    outgoing_status: string | null;
+    city: string;
+    shipment_status: string;
+    last_update: string;
+    created_at: string;
+    details: PackageListItemDetails | null;
+}
+
+export interface PackageListResponse {
+    success: boolean;
+    statusCode: number;
+    data: {
+        items: PackageListItem[];
+        total: number;
+        page: number;
+        limit: number;
+        hasMore: boolean;
+    };
+    message: string;
+}
+
+export interface GetPackageDetailsResponse {
+    success: boolean;
+    statusCode: number;
+    data: PackageListItem;
+    message: string;
+}
+
 export interface PackageDetailAttribute {
     type: string;
     value: string;
@@ -177,9 +222,86 @@ export interface PackageTimelineItem {
     location: string;
 }
 
-export interface CreatePackageSendRequest {
-    courier: string;
-    locker_id: string;
+export interface SendPackageRequest {
+    shippingCompany: string;
+    qboxImage: string;
+    packageDescription: string;
+    packageItemValue: number;
+    currency: string;
+    packageWeight: number;
+    packageType: string;
+    qBoxId: string;
+    phone: string;
+    email: string;
+    fullName: string;
+}
+
+export interface SendPackageResponse {
+    success: boolean;
+    statusCode: number;
+    data: any;
+    message: string;
+}
+
+export interface Address {
+    short_address: string;
+    city: string;
+    district: string;
+    street: string;
+    postal_code: string;
+    building_number: string;
+    secondary_building_number: string;
+}
+
+export interface HomeOwner {
+    id: string;
+    full_name: string;
+    email: string;
+    phone_number: string;
+    secondary_phone_number: string | null;
+    is_verified: boolean;
+    email_verified: boolean;
+    phone_verified: boolean;
+    address: Address;
+    installation_location_preference: string;
+    installation_access_instruction: string;
+    installation_qbox_image_url: string;
+    is_active: boolean;
+    date_joined: string;
+    qboxes: any[];
+}
+
+export interface HomeOwnerResponse {
+    success: boolean;
+    statusCode: number;
+    data: HomeOwner;
+    message: string;
+}
+
+export interface UpdateHomeOwnerRequest {
+    full_name: string;
+    email: string;
+    phone_number?: string;
+    secondary_phone_number?: string;
+    address?: {
+        short_address?: string;
+        city?: string;
+        district?: string;
+        street?: string;
+        postal_code?: string;
+        building_number?: string;
+        secondary_building_number?: string;
+    };
+    installation_location_preference?: string;
+    installation_access_instruction?: string;
+    is_active?: boolean;
+}
+
+export interface UpdateHomeOwnerResponse {
+    success: boolean;
+    statusCode: number;
+    data: HomeOwner;
+    message: string;
 }
 
 // QR Types
@@ -190,6 +312,68 @@ export interface GenerateQRPayload {
     locker_id: string;
     guest_name: string;
     valid_hours: number;
+}
+
+export interface CreateQRCodePayload {
+    qbox_id: string;
+    max_users: number;
+    duration_type: string;
+    valid_duration: number;
+    name: string;
+}
+
+export interface QRCodeData {
+    id: string;
+    qbox: string;
+    qbox_id: string;
+    homeowner: string | null;
+    name: string;
+    location: string;
+    address: string;
+    max_users: number;
+    current_users: number;
+    remaining_users: number;
+    duration_type: string;
+    valid_duration: number;
+    expires_at: string;
+    access_token: string;
+    qr_code_image: string;
+    is_active: boolean;
+    status: string;
+    expiresIn: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateQRCodeResponse {
+    success: boolean;
+    statusCode: number;
+    data: QRCodeData;
+    message: string;
+}
+
+export interface GetQRCodeDetailsResponse {
+    success: boolean;
+    statusCode: number;
+    data: QRCodeData;
+    message: string;
+}
+
+export interface QRHistoryResult {
+    id: string;
+    qbox_id: string;
+    name: string;
+    status: string;
+    validforUsers: number;
+    expiresIn: string;
+    created_at: string;
+}
+
+export interface QRHistoryResponse {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: QRHistoryResult[];
 }
 
 export interface QRHistoryItem {

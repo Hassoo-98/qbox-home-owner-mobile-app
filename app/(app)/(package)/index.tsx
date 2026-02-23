@@ -53,7 +53,7 @@ export const Package = () => {
           iconName="cube-outline"
         />
       ) : (
-        <PackageList packages={filteredPackages} />
+        <PackageList packages={filteredPackages} type={selectedPackageType} />
       )}
 
       <TouchableOpacity

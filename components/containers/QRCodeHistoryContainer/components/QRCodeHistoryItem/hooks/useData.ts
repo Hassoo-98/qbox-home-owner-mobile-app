@@ -1,4 +1,3 @@
-import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 import { useRef } from "react";
 import { QRCodeHistoryItemProps, SwipeableRef } from "../props";
 
@@ -21,15 +20,8 @@ export const useData = ({
     swipeableRef.current?.close();
   };
 
-  const qrCodeDescription = `Valid for ${item?.maxUsers} user${
-    item?.maxUsers > 1 ? "s" : ""
-  }, expires in ${item?.validityDuration} ${
-    item?.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN
-      ? "minute"
-      : item?.validityDurationType === QR_VALIDITY_DURATION_TYPE.HOUR
-      ? "hour"
-      : "day"
-  }${item?.validityDuration > 1 ? "s" : ""}`;
+  const qrCodeDescription = `Valid for ${item?.validforUsers} user${item?.validforUsers > 1 ? "s" : ""
+    }, expires in ${item?.expiresIn}`;
 
   return {
     swipeableRef,

@@ -1,10 +1,10 @@
 import { AuthContext } from "@/context"
 import { useContext } from "react"
 
-export const useAuth=()=>{
-    const {userToken, login, logout, isLoading}=useContext(AuthContext)
+export const useAuth = () => {
+    const { userToken, user, login, logout, isLoading } = useContext(AuthContext)
 
-    return{
-        userToken, login, logout, isLoading
+    return {
+        userToken, user, login, logout, isLoading
     }
 }

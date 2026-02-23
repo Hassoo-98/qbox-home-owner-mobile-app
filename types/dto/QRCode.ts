@@ -1,14 +1,11 @@
-import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 
 export type QRCode = {
-  id: number;
-  title: string;
-  isActive: boolean;
-  createdAt: string;
-  validityDuration: number;
-  validityDurationType: QR_VALIDITY_DURATION_TYPE;
-  maxUsers: number;
-  usersLeft: number;
+  id: string;
+  name: string;
+  status: string;
+  validforUsers: number;
+  expiresIn: string;
+  created_at: string;
 };
 
 export type QRScan = {

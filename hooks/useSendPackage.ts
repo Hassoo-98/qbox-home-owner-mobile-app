@@ -1,3 +1,4 @@
+import { useSendPackageMutation } from "@/hooks/api/useShipmentQueries";
 import { SendPackageFormValues } from "@/types";
 import { SendPackageFormResolver } from "@/utils";
 import * as ImagePicker from "expo-image-picker";
@@ -8,6 +9,7 @@ import { Alert } from "react-native";
 
 export const useSendPackage = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const sendPackageMutation = useSendPackageMutation();
 
   const {
     control,
@@ -25,7 +27,7 @@ export const useSendPackage = () => {
       qBoxId: "",
       packageType: "",
       packageWeight: 0,
-      currency: "",
+      currency: "sar",
       packageItemValue: 0,
       packageDescription: "",
       qboxImage: "",
@@ -39,11 +41,17 @@ export const useSendPackage = () => {
   console.log("send package formm errors: ", JSON.stringify(errors, null, 4));
 
   const onSubmit = handleSubmit((data: SendPackageFormValues) => {
-    console.log(
-      "sendPackage submission submission: ",
-      JSON.stringify(data, null, 4)
-    );
-    router.navigate("/(app)/(package)");
+    sendPackageMutation.mutate(data, {
+      onSuccess: () => {
+        Alert.alert("Success", "Package sent successfully!");
+        reset();
+        router.navigate("/(app)/(package)");
+      },
+      onError: (error) => {
+        Alert.alert("Error", "Failed to send package. Please try again.");
+        console.error("sendPackage mutation error: ", error);
+      },
+    });
   });
 
   const phoneNumber = watch("phone");
@@ -70,11 +78,13 @@ export const useSendPackage = () => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        // Set the image URI to form
-        setValue("qboxImage", result.assets[0].uri, { shouldDirty: true });
+        // Set the image base64 to form
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        setValue("qboxImage", base64Image, { shouldDirty: true });
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -91,5 +101,6 @@ export const useSendPackage = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    isPending: sendPackageMutation.isPending,
   };
 };

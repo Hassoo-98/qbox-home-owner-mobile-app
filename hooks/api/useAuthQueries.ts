@@ -22,7 +22,7 @@ export const useRegister = () => {
             console.log("Registration Success Data:", JSON.stringify(data, null, 2));
         },
         onError: (error: any) => {
-            const errorMessage = error.response?.data?.message || 'Something went wrong during registration';
+            const errorMessage = error?.message || 'Something went wrong during registration';
             console.log("Registration Error Data:", JSON.stringify(error, null, 2));
             Toast.show({
                 type: "error",
@@ -47,13 +47,24 @@ export const useLogin = () => {
 
             // Content is in 'data.access' field in new API structure
             const responseData = Array.isArray(data) ? data[0] : data;
-            const accessToken = responseData?.data?.access || responseData?.token;
+            const access = responseData?.data?.access || responseData?.token;
+            const refresh = responseData?.data?.refresh;
 
-            if (accessToken) {
-                login(accessToken);
+            if (access && refresh && responseData?.data?.user) {
+                login({
+                    tokens: { access, refresh },
+                    user: responseData.data.user
+                });
+            } else if (access && responseData?.data?.user) {
+                // Fallback if only access token is present
+                login({
+                    tokens: { access, refresh: '' },
+                    user: responseData.data.user
+                });
+                console.warn("Login success but no refresh token received.");
             } else {
-                const failureMessage = responseData?.message || "Login failed: Invalid server response";
-                console.warn("Login success but no token. Message:", failureMessage);
+                const failureMessage = responseData?.message || "Login failed: Invalid server response or missing user data";
+                console.warn("Login success but incomplete data. Message:", failureMessage);
                 Toast.show({
                     type: "error",
                     text1: failureMessage,

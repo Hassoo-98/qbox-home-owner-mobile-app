@@ -1,15 +1,14 @@
 import { Text } from "@/components/ui";
 import { mvs } from "@/utils/metrices";
-import { Image } from "expo-image";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { ProfileCardProps } from "./props";
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
   imageUri,
-  name = "Ibrahim Ali",
-  email = "ibrahim@gmail.com",
-  phone = "+966 54 678 6543",
+  name = "Unknown",
+  email = "Unknown",
+  phone = "Unknown",
 }) => {
   const getInitial = () => {
     if (!name) return "";
@@ -21,19 +20,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        {imageUri ? (
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.avatarImage}
-            contentFit="cover"
-            transition={200}
-            onError={() => { }}
-          />
-        ) : (
-          <Text size="xl" style={styles.initialsText} variant="primary">
-            {getInitial()}
-          </Text>
-        )}
+
+        <Text size="xl" style={styles.initialsText} variant="primary">
+          {getInitial()}
+        </Text>
       </View>
       <Text size="lg" style={{ fontWeight: "600" }}>
         {name}

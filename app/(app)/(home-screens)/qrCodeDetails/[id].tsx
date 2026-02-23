@@ -10,49 +10,23 @@ import {
 } from "@/components";
 import {
   Colors,
-  QR_VALIDITY_DURATION_TYPE,
-  Spacing,
+  Spacing
 } from "@/constants";
-import { useQRHistory, useQRScans } from "@/hooks/api/useQRQueries";
-import { QRCode } from "@/types";
+import { useQRCodeDetails, useQRScans } from "@/hooks/api/useQRQueries";
 import { mvs } from "@/utils/metrices";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
 export const QRCodeDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
-  const [qrCodeData, setQrCodeData] = useState<QRCode>();
-  const [qrCodeDescription, setQrCodeDescription] = useState<string>("");
 
-  const { data: qrHistoryData, isLoading: historyLoading } = useQRHistory();
+  const { data: qrResponse, isLoading: detailsLoading } = useQRCodeDetails(id);
+  const qrCodeData = qrResponse?.data;
   const { data: qrScansData, isLoading: scansLoading } = useQRScans();
 
-  useEffect(() => {
-    if (qrHistoryData && id) {
-      const qrCode = qrHistoryData.find(
-        (item) => item.id.toString() === id
-      );
-
-      if (qrCode) {
-        setQrCodeData(qrCode as any);
-        setQrCodeDescription(
-          `Valid for ${qrCode?.maxUsers} user${qrCode?.maxUsers > 1 ? "s" : ""
-          }, ${qrCode?.validityDuration} ${qrCode?.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN
-            ? "minute"
-            : qrCode?.validityDurationType ===
-              QR_VALIDITY_DURATION_TYPE.HOUR
-              ? "hour"
-              : "day"
-          }${qrCode?.validityDuration > 1 ? "s" : ""}`
-        );
-      } else {
-        console.error("QR Code not found");
-        // No auto-back to allow user to see error or loading if it's transient
-      }
-    }
-  }, [id, qrHistoryData]);
+  const qrCodeDescription = qrCodeData ? `Valid for ${qrCodeData.max_users} user${qrCodeData.max_users > 1 ? "s" : ""}, ${qrCodeData.valid_duration} ${qrCodeData.duration_type}` : "";
 
   useLayoutEffect(() => {
     if (qrCodeData) {
@@ -67,7 +41,7 @@ export const QRCodeDetails = () => {
           >
             <AppHeaderLeft canGoBack />
             <AppHeaderTitle
-              title={qrCodeData.title || `QR #${qrCodeData.id}`}
+              title={qrCodeData.name || `QR #${qrCodeData.id}`}
               customStyle={{
                 width: "52%",
                 justifyContent: "flex-end",
@@ -78,9 +52,9 @@ export const QRCodeDetails = () => {
               <Text> </Text>
             </View>
             <Chip
-              label={qrCodeData.isActive ? "Active" : "Inactive"}
+              label={qrCodeData.status}
               size="small"
-              variant={qrCodeData.isActive ? "success" : "error"}
+              variant={qrCodeData.status === "Active" ? "success" : "error"}
             />
           </View>
         ),
@@ -96,7 +70,8 @@ export const QRCodeDetails = () => {
     }
   }, [qrCodeData, navigation]);
 
-  if (historyLoading || scansLoading) {
+  // If we have NO data and we are loading, show full skeleton
+  if (detailsLoading && !qrCodeData) {
     return (
       <View style={styles.container}>
         <FlatList
@@ -125,23 +100,43 @@ export const QRCodeDetails = () => {
   }
 
   const filteredScanHistory = (qrScansData || []).filter(
-    (item) => item.qrCodeId === qrCodeData?.id
+    (item) => item.qrCodeId.toString() === id // Match string ID
   );
+
+  // Map QRCodeData to the QRCode shape if needed, or pass directly
+  const qrCodeForHeader = {
+    ...qrCodeData,
+    createdAt: qrCodeData.created_at ? new Date(qrCodeData.created_at) : new Date(),
+    usersLeft: qrCodeData.remaining_users,
+  };
 
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
-      data={filteredScanHistory}
+      data={scansLoading ? [] : filteredScanHistory}
       keyExtractor={(item) => item?.id?.toString()}
       ListHeaderComponent={
         <QRCodeDetailsHeader
-          qrCodeData={qrCodeData}
+          qrCodeData={qrCodeForHeader as any}
           qrCodeDescription={qrCodeDescription}
         />
       }
       renderItem={({ item }) => <QRScanHistoryItem item={item as any} />}
+      ListEmptyComponent={
+        scansLoading ? (
+          <View style={{ gap: mvs(Spacing.md) }}>
+            <QRScanHistoryItemSkeleton />
+            <QRScanHistoryItemSkeleton />
+            <QRScanHistoryItemSkeleton />
+          </View>
+        ) : (
+          <Text style={{ textAlign: "center", marginTop: mvs(Spacing.xl), opacity: 0.5 }}>
+            No scan history found
+          </Text>
+        )
+      }
     />
   );
 };

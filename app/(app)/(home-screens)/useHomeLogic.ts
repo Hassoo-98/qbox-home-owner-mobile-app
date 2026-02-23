@@ -1,19 +1,26 @@
 import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 import { useOffers } from "@/hooks/api/useHomeQueries";
-import { useGenerateQR } from "@/hooks/api/useQRQueries";
+import { useCreateQRCode } from "@/hooks/api/useQRQueries";
 import { useShare } from "@/hooks/useShare";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils/getValidationResolvers";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { useHomeOwner } from "@/hooks/useHomeOwner";
 
 export const useHomeLogic = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
 
-    const { data: offersData, isLoading: offersLoading } = useOffers();
-    const generateQRMutation = useGenerateQR();
+    const { data: offersData, isLoading: offersLoading, error: offersError } = useOffers();
+    const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
+    const homeOwner = homeOwnerResponse?.data;
+
+    const createQRMutation = useCreateQRCode();
+    const queryClient = useQueryClient();
     const { onShare } = useShare();
 
     const defaultFormValues: QRGenerationFormValues = {
@@ -37,12 +44,20 @@ export const useHomeLogic = () => {
             setIsGenerating(true);
 
             try {
-                await generateQRMutation.mutateAsync({
-                    user_id: "current_user_id", // This should come from auth context
-                    locker_id: "L-101", // This should be selected or default
-                    guest_name: data.qrName || "Guest",
-                    valid_hours: parseInt(data.validityDuration || "1") || 1,
-                });
+                const payload = {
+                    qbox_id: homeOwner?.qboxes?.[0]?.qbox_id || "DEVICE123",
+                    max_users: parseInt(data.maxUsers) || 0,
+                    duration_type: data.validityDurationType === QR_VALIDITY_DURATION_TYPE.DAY ? "days" :
+                        data.validityDurationType === QR_VALIDITY_DURATION_TYPE.HOUR ? "hours" :
+                            data.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN ? "minutes" : data.validityDurationType,
+                    valid_duration: parseInt(data.validityDuration) || 1,
+                    name: data.qrName || "qrcode",
+                };
+
+                await createQRMutation.mutateAsync(payload);
+
+                // Refresh home owner data to get the latest QR image
+                queryClient.invalidateQueries({ queryKey: ['homeOwner'] });
 
                 setIsGenerating(false);
                 setShowSuccess(true);
@@ -66,6 +81,7 @@ export const useHomeLogic = () => {
     return {
         offersData,
         offersLoading,
+        offersError,
         isGenerating,
         showSuccess,
         isQrCodeGenerated,
@@ -73,5 +89,7 @@ export const useHomeLogic = () => {
         handleGenerateQR,
         resetForm,
         setShowSuccess,
+        homeOwner,
+        homeOwnerLoading,
     };
 };
