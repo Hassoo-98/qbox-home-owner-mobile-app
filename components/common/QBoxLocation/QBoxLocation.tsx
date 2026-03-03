@@ -8,10 +8,15 @@ import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { QBoxLocationProps } from "./props";
 
+
 export const QBoxLocation = ({
   control,
   qboxImage,
   pickImage,
+  getValues,
+  handleCheckShortAddress,
+  isShortAddressVerified,
+  isShortAddressChecking,
 }: QBoxLocationProps) => {
   return (
     <View>
@@ -19,7 +24,13 @@ export const QBoxLocation = ({
         name="shortId"
         inputMode="text"
         control={control}
-        endButtonText="Verify"
+        endButtonText={isShortAddressVerified ? "Verified" : "Verify"}
+        onEndButtonClick={() => handleCheckShortAddress(getValues("shortId"))}
+        endButtonProps={{
+          disabled: isShortAddressVerified || isShortAddressChecking,
+          loading: isShortAddressChecking,
+          variant: isShortAddressVerified ? "success" : "primary",
+        }}
         autoCorrect={false}
         label="Short Address"
         placeholder="XXXXXXXXX"

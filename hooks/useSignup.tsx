@@ -11,6 +11,8 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, View } from "react-native";
+import { Toast } from "toastify-react-native";
+import { useVerifyShortAddress } from "./api/useShortAddressQueries";
 
 export const useSignup = () => {
   const { onTriggerModal, onCloseModal } = useModal();
@@ -19,8 +21,12 @@ export const useSignup = () => {
   const verifyOtpMutation = useVerifyOtp();
   const verifyQBoxMutation = useVerifyQBoxId();
 
+
+
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isQBoxVerified, setIsQBoxVerified] = useState(false);
+  const [isShortAddressVerified, setIsShortAddressVerified] = useState(false);
 
   const {
     control,
@@ -30,6 +36,7 @@ export const useSignup = () => {
     watch,
     setValue,
     handleSubmit,
+    getValues,
   } = useForm<SignUpFormValues>({
     resolver: SignUpFormResolver,
     defaultValues: {
@@ -52,6 +59,25 @@ export const useSignup = () => {
       qboxImage: "",
     },
     mode: "all", // Optimized for better UX with multi-step
+  });
+
+  // Initialize the verifyShortAddressMutation with onSuccess callback for auto-fill
+  const verifyShortAddressMutation = useVerifyShortAddress({
+    onSuccess: (response: any) => {
+      setIsShortAddressVerified(true);
+      // Auto-fill address fields from the verified short address data
+      const data = response?.data;
+      console.log("Short address verification response:", JSON.stringify(response, null, 2));
+      console.log("Extracted data:", JSON.stringify(data, null, 2));
+      if (data) {
+        setValue("city", data.city || "", { shouldDirty: true, shouldValidate: true });
+        setValue("district", data.district || "", { shouldDirty: true, shouldValidate: true });
+        setValue("street", data.street || "", { shouldDirty: true, shouldValidate: true });
+        setValue("postalCode", data.postal_code || "", { shouldDirty: true, shouldValidate: true });
+        setValue("buildingNumber", data.building_number || "", { shouldDirty: true, shouldValidate: true });
+        setValue("secondaryNumber", data.additional_number || "", { shouldDirty: true, shouldValidate: true });
+      }
+    },
   });
 
   const qBoxId = watch("qBoxId");
@@ -235,6 +261,28 @@ export const useSignup = () => {
     });
   };
 
+
+  const handleCheckShortAddress = (short_address: string) => {
+    if (!short_address) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please enter QBox Short Address first",
+        position: "top",
+        backgroundColor: Colors.white,
+        textColor: Colors.text,
+        progressBarColor: Colors.danger,
+        visibilityTime: 3000,
+      });
+      return;
+    }
+    verifyShortAddressMutation.mutate({ short_address: short_address }, {
+      onError: () => {
+        setIsShortAddressVerified(false);
+      }
+    });
+  };
+
   return {
     currentStep,
     setCurrentStep,
@@ -249,5 +297,9 @@ export const useSignup = () => {
     handleCheckQBox,
     isQBoxVerified,
     isQBoxChecking: verifyQBoxMutation.isPending,
+    handleCheckShortAddress,
+    isShortAddressVerified,
+    isShortAddressChecking: verifyShortAddressMutation.isPending,
+    getValues,
   };
 };

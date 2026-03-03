@@ -458,3 +458,7 @@ export interface AlertPayload {
     body: string;
     user_id: string;
 }
+
+export interface VerifyShortAddressPayload {
+    short_address: string;
+}
