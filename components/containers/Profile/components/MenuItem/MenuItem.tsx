@@ -35,7 +35,7 @@ export const MenuItem = ({
         <Text style={{ color: textColor || Colors.text }}>{title}</Text>
       </View>
 
-      {path && (
+      {(path || onPress) && (
         <View style={{ flexDirection: "row", gap: mvs(10) }}>
           {rightText && <Text variant="secondary">{rightText}</Text>}
           <Ionicons name="chevron-forward" size={24} />

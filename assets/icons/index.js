@@ -23,6 +23,7 @@ export { default as PlaceholderQRIcon } from "./placeholder-qr.svg";
 export { default as PowerStatusIcom } from "./powerStatus.svg";
 export { default as ProfileIconOutline } from "./profile-icon-outline.svg";
 export { default as ProfileIcon } from "./profile-icon.svg";
+export { default as PromoCodeIcon } from "./promoCode.svg";
 export { default as QRHistoryIcon } from "./qr-history.svg";
 export { default as RecordingIcon } from "./recording-icon.svg";
 export { default as ReportIcon } from "./report.svg";
@@ -32,3 +33,4 @@ export { default as SendPackageIcon } from "./sendPackageIcon.tsx";
 export { default as DeletetIcon } from "./shareIcon.svg";
 export { default as SubscriptionHistoryIcon } from "./subscription-History.svg";
 export { default as WarningIconOutline } from "./warning-icon.svg";
+

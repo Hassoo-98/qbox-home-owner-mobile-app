@@ -5,6 +5,7 @@ import { View } from "react-native";
 import { PackageOrderPaymentSummary } from "../PackageOrderPaymentSummary";
 import { DeliveryInformationProps } from "./props";
 
+
 export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
   const [method, setMethod] = useState<"card" | "stc">("card");
 

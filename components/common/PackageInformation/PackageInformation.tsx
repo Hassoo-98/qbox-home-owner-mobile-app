@@ -21,9 +21,9 @@ export const PackageInformation = ({
         label="Package Type"
         placeholder="Choose package type"
         options={[
-          { label: "Main Door", value: "mainDoor" },
-          { label: "Gate", value: "gate" },
-          { label: "Building Entrance", value: "entrance" },
+          { label: "Electronic", value: "electronic" },
+          { label: "Medical", value: "medical" },
+          { label: "Other", value: "other" },
         ]}
       />
       <TextInput

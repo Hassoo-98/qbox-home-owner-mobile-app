@@ -63,3 +63,14 @@ export const useQRCodeDetails = (id: string) => {
         },
     });
 };
+
+export const useChangeQRStatus = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, status }: { id: string; status: string }) => QR.changeQRStatus(id, status),
+        onSuccess: () => {
+            // Invalidate and refetch QR history to show updated status
+            queryClient.invalidateQueries({ queryKey: ['qr-history'] });
+        },
+    });
+};

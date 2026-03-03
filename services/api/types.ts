@@ -403,10 +403,35 @@ export interface QRScanItem {
 export interface Offer {
     id: number;
     title: string;
+    subtitle?: string;
     description: string;
     image_url: string | number;
     button_text: string;
     button_color: string;
+}
+
+export interface PromotionDetail {
+    id: string;
+    user_limit: string;
+    merchant_img_url: string;
+    code: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    promo_type: string;
+    value: string;
+    merchant_provider_name: string;
+    merchant_provider_img: string;
+    is_active: boolean;
+    start_date: string;
+    end_date: string;
+    created_at: string;
+}
+
+export interface PromotionDetailResponse {
+    success: boolean;
+    statusCode: number;
+    data: PromotionDetail;
 }
 
 export interface Subscription {

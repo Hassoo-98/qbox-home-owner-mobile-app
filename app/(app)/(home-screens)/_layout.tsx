@@ -27,6 +27,12 @@ export default function HomeStack() {
           title: "",
         }}
       />
+      <Stack.Screen
+        name="offerDetails/[id]"
+        options={{
+          title: "",
+        }}
+      />
     </Stack>
   );
 }
