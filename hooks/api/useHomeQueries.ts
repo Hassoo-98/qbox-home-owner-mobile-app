@@ -8,6 +8,14 @@ export const useOffers = () => {
     });
 };
 
+export const usePromotionDetail = (id: string) => {
+    return useQuery({
+        queryKey: ['promotion', id],
+        queryFn: () => Home.getPromotionById(id),
+        enabled: !!id,
+    });
+};
+
 export const useSubscriptions = () => {
     return useQuery({
         queryKey: ['subscriptions'],

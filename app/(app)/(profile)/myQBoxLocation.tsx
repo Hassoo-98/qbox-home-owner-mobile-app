@@ -2,6 +2,7 @@ import { WarningIconOutline } from "@/assets/icons";
 import { QBoxLocation, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
 import { useModal } from "@/hooks";
+import { useVerifyShortAddress } from "@/hooks/api/useShortAddressQueries";
 import { useProfile } from "@/hooks/useProfile";
 import { QBoxLocationFormFormValues } from "@/types";
 import { MyQBoxLocationResolver } from "@/utils";
@@ -9,7 +10,7 @@ import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -29,6 +30,7 @@ export const MyQBoxLocation = () => {
   const { mutateAsync: updateHomeOwner } = useUpdateHomeOwner(homeOwner?.id || "");
 
   const { onTriggerModal, onCloseModal } = useModal();
+  const [isShortAddressVerified, setIsShortAddressVerified] = useState(false);
 
   const {
     control,
@@ -36,12 +38,35 @@ export const MyQBoxLocation = () => {
     setValue,
     watch,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<QBoxLocationFormFormValues>({
     defaultValues: {},
     resolver: MyQBoxLocationResolver,
     mode: "onChange",
   });
+
+  const verifyShortAddressMutation = useVerifyShortAddress({
+    onSuccess: (response: any) => {
+      setIsShortAddressVerified(true);
+      const data = response?.data;
+      if (data) {
+        setValue("city", data.city || "", { shouldDirty: true, shouldValidate: true });
+        setValue("district", data.district || "", { shouldDirty: true, shouldValidate: true });
+        setValue("street", data.street || "", { shouldDirty: true, shouldValidate: true });
+        setValue("postalCode", data.postal_code || "", { shouldDirty: true, shouldValidate: true });
+        setValue("buildingNumber", data.building_number || "", { shouldDirty: true, shouldValidate: true });
+        setValue("secondaryNumber", data.additional_number || "", { shouldDirty: true, shouldValidate: true });
+      }
+    },
+  });
+
+  const handleCheckShortAddress = (short_address: string) => {
+    if (!short_address) return;
+    verifyShortAddressMutation.mutate({ short_address }, {
+      onError: () => setIsShortAddressVerified(false),
+    });
+  };
 
   useEffect(() => {
     if (homeOwner) {
@@ -167,6 +192,10 @@ export const MyQBoxLocation = () => {
             control={control}
             pickImage={pickImage}
             qboxImage={qboxImage}
+            getValues={getValues}
+            handleCheckShortAddress={handleCheckShortAddress}
+            isShortAddressVerified={isShortAddressVerified}
+            isShortAddressChecking={verifyShortAddressMutation.isPending}
           />
 
           <View

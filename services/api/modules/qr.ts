@@ -25,3 +25,8 @@ export const getQRCodeDetails = async (id: string): Promise<GetQRCodeDetailsResp
     const response = await api.get<GetQRCodeDetailsResponse>(`/qbox/qr-codes/${id}`);
     return response.data;
 };
+
+export const changeQRStatus = async (id: string, status: string) => {
+    const response = await api.patch(`/qbox/qr-codes/${id}/change-qr-status`, { status });
+    return response.data;
+};

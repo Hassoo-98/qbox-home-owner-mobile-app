@@ -24,6 +24,10 @@ export const SignUp = () => {
     handleCheckQBox,
     isQBoxVerified,
     isQBoxChecking,
+    getValues,
+    handleCheckShortAddress,
+    isShortAddressVerified,
+    isShortAddressChecking,
   } = useSignup();
 
   return (
@@ -88,6 +92,10 @@ export const SignUp = () => {
             control={control}
             pickImage={pickImage}
             qboxImage={qboxImage}
+            getValues={getValues}
+            handleCheckShortAddress={handleCheckShortAddress}
+            isShortAddressVerified={isShortAddressVerified}
+            isShortAddressChecking={isShortAddressChecking}
           />
         )}
       </View>

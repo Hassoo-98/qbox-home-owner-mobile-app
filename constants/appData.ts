@@ -7,6 +7,7 @@ import {
   PackageValueIcon,
   PackageWeightIcon,
   ProfileIcon,
+  PromoCodeIcon,
   SubscriptionHistoryIcon
 } from "@/assets/icons";
 import { PackageDetailsType, ProfileItem } from "@/types";
@@ -402,9 +403,15 @@ export const MENU_ITEM: ProfileItem[] = [
     title: "Subscription History",
     path: "/subscriptionHistory",
   },
-  { id: 5, icon: ContactIcon, title: "Contact Us", path: "/" },
   {
-    id: 6,
+    id: 5,
+    icon: PromoCodeIcon,
+    title: "Promo Code",
+    path: "/promoCode",
+  },
+  { id: 6, icon: ContactIcon, title: "Contact Us" },
+  {
+    id: 7,
     icon: LogoutIcon,
     title: "Logout",
     backgroundColor: Colors.lightRed,

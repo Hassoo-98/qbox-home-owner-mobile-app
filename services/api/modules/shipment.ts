@@ -48,6 +48,6 @@ export const getPackageDetails = async (id: string | number): Promise<GetPackage
 };
 
 export const getPackageTimeline = async (id: string | number): Promise<PackageTimelineItem[]> => {
-    const response = await api.get(`/packages/${id}/timeline`);
+    const response = await api.get(`/timeline/${id}`);
     return response.data;
 };

@@ -3,9 +3,11 @@ export * from "./DriverOTPRequestModal";
 export * from "./ItemInfo";
 export * from "./Layout";
 export * from "./Modal";
+export * from "./OfferClaimedModal";
 export * from "./OTPModal";
 export * from "./PackageInformation";
 export * from "./PaymentSection";
 export * from "./QBoxLocation";
 export * from "./RadioButton";
 export * from "./ViewRecording";
+

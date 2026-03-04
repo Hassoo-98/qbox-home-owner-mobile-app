@@ -1,23 +1,28 @@
 import { EmptyState, QRCodeHistoryItem, QRCodeHistoryItemSkeleton, Text } from "@/components";
 import { Spacing } from "@/constants";
-import { useQRHistory } from "@/hooks/api/useQRQueries";
+import { useChangeQRStatus, useQRHistory } from "@/hooks/api/useQRQueries";
 import { QRCode } from "@/types";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, View } from "react-native";
+import { Alert, FlatList, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const QRCodeHistory = () => {
   const { data: qrHistoryData, isLoading } = useQRHistory();
+  const changeQRStatusMutation = useChangeQRStatus();
 
   const handleShare = (item: QRCode) => {
     // Implement share functionality
     console.log("Sharing QR Code:", item.name);
   };
 
-  const handleMarkAsExpire = (item: QRCode) => {
-    // Implement mark as expire functionality
-    console.log("Marking as expired:", item.id);
+  const handleMarkAsExpire = async (item: QRCode) => {
+    try {
+      await changeQRStatusMutation.mutateAsync({ id: item.id, status: "Expired" });
+      Alert.alert("Success", "QR Code has been marked as expired");
+    } catch (error) {
+      Alert.alert("Error", "Failed to mark QR Code as expired. Please try again.");
+    }
   };
 
   return (

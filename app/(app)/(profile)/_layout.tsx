@@ -59,6 +59,12 @@ export default function ProfileStack() {
           }}
         />
         <Stack.Screen
+          name="promoCode"
+          options={{
+            title: "Promo Codes",
+          }}
+        />
+        <Stack.Screen
           name="renewSubscription"
           options={{
             title: "Renew Subscription",
