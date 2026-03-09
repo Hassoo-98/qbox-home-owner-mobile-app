@@ -1,12 +1,12 @@
 // Auth Types
 export interface AddressDetails {
     short_address: string;
-    city: string;
+    city?: string;
     region?: string;
-    district: string;
-    street: string;
-    postal_code: string;
-    building_number: string;
+    district?: string;
+    street?: string;
+    postal_code?: string;
+    building_number?: string;
     additional_number?: string;
     latitude?: string;
     longitude?: string;

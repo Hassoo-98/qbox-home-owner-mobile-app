@@ -49,7 +49,7 @@ export const OTPModal = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback >
         <BlurView
           intensity={Platform.OS === "ios" ? 30 : 80}
           tint="dark"
@@ -101,7 +101,7 @@ export const OTPModal = ({
                     marginTop: Spacing.sm,
                   }}
                 >
-                  {footerText}
+                  {footerText}{" "}
                   <Text
                     variant="primary"
                     style={{ fontWeight: "bold" }}

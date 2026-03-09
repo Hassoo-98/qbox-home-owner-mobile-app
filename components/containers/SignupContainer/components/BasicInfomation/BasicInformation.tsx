@@ -37,7 +37,7 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
       <PhoneNumberInput
         name="secondaryPhone"
         control={control}
-        label="Secondary Number"
+        label="Secondary Number (Optional)"
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
       />
