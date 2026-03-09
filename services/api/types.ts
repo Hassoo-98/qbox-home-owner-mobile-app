@@ -2,17 +2,23 @@
 export interface AddressDetails {
     short_address: string;
     city: string;
+    region?: string;
     district: string;
     street: string;
     postal_code: string;
     building_number: string;
-    secondary_building_number: string;
+    additional_number?: string;
+    latitude?: string;
+    longitude?: string;
+    address_id?: string;
+    address1?: string;
+    address2?: string;
 }
 
 export interface InstallationDetails {
     location_preference: string;
     access_instruction: string;
-    qbox_image_url: string;
+    qbox_image_url: string | null;
 }
 
 export interface RegisterPayload {
@@ -154,7 +160,7 @@ export interface PackageListItemDetails {
 export interface PackageListItem {
     id: string;
     qbox: string | null;
-    tracking_id: string;
+    trackingId: string;
     merchant_name: string;
     service_provider: string;
     driver_name: string;
@@ -209,31 +215,60 @@ export interface PackageDetails {
     recepientName?: string;
     paymentSummary?: {
         paymentMethod: string;
-        charges: { key: string; value: number }[];
-        currency: string;
+        charges: number | { key: string; value: number }[];
+        currency?: string;
     };
 }
 
 export interface PackageTimelineItem {
-    id: number;
-    packageId: number;
-    timestamp: string;
+    id: string;
+    date_and_time?: string;
+    dateAndTime?: string; // Support camelCase from latest update
     status: string;
-    location: string;
+    description: string;
+    location: string; // Use this for city as requested
+    package?: string;
+    package_status?: string;
+    package_tracking_id?: string;
+    package_city?: string;
+    issue_related_to?: string;
+    issueRelatedTo?: string;
 }
 
 export interface SendPackageRequest {
     shippingCompany: string;
     qboxImage: string;
     packageDescription: string;
-    packageItemValue: number;
-    currency: string;
-    packageWeight: number;
-    packageType: string;
     qBoxId: string;
     phone: string;
     email: string;
     fullName: string;
+    paymentSummary: {
+        paymentMethod: string;
+        charges: number;
+    };
+    attributes: {
+        type: string;
+        value: string;
+    }[];
+}
+
+export interface ReturnPackageRequest {
+    returnPackageImage: string;
+    packageDescription: string;
+    qBoxId: string;
+    pinCode: string;
+    attributes: {
+        type: string;
+        value: string;
+    }[];
+}
+
+export interface ReturnPackageResponse {
+    success: boolean;
+    statusCode: number;
+    data: any;
+    message: string;
 }
 
 export interface SendPackageResponse {
@@ -243,14 +278,55 @@ export interface SendPackageResponse {
     message: string;
 }
 
+export interface CreateReportPayload {
+    tracking_id: string;
+    status: string;
+    description: string;
+    issue_related_to: string;
+    location: string;
+}
+
+export interface CreateReportResponse {
+    success: boolean;
+    statusCode: number;
+    message: string;
+    data?: any;
+}
+
 export interface Address {
     short_address: string;
+    region: string;
+    region_ar?: string;
     city: string;
+    city_ar?: string;
     district: string;
+    district_ar?: string;
     street: string;
+    street_ar?: string;
     postal_code: string;
     building_number: string;
-    secondary_building_number: string;
+    additional_number: string;
+    latitude: string;
+    longitude: string;
+    address_id: string;
+    address1: string;
+    address2: string;
+}
+
+export interface QBox {
+    id: string;
+    qbox_id: string;
+    homeowner_name_snapshot: string;
+    short_address_snapshot: string;
+    city_snapshot: string;
+    status: string;
+    led_indicator: string;
+    camera_status: string;
+    last_online: string | null;
+    activation_date: string;
+    qbox_image: string;
+    qbox_image_url: string;
+    power_status: string;
 }
 
 export interface HomeOwner {
@@ -263,12 +339,14 @@ export interface HomeOwner {
     email_verified: boolean;
     phone_verified: boolean;
     address: Address;
-    installation_location_preference: string;
-    installation_access_instruction: string;
-    installation_qbox_image_url: string;
+    installation: {
+        location_preference: string;
+        access_instruction: string;
+        qbox_image_url: string | null;
+    };
     is_active: boolean;
     date_joined: string;
-    qboxes: any[];
+    qboxes: QBox[];
 }
 
 export interface HomeOwnerResponse {
@@ -279,10 +357,13 @@ export interface HomeOwnerResponse {
 }
 
 export interface UpdateHomeOwnerRequest {
-    full_name: string;
-    email: string;
+    full_name?: string;
+    email?: string;
     phone_number?: string;
+    password?: string;
     secondary_phone_number?: string;
+    role?: string;
+    qbox_id?: string;
     address?: {
         short_address?: string;
         city?: string;
@@ -290,10 +371,19 @@ export interface UpdateHomeOwnerRequest {
         street?: string;
         postal_code?: string;
         building_number?: string;
-        secondary_building_number?: string;
+        region?: string;
+        additional_number?: string;
+        latitude?: string;
+        longitude?: string;
+        address_id?: string;
+        address1?: string;
+        address2?: string;
     };
-    installation_location_preference?: string;
-    installation_access_instruction?: string;
+    installation?: {
+        location_preference?: string;
+        access_instruction?: string;
+        qbox_image_url?: string | null;
+    };
     is_active?: boolean;
 }
 
@@ -465,6 +555,7 @@ export interface UpdateSettingsPayload {
 }
 
 export interface ChangePasswordPayload {
+    id: string;
     old_password: string;
     new_password: string;
 }

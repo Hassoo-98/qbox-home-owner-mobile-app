@@ -12,7 +12,7 @@ export const getHomeOwner = async (id: string): Promise<HomeOwnerResponse> => {
 
 export const updateHomeOwner = async (id: string, data: UpdateHomeOwnerRequest): Promise<UpdateHomeOwnerResponse> => {
     try {
-        const response = await api.put<UpdateHomeOwnerResponse>(`/home_owner/${id}/update`, data);
+        const response = await api.patch<UpdateHomeOwnerResponse>(`/home_owner/${id}/update`, data);
         return response.data;
     } catch (error) {
         throw error;

@@ -138,7 +138,7 @@ export const useSignup = () => {
         street: data.street,
         postal_code: data.postalCode,
         building_number: data.buildingNumber,
-        secondary_building_number: data.secondaryNumber,
+        additional_number: data.secondaryNumber,
       },
       installation: {
         location_preference: data.installationLocation,

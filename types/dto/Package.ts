@@ -12,8 +12,8 @@ export interface PaymentCharge {
 
 export interface PaymentSummary {
   paymentMethod: string;
-  charges: PaymentCharge[];
-  currency: string;
+  charges: number | PaymentCharge[];
+  currency?: string;
 }
 
 export interface PackageBase {

@@ -1,12 +1,12 @@
 import { PaymentSection } from "@/components/common";
 import { CustomDropdown } from "@/components/ui/Dropdown";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PackageOrderPaymentSummary } from "../PackageOrderPaymentSummary";
 import { DeliveryInformationProps } from "./props";
 
 
-export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
+export const DeliveryInformation = ({ control, setValue }: DeliveryInformationProps) => {
   const [method, setMethod] = useState<"card" | "stc">("card");
 
   const handlePaymentMethodChange = (newMethod: "card" | "stc") => {
@@ -14,7 +14,7 @@ export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
   };
 
   const paymentSummary = {
-    paymentMethod: "Apple Pay",
+    paymentMethod: "Credit Card",
     charges: [
       {
         key: "Base delivery fee (First 5 Kg’s)",
@@ -31,6 +31,13 @@ export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
     ],
     currency: "SAR",
   };
+
+  useEffect(() => {
+    const total = paymentSummary.charges.reduce((sum, item) => sum + item.value, 0);
+    setValue("paymentMethod", paymentSummary.paymentMethod);
+    setValue("charges", total);
+  }, []);
+
   return (
     <View>
       <CustomDropdown
@@ -47,7 +54,7 @@ export const DeliveryInformation = ({ control }: DeliveryInformationProps) => {
 
       <View>
         <PackageOrderPaymentSummary paymentSummary={paymentSummary} />
-        <PaymentSection control={control} />
+        <PaymentSection control={control} setValue={setValue} />
       </View>
     </View>
   );

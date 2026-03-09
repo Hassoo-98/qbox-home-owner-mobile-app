@@ -7,9 +7,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
 import { Toast } from "toastify-react-native";
+import { useReturnPackageMutation } from "./api/useShipmentQueries";
 
 export const useReturnPackage = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const returnPackageMutation = useReturnPackageMutation();
 
   const {
     control,
@@ -37,20 +39,37 @@ export const useReturnPackage = () => {
   console.log("send package formm errors: ", JSON.stringify(errors, null, 4));
 
   const onSubmit = handleSubmit((data: ReturnPackageFormValues) => {
-    console.log(
-      "returnPackage submission submission: ",
-      JSON.stringify(data, null, 4)
-    );
-    reset();
-    router.navigate("/(app)/(package)");
-    Toast.show({
-      type: "success",
-      text1: "Package returned successfully.",
-      position: "top",
-      backgroundColor: Colors.white,
-      textColor: Colors.text,
-      progressBarColor: Colors.white,
-      visibilityTime: 3000,
+    const payload = {
+      returnPackageImage: data.returnPackageImage,
+      packageDescription: data.packageDescription,
+      qBoxId: "QBOX-01", // Defaulted per API payload req
+      pinCode: data.pinCode,
+      attributes: [
+        { type: "Package Type", value: data.packageType },
+        { type: "Package Weight", value: Number(data.packageWeight).toFixed(2) },
+        { type: "Item Value", value: Number(data.packageItemValue).toFixed(2) },
+        { type: "currency", value: data.currency },
+      ],
+    };
+
+    returnPackageMutation.mutate(payload, {
+      onSuccess: () => {
+        reset();
+        router.navigate("/(app)/(package)");
+        Toast.show({
+          type: "success",
+          text1: "Package returned successfully.",
+          position: "top",
+          backgroundColor: Colors.white,
+          textColor: Colors.text,
+          progressBarColor: Colors.white,
+          visibilityTime: 3000,
+        });
+      },
+      onError: (error) => {
+        console.error("Return package error:", error);
+        Alert.alert("Error", "Failed to return package. Please try again.");
+      },
     });
   });
 
@@ -74,10 +93,12 @@ export const useReturnPackage = () => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        setValue("returnPackageImage", result.assets[0].uri, {
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        setValue("returnPackageImage", base64Image, {
           shouldDirty: true,
         });
       }
@@ -95,5 +116,6 @@ export const useReturnPackage = () => {
     control,
     pickImage,
     returnPackageImage,
+    isPending: returnPackageMutation.isPending,
   };
 };

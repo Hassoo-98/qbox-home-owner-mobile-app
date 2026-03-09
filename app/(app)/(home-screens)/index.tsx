@@ -1,4 +1,4 @@
-import { BoxInfo, Offer, OfferSkeleton, QRSetting, Text } from "@/components";
+import { BoxInfo, BoxInfoSkeleton, Offer, OfferSkeleton, QRSetting, QRSettingSkeleton, Text } from "@/components";
 import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -25,6 +25,7 @@ export const Home = () => {
     handleGenerateQR,
     resetForm,
     homeOwner,
+    homeOwnerLoading,
   } = useHomeLogic();
 
 
@@ -33,16 +34,24 @@ export const Home = () => {
   const offers = Array.isArray(offersData) ? offersData : [];
 
   // Render loading state
-  if (offersLoading) {
+  if (homeOwnerLoading || isGenerating) {
     return (
-      <FlatList
-        data={[1, 2, 3]}
-        keyExtractor={(item) => item.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.flatList}
-        renderItem={() => <OfferSkeleton />}
-      />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <BoxInfoSkeleton />
+        <FlatList
+          data={[1, 2, 3]}
+          keyExtractor={(item) => item.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.flatList}
+          renderItem={() => <OfferSkeleton />}
+        />
+        <QRSettingSkeleton />
+      </ScrollView>
     );
   }
 
@@ -69,7 +78,7 @@ export const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <BoxInfo
-          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "QB-10089912"}
           address={homeOwner?.address?.short_address || "No Address"}
           packageCount={0} // Placeholder until package API is integrated
           status={homeOwner?.qboxes?.[0]?.status || "Offline"}
@@ -85,9 +94,9 @@ export const Home = () => {
           />
         }
         <QRSetting
-          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "N/A"}
+          boxId={homeOwner?.qboxes?.[0]?.qbox_id || "QB-10089912"}
           address={homeOwner?.address?.short_address || "No Address"}
-          image={homeOwner?.installation_qbox_image_url || ""}
+          image={homeOwner?.installation?.qbox_image_url || ""}
           isGenerating={isGenerating}
           resetForm={resetForm}
           control={control}

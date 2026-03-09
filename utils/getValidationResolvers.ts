@@ -529,6 +529,10 @@ export const SendPackageFormResolver = yupResolver(
     qboxImage: yup.string().required("Please upload a QBox image"),
 
     shippingCompany: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    paymentMethod: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    charges: yup.number().required(ERROR_MESSAGES.REQUIRED_FIELD),
   }) as yup.ObjectSchema<SendPackageFormValues>
 );
 

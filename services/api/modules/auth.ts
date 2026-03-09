@@ -42,7 +42,8 @@ export const updateProfileSettings = async (data: UpdateSettingsPayload) => {
 };
 
 export const changePassword = async (data: ChangePasswordPayload) => {
-    const response = await api.post('/home_owner/profile/change_password', data);
+    const { id, ...payload } = data;
+    const response = await api.post(`/home_owner/${id}/change-password`, payload);
     return response.data;
 };
 

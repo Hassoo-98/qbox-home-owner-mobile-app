@@ -70,17 +70,18 @@ export const MyQBoxLocation = () => {
 
   useEffect(() => {
     if (homeOwner) {
+      console.log("Full HomeOwner Data on Location Screen:", JSON.stringify(homeOwner, null, 2));
       reset({
-        shortId: homeOwner.address?.short_address || "",
-        city: homeOwner.address?.city || "",
-        district: homeOwner.address?.district || "",
-        street: homeOwner.address?.street || "",
-        postalCode: homeOwner.address?.postal_code || "",
-        buildingNumber: homeOwner.address?.building_number || "",
-        secondaryNumber: homeOwner.address?.secondary_building_number || "",
-        installationLocation: homeOwner.installation_location_preference || "",
-        accessInstruction: homeOwner.installation_access_instruction || "",
-        qboxImage: homeOwner.installation_qbox_image_url || "",
+        shortId: homeOwner.address?.short_address || (homeOwner as any).short_address || "",
+        city: homeOwner.address?.city || (homeOwner as any).city || "",
+        district: homeOwner.address?.district || (homeOwner as any).district || "",
+        street: homeOwner.address?.street || (homeOwner as any).street || "",
+        postalCode: homeOwner.address?.postal_code || (homeOwner as any).postal_code || "",
+        buildingNumber: homeOwner.address?.building_number || (homeOwner as any).building_number || "",
+        secondaryNumber: (homeOwner.address as any)?.additional_number || (homeOwner.address as any)?.secondary_building_number || (homeOwner as any).secondary_building_number || "",
+        installationLocation: homeOwner.installation?.location_preference || (homeOwner as any).installation_location_preference || "",
+        accessInstruction: homeOwner.installation?.access_instruction || (homeOwner as any).installation_access_instruction || "",
+        qboxImage: homeOwner.installation?.qbox_image_url || (homeOwner as any).installation_qbox_image_url || "",
       });
     }
   }, [homeOwner, reset]);
@@ -133,10 +134,12 @@ export const MyQBoxLocation = () => {
           street: data.street,
           postal_code: data.postalCode,
           building_number: data.buildingNumber,
-          secondary_building_number: data.secondaryNumber,
+          additional_number: data.secondaryNumber,
         },
-        installation_location_preference: data.installationLocation,
-        installation_access_instruction: data.accessInstruction,
+        installation: {
+          location_preference: data.installationLocation,
+          access_instruction: data.accessInstruction,
+        },
       });
 
       onTriggerModal({
