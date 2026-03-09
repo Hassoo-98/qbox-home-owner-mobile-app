@@ -26,18 +26,36 @@ export const PackageDetailsTimeLine = ({
               textStyle={styles.headerText}
               flexArr={TABLE_FLEX}
             />
-            {timelineData.map((rowData, index) => (
-              <Row
-                key={`timeline-${index}`}
-                data={rowData}
-                textStyle={styles.rowText}
-                style={[
-                  styles.dataRow,
-                  { backgroundColor: index % 2 === 0 ? "#fff" : "#F4F5F6" },
-                ]}
-                flexArr={TABLE_FLEX}
-              />
-            ))}
+            {timelineData.map((rowData, index) => {
+              const status = rowData[1];
+              const isIssue = status?.toLowerCase().includes("issue") || status?.toLowerCase().includes("failed");
+
+              const formattedRow = [
+                rowData[0],
+                <Text
+                  style={[
+                    styles.rowText,
+                    isIssue && { color: Colors.danger }
+                  ]}
+                >
+                  {status?.replace(/-/g, ' ')}
+                </Text>,
+                rowData[2]
+              ];
+
+              return (
+                <Row
+                  key={`timeline-${index}`}
+                  data={formattedRow}
+                  textStyle={styles.rowText}
+                  style={[
+                    styles.dataRow,
+                    { backgroundColor: index % 2 === 0 ? "#fff" : "#F4F5F6" },
+                  ]}
+                  flexArr={TABLE_FLEX}
+                />
+              );
+            })}
           </Table>
         </View>
       ) : (

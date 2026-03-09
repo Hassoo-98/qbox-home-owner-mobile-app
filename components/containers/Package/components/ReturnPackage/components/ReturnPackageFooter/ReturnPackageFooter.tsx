@@ -12,6 +12,7 @@ export const ReturnPackageFooter = ({
   setCurrentStep,
   isFormValid,
   onSubmit,
+  isPending,
 }: ReturnPackageFooterProps) => {
   const packageGuidelines = [
     "Maximum weight: 5kg",
@@ -50,8 +51,9 @@ export const ReturnPackageFooter = ({
           }}
         />
         <Button
-          title={currentStep === 2 ? "Confirm" : "Next"}
-          disabled={!isFormValid}
+          title={currentStep === 2 ? (isPending ? "Loading..." : "Confirm") : "Next"}
+          disabled={!isFormValid || isPending}
+          loading={isPending} // assuming Button supports loading
           onPress={() => {
             console.log("current step: ", currentStep);
             switch (currentStep) {

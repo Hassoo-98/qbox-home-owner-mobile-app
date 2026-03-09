@@ -25,7 +25,7 @@ export const useMyQBoxLogic = () => {
     );
 
     const internalPlayer = useVideoPlayer(
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://backend.qbox.sa/media/hls/pi_cam_internal/index.m3u8",
         (player) => {
             player.loop = false;
             player.muted = false;

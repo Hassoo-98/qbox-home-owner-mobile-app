@@ -256,30 +256,37 @@ export const SignUpFormResolver = yupResolver(
 
     city: yup
       .string()
+      .nullable()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .min(2, "City must be at least 2 characters"),
 
     district: yup
       .string()
+      .nullable()
+
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .min(2, "District must be at least 2 characters"),
 
     street: yup
       .string()
+      .nullable()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .min(2, "Street must be at least 2 characters"),
 
     postalCode: yup
       .string()
+      .nullable()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .matches(/^[0-9]{5}$/, "Postal code must be 5 digits"),
 
     buildingNumber: yup
       .string()
+      .nullable()
       .optional(),
 
     secondaryNumber: yup
       .string()
+      .nullable()
       .optional(),
 
     installationLocation: yup
@@ -529,6 +536,10 @@ export const SendPackageFormResolver = yupResolver(
     qboxImage: yup.string().required("Please upload a QBox image"),
 
     shippingCompany: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    paymentMethod: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    charges: yup.number().required(ERROR_MESSAGES.REQUIRED_FIELD),
   }) as yup.ObjectSchema<SendPackageFormValues>
 );
 

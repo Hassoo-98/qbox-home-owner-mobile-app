@@ -2,14 +2,15 @@ import { RadioButton, Text, TextInput } from "@/components";
 import { Colors } from "@/constants";
 import { mvs } from "@/utils/metrices";
 import React, { useState } from "react";
-import { Control } from "react-hook-form";
+import { Control, UseFormSetValue } from "react-hook-form";
 import { View } from "react-native";
 
 interface PaymentSectionProps {
   control: Control<any>;
+  setValue: UseFormSetValue<any>;
 }
 
-export const PaymentSection: React.FC<PaymentSectionProps> = ({ control }) => {
+export const PaymentSection: React.FC<PaymentSectionProps> = ({ control, setValue }) => {
   const [method, setMethod] = useState<"card" | "stc">("card");
 
   return (
@@ -28,14 +29,20 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ control }) => {
         title="STC Payment"
         subtitle="Digital wallet payment"
         selected={method === "stc"}
-        onPress={() => setMethod("stc")}
+        onPress={() => {
+          setMethod("stc");
+          setValue("paymentMethod", "STC Pay");
+        }}
       />
 
       <RadioButton
         title="Credit/Debit Card"
         subtitle="Visa, Mastercard, Mada"
         selected={method === "card"}
-        onPress={() => setMethod("card")}
+        onPress={() => {
+          setMethod("card");
+          setValue("paymentMethod", "Credit Card");
+        }}
       />
 
       {method === "card" && (

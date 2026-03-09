@@ -12,10 +12,10 @@ export const PackageDetailsHeader = ({ packageData }: any) => {
   }
   return (
     <ItemInfo
-      title={packageData.courierName}
-      description={`Sender Name`}
+      title={packageData.courierName || "Courier Name"}
+      description={packageData.type === PACKAGE_TYPE.DELIVERED ? null : packageData.sender_name || "Sender Name"}
       titleProps={{
-        size: "lg",
+        size: "md",
         style: { fontWeight: "bold", color: Colors.dark },
       }}
       descriptionProps={{ size: "sm", style: { fontWeight: "medium" } }}
@@ -33,13 +33,21 @@ export const PackageDetailsHeader = ({ packageData }: any) => {
 
 const OutgoingPackageDetailsHeader = ({ data }: any) => (
   <ItemInfo
-    title="QBox ID"
-    description={data.recepientName}
-    descriptionProps={{ size: "sm" }}
+    title="QboxId"
+    description={data.courierName || "Courier Name"}
+    descriptionProps={{
+      size: "sm",
+    }}
     leftContent={
       <View>
-        <Text size="sm">{`${data.phoneNumber} . ${data.email}`}</Text>
-        <Text size="sm">{`Last update: ${format(data.lastUpdate, "Pp")}`}</Text>
+        <Text size="sm">
+          {data.email || "Email"} {". "}{data.phoneNumber || "Phone number"}
+        </Text>
+        <View style={{ marginTop: 2 }}>
+          <Text size="sm">
+            {`Last update: ${format(data.lastUpdate, "Pp")}`}
+          </Text>
+        </View>
       </View>
     }
     rightContent={<Image source={data.imageUrl} style={styles.packageImage} />}

@@ -45,8 +45,8 @@ export const useHomeLogic = () => {
 
             try {
                 const payload = {
-                    qbox_id: homeOwner?.qboxes?.[0]?.qbox_id || "DEVICE123",
-                    max_users: parseInt(data.maxUsers) || 0,
+                    qbox_id: homeOwner?.qboxes?.[0]?.qbox_id || "QB-10089912",
+                    max_users: parseInt(data.maxUsers) || 1, // Default to 1 if parsing fails or is 0
                     duration_type: data.validityDurationType === QR_VALIDITY_DURATION_TYPE.DAY ? "days" :
                         data.validityDurationType === QR_VALIDITY_DURATION_TYPE.HOUR ? "hours" :
                             data.validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN ? "minutes" : data.validityDurationType,
@@ -90,6 +90,6 @@ export const useHomeLogic = () => {
         resetForm,
         setShowSuccess,
         homeOwner,
-        homeOwnerLoading,
+        homeOwnerLoading: homeOwnerLoading || offersLoading,
     };
 };

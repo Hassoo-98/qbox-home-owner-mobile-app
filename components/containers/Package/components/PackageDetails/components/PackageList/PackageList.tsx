@@ -75,7 +75,7 @@ export const PackageList = ({ packages, type }: PackageListProps) => {
 
             {/* Tracking ID */}
             <Text variant="secondary" size="sm" style={styles.trackingId}>
-              {item.tracking_id}
+              {item.trackingId}
             </Text>
             {/* Created Date */}
             <Text variant="secondary" size="xs">

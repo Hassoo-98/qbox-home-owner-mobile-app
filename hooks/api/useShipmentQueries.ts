@@ -2,6 +2,9 @@ import * as Shipment from '@/services/api/modules/shipment';
 import {
     GetPackageDetailsResponse,
     PackageListResponse,
+    PackageTimelineItem,
+    ReturnPackageRequest,
+    ReturnPackageResponse,
     SendPackageRequest,
     SendPackageResponse,
 } from '@/services/api/types';
@@ -64,6 +67,17 @@ export const useSendPackageMutation = () => {
     });
 };
 
+export const useReturnPackageMutation = () => {
+    const queryClient = useQueryClient();
+    return useMutation<ReturnPackageResponse, Error, ReturnPackageRequest>({
+        mutationFn: Shipment.returnPackage,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['outgoing-packages'] });
+            queryClient.invalidateQueries({ queryKey: ['packages'] });
+        },
+    });
+};
+
 export const usePackageDetails = (id: string | number) => {
     const queryClient = useQueryClient();
     return useQuery<GetPackageDetailsResponse>({
@@ -91,7 +105,7 @@ export const usePackageDetails = (id: string | number) => {
 };
 
 export const usePackageTimeline = (id: string | number) => {
-    return useQuery({
+    return useQuery<PackageTimelineItem[]>({
         queryKey: ['package-timeline', id],
         queryFn: () => Shipment.getPackageTimeline(id),
         enabled: !!id,

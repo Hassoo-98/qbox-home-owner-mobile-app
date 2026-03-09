@@ -6,7 +6,8 @@ export const useUpdateHomeOwner = (id: string) => {
     const queryClient = useQueryClient();
     return useMutation<UpdateHomeOwnerResponse, Error, UpdateHomeOwnerRequest>({
         mutationFn: (data: UpdateHomeOwnerRequest) => HomeOwner.updateHomeOwner(id, data),
-        onSuccess: () => {
+        onSuccess: (data) => {
+            queryClient.setQueryData(['homeOwner', id], data);
             queryClient.invalidateQueries({ queryKey: ['homeOwner', id] });
         },
     });

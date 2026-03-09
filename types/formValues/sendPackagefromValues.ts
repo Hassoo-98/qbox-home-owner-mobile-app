@@ -10,4 +10,6 @@ export type SendPackageFormValues = {
   packageDescription: string;
   qboxImage: string;
   shippingCompany: string;
+  paymentMethod: string;
+  charges: number;
 };

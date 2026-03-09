@@ -8,14 +8,17 @@ import { styles } from "./style";
 export const PackageDetailsPaymentSummary = ({
   paymentSummary,
 }: PackageDetailsPaymentSummaryProps) => {
-  const total = useMemo(
-    () =>
-      paymentSummary.charges.reduce(
-        (sum: number, charge: any) => sum + charge.value,
-        0
-      ),
-    [paymentSummary.charges]
-  );
+  const total = useMemo(() => {
+    if (typeof paymentSummary.charges === "number") {
+      return paymentSummary.charges;
+    }
+    return paymentSummary.charges.reduce(
+      (sum: number, charge: any) => sum + charge.value,
+      0
+    );
+  }, [paymentSummary.charges]);
+
+  const currency = paymentSummary.currency || "SAR";
 
   return (
     <View style={styles.sectionContainer}>
@@ -25,15 +28,22 @@ export const PackageDetailsPaymentSummary = ({
         </Text>
         <Chip label={paymentSummary.paymentMethod} variant="info" />
       </View>
-      {paymentSummary.charges.map((item: any, index: number) => (
-        <View key={`charge-${index}`} style={styles.summaryRow}>
-          <Text>{item.key}</Text>
-          <Text>{`${paymentSummary.currency} ${item.value}`}</Text>
+      {Array.isArray(paymentSummary.charges) ? (
+        paymentSummary.charges.map((item: any, index: number) => (
+          <View key={`charge-${index}`} style={styles.summaryRow}>
+            <Text>{item.key}</Text>
+            <Text>{`${currency} ${item.value}`}</Text>
+          </View>
+        ))
+      ) : (
+        <View style={styles.summaryRow}>
+          <Text>Service Charges</Text>
+          <Text>{`${currency} ${paymentSummary.charges}`}</Text>
         </View>
-      ))}
+      )}
       <View style={styles.summaryTotalRow}>
         <Text bold>Total</Text>
-        <Text bold>{`${paymentSummary.currency} ${total}`}</Text>
+        <Text bold>{`${currency} ${total}`}</Text>
       </View>
     </View>
   );

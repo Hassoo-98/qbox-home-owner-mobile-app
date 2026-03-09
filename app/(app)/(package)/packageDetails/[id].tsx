@@ -26,6 +26,8 @@ import {
   useOutgoingPackagesDetails,
   usePackageTimeline
 } from "@/hooks/api/useShipmentQueries";
+import { reportIssue } from "@/services/api/modules/shipment";
+import { CreateReportPayload, PackageTimelineItem } from "@/services/api/types";
 import { mvs } from "@/utils/metrices";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
@@ -38,7 +40,7 @@ import {
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
-import { Modal, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Modal, ScrollView, StyleSheet, View } from "react-native";
 
 export const PackageDetails = () => {
   const { id, type } = useLocalSearchParams<{ id: string; type: string }>();
@@ -77,7 +79,8 @@ export const PackageDetails = () => {
   }, [response]);
 
   const packageData = rawPackageData;
-  const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(id || "");
+  const trackingId = packageData?.trackingId || packageData?.tracking_id;
+  const { data: timelineRawData, isLoading: timelineLoading } = usePackageTimeline(trackingId);
 
   const { handleSubmit, control } = useForm({
     defaultValues: {
@@ -97,7 +100,7 @@ export const PackageDetails = () => {
   );
 
   // Map new data structure to UI expectations
-  const mappedPackageData = useMemo(() => {
+  const packageDetails = useMemo(() => {
     if (!packageData) return null;
     return {
       ...packageData,
@@ -112,26 +115,56 @@ export const PackageDetails = () => {
         if (t.includes("delivered")) return PACKAGE_TYPE.DELIVERED;
         return t as any;
       })(),
-      status: packageData.status || packageData.outgoing_status || packageData.shipment_status,
-      qrCode: packageData.qrCode || packageData.qr_code,
-      description: packageData.description || packageData.details?.summary || "No description available",
-      attributes: packageData.attributes || [
-        { type: "Type", value: packageData.details?.package_type || "N/A" },
-        { type: "Size", value: packageData.details?.package_size || "N/A" },
-        { type: "Weight", value: packageData.details?.package_weight || "N/A" },
-      ],
-      imageUrl: packageData.imageUrl || "",
+      status: packageData.status,
+      qrCode: packageData.assigned_qr_code[0].qr_code_id,
+      description: packageData.description || "No description available",
+      senderName: packageData.merchant_name || "",
+      attributes: (() => {
+        const type = (packageData.type || "").toLowerCase();
+        const isOutgoing = type.includes("outgoing");
+
+        // Try to get attributes from the array first
+        const rawAttributes = packageData.attributes || [];
+
+        if (isOutgoing) {
+          const findAttr = (key: string) => rawAttributes.find((a: any) => a.type.toLowerCase() === key.toLowerCase())?.value;
+
+          const pkgType = findAttr("Package Type") || packageData.details?.package_type || "N/A";
+          const pkgWeight = findAttr("Package Weight") || packageData.details?.package_weight || "N/A";
+          const itemValue = findAttr("Item Value") || findAttr("Item Price");
+          const currency = findAttr("Currency") || "SAR";
+
+          const displayItemValue = itemValue ? `${currency} ${itemValue}`.trim() : "N/A";
+
+          return [
+            { type: "Package Type", value: pkgType },
+            { type: "Item Value", value: displayItemValue },
+            { type: "Package Weight", value: pkgWeight.toString().includes("kg") ? pkgWeight : `${pkgWeight} kg` },
+          ];
+        }
+
+        if (rawAttributes.length > 0) {
+          return rawAttributes;
+        }
+
+        return [
+          { type: "Type", value: packageData.details?.package_type || "N/A" },
+          { type: "Size", value: packageData.details?.package_size || "N/A" },
+          { type: "Weight", value: packageData.details?.package_weight || "N/A" },
+        ];
+      })(),
+      imageUrl: packageData.imageUrl || packageData.package_image || "",
     };
   }, [packageData]);
 
   // Determine if we should show video features
-  const shouldShowVideo = !!mappedPackageData && mappedPackageData.type === PACKAGE_TYPE.DELIVERED;
+  const shouldShowVideo = !!packageDetails && packageDetails.type === PACKAGE_TYPE.DELIVERED;
 
   const timelineData = useMemo(() => {
     if (!timelineRawData) return [];
 
-    return timelineRawData.map((item) => [
-      format(new Date(item.timestamp), "Pp"),
+    return timelineRawData.map((item: PackageTimelineItem) => [
+      format(new Date(item.dateAndTime || item.date_and_time || ""), "MM/dd/yy  h:mma").toLowerCase(),
       item.status,
       item.location,
     ]);
@@ -151,8 +184,8 @@ export const PackageDetails = () => {
           <AppHeaderLeft canGoBack />
           <AppHeaderTitle
             title={
-              mappedPackageData?.courierName || mappedPackageData
-                ? `${mappedPackageData?.trackingId || id}`
+              packageDetails?.courierName || packageDetails
+                ? `${packageDetails?.trackingId || id}`
                 : "Package Not Found"
             }
           />
@@ -161,16 +194,16 @@ export const PackageDetails = () => {
       headerRight: () => {
         return (
           <View style={{ flexDirection: "row", gap: mvs(10) }}>
-            {mappedPackageData?.type === PACKAGE_TYPE.INCOMING && (
+            {packageDetails?.type === PACKAGE_TYPE.INCOMING && (
               <Feather name="phone" size={24} color="black" />
             )}
-            {mappedPackageData?.type === PACKAGE_TYPE.OUTGOING && (
+            {packageDetails?.type === PACKAGE_TYPE.OUTGOING && (
               <Chip
-                label={mappedPackageData.outgoing_status || ""}
+                label={packageDetails.outgoing_status || ""}
                 size="small"
                 variant={
-                  mappedPackageData.outgoing_status?.toLowerCase().includes("sent") ||
-                    mappedPackageData.outgoing_status?.toLowerCase().includes("send")
+                  packageDetails.outgoing_status?.toLowerCase().includes("sent") ||
+                    packageDetails.outgoing_status?.toLowerCase().includes("send")
                     ? "warning"
                     : "info"
                 }
@@ -180,7 +213,7 @@ export const PackageDetails = () => {
         );
       },
     });
-  }, [mappedPackageData, navigation, id]);
+  }, [packageDetails, navigation, id]);
 
   const onCloseReportModal = () => {
     setIsReportModalOpen(false);
@@ -191,8 +224,27 @@ export const PackageDetails = () => {
   }, []);
 
   const onSubmitReport = handleSubmit(async (data: any) => {
-    console.log("report form data: ", data);
-    onCloseReportModal();
+    try {
+      const payload: CreateReportPayload = {
+        tracking_id: data.trackingId,
+        status: "Issue-Logged",
+        description: data.reportDescription,
+        issue_related_to: data.reportType,
+        location: "Riyadh",
+      };
+
+      const response = await reportIssue(payload);
+
+      if (response.success) {
+        Alert.alert("Success", "Issue reported successfully");
+        onCloseReportModal();
+      } else {
+        Alert.alert("Error", response.message || "Failed to report issue");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error?.response?.data?.message || "Something went wrong while reporting the issue");
+      console.error("report issue error: ", error);
+    }
   });
 
   const handleCloseModal = useCallback(() => {
@@ -231,7 +283,7 @@ export const PackageDetails = () => {
     );
   }
 
-  if (!packageData || !mappedPackageData) {
+  if (!packageData || !packageDetails) {
     return (
       <View style={styles.centerContainer}>
         <Text>Package not found</Text>
@@ -245,17 +297,17 @@ export const PackageDetails = () => {
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: mvs(30) }}
       >
-        <PackageDetailsHeader packageData={mappedPackageData as any} />
+        <PackageDetailsHeader packageData={packageDetails as any} />
 
         <SpecificInfoSection
           title="Assigned QR Code"
           description="QR Code"
-          value={mappedPackageData.qrCode}
+          value={packageDetails.qrCode}
         />
 
-        <PackageDetailsAttribute attributes={mappedPackageData.attributes} />
+        <PackageDetailsAttribute attributes={packageDetails.attributes} />
 
-        <PackageDetailsDescription description={mappedPackageData.description} />
+        <PackageDetailsDescription description={packageDetails.description} />
 
 
         {
@@ -270,8 +322,7 @@ export const PackageDetails = () => {
             <Skeleton width="100%" height={80} variant="rounded" />
           </View>
         ) : (
-          (mappedPackageData.type !== PACKAGE_TYPE.OUTGOING ||
-            mappedPackageData.shipment_status === "Send") && (
+          (packageDetails.type !== PACKAGE_TYPE.OUTGOING) && (
             <PackageDetailsTimeLine timelineData={timelineData} />
           )
         )}
@@ -295,13 +346,13 @@ export const PackageDetails = () => {
             <SpecificInfoSection
               title="Returning PIN"
               description="PIN Code"
-              value={mappedPackageData.qrCode}
+              value={packageDetails.qrCode}
             />
           </View>
         )}
       </ScrollView>
 
-      {mappedPackageData.type === PACKAGE_TYPE.INCOMING && (
+      {packageDetails.type === PACKAGE_TYPE.INCOMING && (
         <View style={styles.footer}>
           <Button
             title="Report an Issue"

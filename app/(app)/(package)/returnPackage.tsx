@@ -17,6 +17,7 @@ export const ReturnPackage = () => {
     control,
     returnPackageImage,
     pickImage,
+    isPending,
   } = useReturnPackage();
 
   return (
@@ -32,6 +33,7 @@ export const ReturnPackage = () => {
           setCurrentStep={setCurrentStep}
           isFormValid={isFormValid}
           onSubmit={onSubmit}
+          isPending={isPending}
         />
       }
     >

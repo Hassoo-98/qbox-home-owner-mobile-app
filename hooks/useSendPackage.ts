@@ -32,6 +32,8 @@ export const useSendPackage = () => {
       packageDescription: "",
       qboxImage: "",
       shippingCompany: "",
+      paymentMethod: "",
+      charges: 0,
     },
     mode: "onChange",
   });
@@ -40,8 +42,44 @@ export const useSendPackage = () => {
 
   console.log("send package formm errors: ", JSON.stringify(errors, null, 4));
 
+
+
   const onSubmit = handleSubmit((data: SendPackageFormValues) => {
-    sendPackageMutation.mutate(data, {
+    const payload = {
+      shippingCompany: data.shippingCompany,
+      qboxImage: data.qboxImage,
+      packageDescription: data.packageDescription,
+      qBoxId: data.qBoxId,
+      phone: data.phone,
+      email: data.email,
+      fullName: data.fullName,
+      paymentSummary: {
+        paymentMethod: data.paymentMethod,
+        charges: data.charges,
+      },
+      attributes: [
+        {
+          type: "Package Type",
+          value: data.packageType
+        },
+        {
+          type: "Package Weight",
+          value: Number(data.packageWeight).toFixed(2)
+        },
+        {
+          type: "Item Value",
+          value: Number(data.packageItemValue).toFixed(2)
+        },
+        {
+          type: "currency",
+          value: data.currency
+        }
+      ]
+    };
+
+    console.log("send package payload: ", JSON.stringify(payload, null, 4));
+
+    sendPackageMutation.mutate(payload, {
       onSuccess: () => {
         Alert.alert("Success", "Package sent successfully!");
         reset();
@@ -98,6 +136,7 @@ export const useSendPackage = () => {
     isFormValid,
     onSubmit,
     control,
+    setValue,
     phoneNumber,
     pickImage,
     qboxImage,

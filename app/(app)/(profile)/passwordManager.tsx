@@ -1,5 +1,6 @@
 import { PasswordInput } from "@/components";
 import { useChangePassword } from "@/hooks/api/useAuthQueries";
+import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { PasswordFormResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
@@ -9,6 +10,7 @@ import { ScrollView } from "react-native";
 
 export const Password = () => {
   const { setOnSave } = useProfile();
+  const { user } = useAuth();
   const changePasswordMutation = useChangePassword();
 
   const { control, handleSubmit } = useForm({
@@ -24,6 +26,7 @@ export const Password = () => {
   const onSubmit = handleSubmit((data) => {
     console.log("this is password form data", data);
     changePasswordMutation.mutate({
+      id: user?.id as string,
       old_password: data.oldPassword,
       new_password: data.password,
     });

@@ -42,7 +42,7 @@ export const QBoxLocation = ({
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="City"
+        label="City (Optional)"
         placeholder="Enter city"
       />
 
@@ -52,7 +52,7 @@ export const QBoxLocation = ({
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="District"
+        label="District (Optional)"
         placeholder="Enter District"
       />
 
@@ -62,7 +62,7 @@ export const QBoxLocation = ({
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="Street"
+        label="Street (Optional)"
         placeholder="Enter Street Address"
       />
 
@@ -72,7 +72,7 @@ export const QBoxLocation = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Postal Code"
+        label="Postal Code (Optional)"
         placeholder="XXXXX"
       />
 
@@ -82,7 +82,7 @@ export const QBoxLocation = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Building Number"
+        label="Building Number (Optional)"
         placeholder="XXXX"
       />
 
@@ -92,7 +92,7 @@ export const QBoxLocation = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Secondary Number"
+        label="Secondary Number (Optional)"
         placeholder="XXXX"
       />
 

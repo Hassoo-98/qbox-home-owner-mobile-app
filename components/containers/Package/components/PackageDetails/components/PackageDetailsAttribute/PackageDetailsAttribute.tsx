@@ -19,7 +19,13 @@ export const PackageDetailsAttribute = ({
             key={`${attr.type}-${index}`}
             item={{
               id: index.toString(),
-              icon: PACKAGE_ATTRIBUTE_DATA[index]?.icon,
+              icon: (() => {
+                const type = attr.type.toLowerCase();
+                if (type.includes("type")) return PACKAGE_ATTRIBUTE_DATA[0].icon;
+                if (type.includes("value") || type.includes("price") || type.includes("currency")) return PACKAGE_ATTRIBUTE_DATA[1].icon;
+                if (type.includes("weight")) return PACKAGE_ATTRIBUTE_DATA[2].icon;
+                return PACKAGE_ATTRIBUTE_DATA[0].icon;
+              })(),
               title: attr.type,
               statusText: attr.value,
             }}

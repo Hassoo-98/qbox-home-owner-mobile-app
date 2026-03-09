@@ -16,6 +16,7 @@ export const SendPackage = () => {
     isFormValid,
     onSubmit,
     control,
+    setValue,
     phoneNumber,
     pickImage,
     qboxImage,
@@ -56,7 +57,7 @@ export const SendPackage = () => {
             pickImage={pickImage}
           />
         ) : (
-          <DeliveryInformation control={control} />
+          <DeliveryInformation control={control} setValue={setValue} />
         )}
       </View>
     </FormLayout>
