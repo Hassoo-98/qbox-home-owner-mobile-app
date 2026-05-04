@@ -35,8 +35,10 @@ export const MenuList = ({ menuData }: MenuListProps) => {
           backgroundColor={item?.backgroundColor}
           path={item?.path}
           rightText={item?.rightText}
+          isBadge={item?.isBadge}
           textColor={item?.textColor}
           icon={item?.icon}
+          rightElement={item?.rightElement}
           onPress={async () => handlePress(item?.title)}
         />
       ))}

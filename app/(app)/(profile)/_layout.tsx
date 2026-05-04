@@ -59,6 +59,18 @@ export default function ProfileStack() {
           }}
         />
         <Stack.Screen
+          name="wifiList"
+          options={{
+            title: "Available Wi-Fi",
+          }}
+        />
+        <Stack.Screen
+          name="bluetoothList"
+          options={{
+            title: "Bluetooth Devices",
+          }}
+        />
+        <Stack.Screen
           name="promoCode"
           options={{
             title: "Promo Codes",

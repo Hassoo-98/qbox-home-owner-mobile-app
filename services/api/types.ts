@@ -578,3 +578,11 @@ export interface AlertPayload {
 export interface VerifyShortAddressPayload {
     short_address: string;
 }
+
+export interface QBoxStreamsResponse {
+    device_id: string;
+    streams: {
+        external: string;
+        internal: string;
+    }
+}

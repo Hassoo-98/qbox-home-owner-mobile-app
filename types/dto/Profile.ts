@@ -6,6 +6,8 @@ export interface ProfileItem {
   title: string;
   path?: Href;
   rightText?: string;
+  isBadge?: boolean;
+  rightElement?: React.ReactNode;
   backgroundColor?: string;
   textColor?: string;
 }

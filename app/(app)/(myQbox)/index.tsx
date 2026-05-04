@@ -44,8 +44,10 @@ export const MyQBox = () => {
         onToggle={() => setIsAlarmEnabled(!isAlarmEnabled)}
       />
 
+      {/* QBox Status Grid */}
       <StatusCardsGrid qboxesDetails={qboxesDetails} />
 
+      {/* External QBox View */}
       <VideoRecording
         player={externalPlayer}
         onShare={handleShare}
@@ -58,6 +60,9 @@ export const MyQBox = () => {
           onRightIconPress: () => openCalendar("external"),
         }}
       />
+
+
+      {/* Internal QBox View */}
 
       <VideoRecording
         player={internalPlayer}
