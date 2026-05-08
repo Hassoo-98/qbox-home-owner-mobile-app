@@ -4,7 +4,7 @@ export interface SignupFooterProps {
     setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
     validateStep: (step: number) => Promise<boolean>;
     onSubmit: () => void;
-    phoneNumber: string;
+    contactInfo: string;
     handleSendOtp: (contact: string, onSuccess?: () => void) => void;
     handleVerifyOtp: (contact: string, otp: string, onSuccess: () => void) => void;
     isQBoxVerified: boolean;
