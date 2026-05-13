@@ -47,33 +47,19 @@ export const useMyQBoxLogic = () => {
     // Explicitly handle source updates and play
     useEffect(() => {
         if (streams?.streams?.external) {
-            const url = streams.streams.external.includes('?') 
-                ? `${streams.streams.external}&cookieCheck=1` 
-                : `${streams.streams.external}?cookieCheck=1`;
-            
-            console.log("Updating externalPlayer source:", url);
-            externalPlayer.replace({
-                uri: url,
-                contentType: 'hls'
-            });
-            externalPlayer.play();
+            console.log("External stream available:", streams.streams.external);
         }
-    }, [streams?.streams?.external, externalPlayer]);
+    }, [streams?.streams?.external]);
 
     useEffect(() => {
         if (streams?.streams?.internal) {
-            const url = streams.streams.internal.includes('?') 
-                ? `${streams.streams.internal}&cookieCheck=1` 
-                : `${streams.streams.internal}?cookieCheck=1`;
-
-            console.log("Updating internalPlayer source:", url);
-            internalPlayer.replace({
-                uri: url,
-                contentType: 'hls'
-            });
-            internalPlayer.play();
+            console.log("Internal stream available:", streams.streams.internal);
         }
-    }, [streams?.streams?.internal, internalPlayer]);
+    }, [streams?.streams?.internal]);
+
+    const externalSource = streams?.streams?.external;
+    const internalSource = streams?.streams?.internal;
+    const headers = userToken ? { Authorization: `Bearer ${userToken}` } : undefined;
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
         if (Platform.OS === "android") {
@@ -117,6 +103,9 @@ export const useMyQBoxLogic = () => {
         setShowDatePicker,
         externalPlayer,
         internalPlayer,
+        externalSource,
+        internalSource,
+        headers,
         currentDate,
         handleDateChange,
         openCalendar,

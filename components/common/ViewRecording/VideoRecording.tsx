@@ -5,9 +5,11 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { VideoPlayer, VideoView } from "expo-video";
 import React, { ReactNode, useEffect } from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { WebView } from "react-native-webview";
 
 const { width } = Dimensions.get("window");
-const VIDEO_HEIGHT = (width - 100) * (9 / 16);
+const VIDEO_WIDTH = width - 80;
+const VIDEO_HEIGHT = VIDEO_WIDTH * (9 / 16);
 
 interface HeaderConfig {
   title: string;
@@ -17,7 +19,9 @@ interface HeaderConfig {
 }
 
 interface VideoRecordingProps {
-  player: VideoPlayer;
+  player?: VideoPlayer;
+  sourceUri?: string;
+  headers?: Record<string, string>;
   onShare?: () => void;
   onDownload?: () => void;
   autoPlay?: boolean;
@@ -28,6 +32,8 @@ interface VideoRecordingProps {
 
 export const VideoRecording = ({
   player,
+  sourceUri,
+  headers,
   onShare,
   onDownload,
   autoPlay = true,
@@ -36,7 +42,7 @@ export const VideoRecording = ({
   customHeader,
 }: VideoRecordingProps) => {
   useEffect(() => {
-    if (autoPlay) {
+    if (autoPlay && player) {
       const timer = setTimeout(() => player.play(), 200);
       return () => clearTimeout(timer);
     }
@@ -109,14 +115,74 @@ export const VideoRecording = ({
           gap: mvs(10),
         }}
       >
-        <VideoView
-          player={player}
-          style={styles.container}
-          allowsFullscreen
-          allowsPictureInPicture
-          nativeControls={true}
-          surfaceType="textureView"
-        />
+        {sourceUri ? (
+          <WebView
+            source={{ uri: sourceUri, headers }}
+            style={[styles.container, { backgroundColor: 'black' }]}
+            allowsInlineMediaPlayback={true}
+            mediaPlaybackRequiresUserAction={false}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scrollEnabled={false}
+            scalesPageToFit={true}
+            useWideViewPort={true}
+            loadWithOverviewMode={true}
+            userAgent="Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36"
+            startInLoadingState={true}
+            onHttpError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn(
+                'WebView received error status code: ',
+                nativeEvent.statusCode
+              );
+            }}
+            injectedJavaScript={`
+              (function() {
+                const style = document.createElement('style');
+                style.innerHTML = \`
+                  * { margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
+                  video { 
+                    width: 100vw !important; 
+                    height: 100vh !important; 
+                    object-fit: contain !important; 
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                  } 
+                  body, html { 
+                    background: black !important; 
+                    width: 100% !important;
+                    height: 100% !important;
+                  }
+                \`;
+                document.head.appendChild(style);
+                
+                // Auto-play attempt
+                setTimeout(() => {
+                  const videos = document.getElementsByTagName('video');
+                  for (let v of videos) {
+                    v.muted = true;
+                    v.play().catch(e => console.log("Auto-play blocked", e));
+                  }
+                }, 1000);
+              })();
+              true;
+            `}
+          />
+        ) : player ? (
+          <VideoView
+            player={player}
+            style={styles.container}
+            allowsFullscreen
+            allowsPictureInPicture
+            nativeControls={true}
+            surfaceType="textureView"
+          />
+        ) : (
+          <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+            <Text>No stream available</Text>
+          </View>
+        )}
         <View style={styles.bottomActions}>
           <Button
             style={{
@@ -150,12 +216,10 @@ export const VideoRecording = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "90%",
+    width: VIDEO_WIDTH,
     height: VIDEO_HEIGHT,
     position: "relative",
     alignSelf: "center",
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   bottomActions: {
     flexDirection: "row",

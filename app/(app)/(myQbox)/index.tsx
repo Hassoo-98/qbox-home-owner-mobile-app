@@ -21,6 +21,9 @@ export const MyQBox = () => {
     setShowDatePicker,
     externalPlayer,
     internalPlayer,
+    externalSource,
+    internalSource,
+    headers,
     currentDate,
     handleDateChange,
     openCalendar,
@@ -49,6 +52,8 @@ export const MyQBox = () => {
 
       {/* External QBox View */}
       <VideoRecording
+        sourceUri={externalSource}
+        headers={headers}
         player={externalPlayer}
         onShare={handleShare}
         onDownload={() => { }}
@@ -65,6 +70,8 @@ export const MyQBox = () => {
       {/* Internal QBox View */}
 
       <VideoRecording
+        sourceUri={internalSource}
+        headers={headers}
         player={internalPlayer}
         onShare={handleShare}
         onDownload={() => { }}
