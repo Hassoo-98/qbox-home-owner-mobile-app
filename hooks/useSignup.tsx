@@ -183,7 +183,7 @@ export const useSignup = () => {
 
   const email = watch("email");
   const phone = watch("phone");
-  const contact = phone || email;
+  const contact = email;
   const qboxImage = watch("qboxImage");
 
   // Request permissions and pick image

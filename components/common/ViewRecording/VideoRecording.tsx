@@ -114,6 +114,8 @@ export const VideoRecording = ({
           style={styles.container}
           allowsFullscreen
           allowsPictureInPicture
+          nativeControls={true}
+          surfaceType="textureView"
         />
         <View style={styles.bottomActions}>
           <Button
@@ -150,8 +152,6 @@ const styles = StyleSheet.create({
   container: {
     width: "90%",
     height: VIDEO_HEIGHT,
-    borderRadius: 12,
-    overflow: "hidden",
     position: "relative",
     alignSelf: "center",
     borderWidth: 1,

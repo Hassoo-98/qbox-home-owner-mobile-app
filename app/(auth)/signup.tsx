@@ -55,7 +55,7 @@ export const SignUp = () => {
           setCurrentStep={setCurrentStep}
           validateStep={validateStep}
           onSubmit={onSubmit}
-          phoneNumber={contact}
+          contactInfo={contact}
           handleSendOtp={handleSendOtp}
           handleVerifyOtp={handleVerifyOtp}
           isQBoxVerified={isQBoxVerified}

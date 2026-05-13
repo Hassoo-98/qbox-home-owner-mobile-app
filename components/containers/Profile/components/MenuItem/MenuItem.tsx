@@ -13,6 +13,8 @@ export const MenuItem = ({
   backgroundColor,
   textColor,
   rightText,
+  isBadge,
+  rightElement,
   onPress,
   icon,
 }: MenuItemProps) => {
@@ -30,14 +32,30 @@ export const MenuItem = ({
       }}
       onPress={path ? () => router.navigate(path) : onPress}
     >
-      <View style={{ flexDirection: "row", gap: mvs(10) }}>
+      <View style={{ flexDirection: "row", gap: mvs(10), alignItems: "center" }}>
         {Icon && <Icon size={24} />}
         <Text style={{ color: textColor || Colors.text }}>{title}</Text>
       </View>
 
       {(path || onPress) && (
-        <View style={{ flexDirection: "row", gap: mvs(10) }}>
-          {rightText && <Text variant="secondary">{rightText}</Text>}
+        <View style={{ flexDirection: "row", gap: mvs(10), alignItems: "center" }}>
+          {rightElement ? (
+            rightElement
+          ) : rightText ? (
+            isBadge ? (
+              <View
+                style={{
+                  backgroundColor: "#CBEFDB",
+                  paddingHorizontal: 12,
+                  borderRadius: 16,
+                }}
+              >
+                <Text style={{ color: "#2B9E66", fontSize: 14 }}>{rightText}</Text>
+              </View>
+            ) : (
+              <Text variant="secondary">{rightText}</Text>
+            )
+          ) : null}
           <Ionicons name="chevron-forward" size={24} />
         </View>
       )}

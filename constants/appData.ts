@@ -8,8 +8,11 @@ import {
   PackageWeightIcon,
   ProfileIcon,
   PromoCodeIcon,
-  SubscriptionHistoryIcon
+  SubscriptionHistoryIcon,
+  OnlineStatusIcon
 } from "@/assets/icons";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
 import { PackageDetailsType, ProfileItem } from "@/types";
 import { PACKAGE_TYPE, QR_VALIDITY_DURATION_TYPE } from "./enums";
 import { Colors } from "./theme";
@@ -377,6 +380,10 @@ export const PACKAGE_ATTRIBUTE_DATA = [
   },
 ];
 
+// Thin wrapper so Bluetooth uses the same icon contract as other menu items
+const BluetoothMenuIcon = ({ size, color }: { size?: number; color?: string }) =>
+  React.createElement(Ionicons, { name: "bluetooth", size: size ?? 24, color: color ?? "#000" });
+
 export const MENU_ITEM: ProfileItem[] = [
   {
     id: 1,
@@ -396,6 +403,20 @@ export const MENU_ITEM: ProfileItem[] = [
     icon: LocationIcon,
     title: "My QBox Location",
     path: "/myQBoxLocation",
+  },
+  {
+    id: 9,
+    icon: BluetoothMenuIcon,
+    title: "Bluetooth",
+    path: "/bluetoothList",
+  },
+  {
+    id: 8,
+    icon: OnlineStatusIcon,
+    title: "Wifi",
+    path: "/wifiList",
+    rightText: "Connected",
+    isBadge: true,
   },
   {
     id: 4,

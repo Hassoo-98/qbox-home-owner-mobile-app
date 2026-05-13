@@ -4,9 +4,11 @@ import { GestureResponderEvent } from "react-native";
 export interface MenuItemProps {
   title: string;
   rightText?: string;
+  isBadge?: boolean;
   textColor?: string;
   backgroundColor?: string;
   path?: Href;
   onPress?: (event: GestureResponderEvent) => void;
   icon?: React.ComponentType<{ size?: number; color?: string }>;
+  rightElement?: React.ReactNode;
 }

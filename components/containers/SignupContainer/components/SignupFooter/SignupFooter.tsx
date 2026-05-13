@@ -12,7 +12,7 @@ export const SignupFooter = ({
   setCurrentStep,
   validateStep,
   onSubmit,
-  phoneNumber,
+  contactInfo,
   handleSendOtp,
   handleVerifyOtp,
   isQBoxVerified,
@@ -21,20 +21,19 @@ export const SignupFooter = ({
 
   const handleVerify = () => {
     // Send OTP when modal triggers
-    handleSendOtp(phoneNumber, () => {
+    handleSendOtp(contactInfo, () => {
       onTriggerModal({
         modalType: "otp",
         title: "OTP Verification",
-        subtitle: `Enter the 6-digit code sent to your ${phoneNumber.includes("@") ? "email" : "phone number"
-          }. ${phoneNumber}`,
+        subtitle: `Enter the 6-digit code sent to your email. ${contactInfo}`,
         footerText: "Didn’t receive the code?",
         footerAction: "Resend OTP",
         primaryButtonText: "Verify",
-        secondaryButtonHandler: () => handleSendOtp(phoneNumber),
+        secondaryButtonHandler: () => handleSendOtp(contactInfo),
         primaryButtonHandler: (otpValue?: any) => {
           console.log("otp verification triggered: ", otpValue);
           // The modal should pass the OTP value here
-          handleVerifyOtp(phoneNumber, otpValue as string, () => {
+          handleVerifyOtp(contactInfo, otpValue as string, () => {
             setCurrentStep((prev) => prev + 1);
             onCloseModal?.();
           });
