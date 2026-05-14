@@ -1,14 +1,14 @@
 import { OnlineStatusIcon } from "@/assets/icons";
-import { Card, Text } from "@/components";
+import { Button, Card, PasswordInput, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
 import { useHomeOwner } from "@/hooks/useHomeOwner";
+import api from "@/services/api/config";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, PasswordInput } from "@/components";
-import api from "@/services/api/config";
+import { useNavigation } from "expo-router";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ActivityIndicator, Alert, Animated, Easing, FlatList, Modal, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface WifiNetwork {
   ssid: string;
@@ -31,15 +31,45 @@ export const WifiList = () => {
   const homeOwner = homeOwnerResponse?.data;
   const qboxId = homeOwner?.qboxes?.[0]?.qbox_id;
 
+  const navigation = useNavigation();
   const [networks, setNetworks] = useState<WifiNetwork[]>([]);
   const [connectedSsid, setConnectedSsid] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRescanning, setIsRescanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Spin animation for rescan icon
+  const spinValue = useRef(new Animated.Value(0)).current;
+  const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
+
+  const startSpin = () => {
+    spinValue.setValue(0);
+    spinAnimation.current = Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 800,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    );
+    spinAnimation.current.start();
+  };
+
+  const stopSpin = () => {
+    spinAnimation.current?.stop();
+    spinValue.setValue(0);
+  };
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
 
   // Connection Modal State
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<WifiNetwork | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const { control, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
@@ -47,81 +77,132 @@ export const WifiList = () => {
     }
   });
 
-  useEffect(() => {
-    const fetchWifiNetworks = async () => {
-      if (!qboxId) {
-        if (homeOwnerResponse) {
-          setError("No QBox found for this user");
-          setLoading(false);
-        }
-        return;
-      }
-
-      try {
-        const [networksResponse, stateResponse] = await Promise.all([
-          api.get(`/devices/${qboxId}/wifi/networks/`),
-          api.get(`/devices/${qboxId}/state/`)
-        ]);
-
-        const networksData = networksResponse.data;
-        let fetchedNetworks: WifiNetwork[] = networksData.networks || [];
-        let currentConnectedSsid = networksData.connected_ssid || null;
-
-        if (stateResponse.status === 200) {
-          const stateData: WifiStateResponse = stateResponse.data;
-          if (!currentConnectedSsid) {
-            currentConnectedSsid = stateData.connected_ssid || null;
-          }
-        }
-
-        setConnectedSsid(currentConnectedSsid);
-
-        // If connected SSID is not in the list, add it
-        if (currentConnectedSsid && !fetchedNetworks.some(n => n.ssid === currentConnectedSsid)) {
-          fetchedNetworks.push({
-            ssid: currentConnectedSsid,
-            rssi: -50, // Default signal for connected
-            is_secured: true,
-          });
-        }
-
-        // Sort so connected is at the top
-        fetchedNetworks.sort((a, b) => {
-          if (a.ssid === currentConnectedSsid) return -1;
-          if (b.ssid === currentConnectedSsid) return 1;
-          return b.rssi - a.rssi;
-        });
-
-        setNetworks(fetchedNetworks);
-      } catch (err: any) {
-        setError(err.message || "An unexpected error occurred");
-      } finally {
+  const fetchWifiNetworks = useCallback(async (isManualRescan = false) => {
+    if (!qboxId) {
+      if (homeOwnerResponse) {
+        setError("No QBox found for this user");
         setLoading(false);
       }
-    };
+      return;
+    }
 
-    fetchWifiNetworks();
+    if (isManualRescan) {
+      setIsRescanning(true);
+      startSpin();
+    } else {
+      setLoading(true);
+    }
+    setError(null);
+
+    try {
+      const [networksResponse, stateResponse] = await Promise.all([
+        api.get(`/devices/${qboxId}/wifi/networks/`),
+        api.get(`/devices/${qboxId}/state/`)
+      ]);
+
+      const networksData = networksResponse.data;
+      let fetchedNetworks: WifiNetwork[] = networksData.networks || [];
+      let currentConnectedSsid = networksData.connected_ssid || null;
+
+      if (stateResponse.status === 200) {
+        const stateData: WifiStateResponse = stateResponse.data;
+        if (!currentConnectedSsid) {
+          currentConnectedSsid = stateData.connected_ssid || null;
+        }
+      }
+
+      setConnectedSsid(currentConnectedSsid);
+
+      if (currentConnectedSsid && !fetchedNetworks.some(n => n.ssid === currentConnectedSsid)) {
+        fetchedNetworks.push({
+          ssid: currentConnectedSsid,
+          rssi: -50,
+          is_secured: true,
+        });
+      }
+
+      fetchedNetworks.sort((a, b) => {
+        if (a.ssid === currentConnectedSsid) return -1;
+        if (b.ssid === currentConnectedSsid) return 1;
+        return b.rssi - a.rssi;
+      });
+
+      setNetworks(fetchedNetworks);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+      setIsRescanning(false);
+      stopSpin();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qboxId, homeOwnerResponse]);
+
+  useEffect(() => {
+    fetchWifiNetworks();
+  }, [fetchWifiNetworks]);
+
+  // Inject Rescan button into native header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => fetchWifiNetworks(true)}
+          disabled={isRescanning}
+          style={{ marginRight: 16, padding: 4 }}
+          activeOpacity={0.7}
+        >
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <Ionicons
+              name="refresh"
+              size={22}
+              color={isRescanning ? Colors.secondaryText : Colors.primary}
+            />
+          </Animated.View>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, fetchWifiNetworks, isRescanning, spin]);
 
   const handleConnect = handleSubmit(async (data) => {
     if (!selectedNetwork || !qboxId) return;
 
+    setConnectionError(null);
     setIsConnecting(true);
     try {
-      const response = await api.post(`/devices/${qboxId}/wifi/connect/`, {
+      const payload: { ssid: string; password?: string } = {
         ssid: selectedNetwork.ssid,
-        password: data.password,
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Success", `Attempting to connect to ${selectedNetwork.ssid}`);
-        setIsModalVisible(false);
-        reset();
-      } else {
-        throw new Error("Failed to connect");
+      };
+      if (data.password && data.password.trim().length > 0) {
+        payload.password = data.password.trim();
       }
+
+      const response = await api.post(`/devices/${qboxId}/wifi/connect/`, payload);
+      const result = response.data?.result;
+
+      // API returns HTTP 200 even on failure — check result.status explicitly
+      if (result?.status === "FAILED") {
+        const reason = result?.details?.reason;
+        if (reason === "auth_failed") {
+          setConnectionError("Incorrect password. Please check and try again.");
+        } else {
+          setConnectionError(result?.message || "Connection failed. Network may be unavailable.");
+        }
+        return;
+      }
+
+      // Success
+      Alert.alert("Success", `Connecting to ${selectedNetwork.ssid}...`);
+      setIsModalVisible(false);
+      reset();
+      setConnectionError(null);
     } catch (err: any) {
-      Alert.alert("Connection Failed", err.response?.data?.message || err.message || "An unexpected error occurred");
+      const apiMessage = err.response?.data?.result?.message
+        || err.response?.data?.detail
+        || err.response?.data?.message
+        || err.message
+        || "An unexpected error occurred.";
+      setConnectionError(apiMessage);
     } finally {
       setIsConnecting(false);
     }
@@ -130,6 +211,7 @@ export const WifiList = () => {
   const openConnectModal = (network: WifiNetwork) => {
     setSelectedNetwork(network);
     reset();
+    setConnectionError(null);
     setIsModalVisible(true);
   };
 
@@ -230,18 +312,23 @@ export const WifiList = () => {
             </View>
 
             <View style={styles.modalBody}>
-              {selectedNetwork?.is_secured ? (
-                <PasswordInput
-                  name="password"
-                  control={control}
-                  label="Password"
-                  placeholder="Enter Wi-Fi password"
-                  containerStyle={styles.inputContainer}
-                />
-              ) : (
+              <PasswordInput
+                name="password"
+                control={control}
+                label={selectedNetwork?.is_secured ? "Password" : "Password (Optional)"}
+                placeholder={selectedNetwork?.is_secured ? "Enter Wi-Fi password" : "Leave empty for open network"}
+                containerStyle={styles.inputContainer}
+              />
+              {!selectedNetwork?.is_secured && !connectionError && (
                 <Text style={styles.unsecuredText}>
-                  This network is not secured.
+                  This is an open network. You can connect without a password.
                 </Text>
+              )}
+              {connectionError && (
+                <View style={styles.errorBanner}>
+                  <Ionicons name="alert-circle" size={16} color={Colors.danger} style={{ marginRight: 6 }} />
+                  <Text style={styles.errorBannerText}>{connectionError}</Text>
+                </View>
               )}
             </View>
 
@@ -387,6 +474,20 @@ const styles = StyleSheet.create({
   cancelButton: {
     width: "100%",
     borderWidth: 0,
+  },
+  errorBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: `${Colors.danger}15`,
+    borderRadius: 10,
+    padding: mvs(10),
+    marginTop: mvs(4),
+  },
+  errorBannerText: {
+    color: Colors.danger,
+    fontSize: 13,
+    flex: 1,
+    flexWrap: "wrap",
   },
 });
 

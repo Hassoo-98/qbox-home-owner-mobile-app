@@ -1,5 +1,5 @@
 import { Colors, CustomNavigationTheme } from "@/constants";
-import { ModalProvider } from "@/context";
+import { BleProvisioningProvider, ModalProvider } from "@/context";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppNavigation } from "@/navigation";
 import { ThemeProvider } from "@react-navigation/native";
@@ -33,9 +33,11 @@ export const RootLayout = () => {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={CustomNavigationTheme}>
           <AuthProvider>
-            <ModalProvider>
-              <AppNavigation />
-            </ModalProvider>
+            <BleProvisioningProvider>
+              <ModalProvider>
+                <AppNavigation />
+              </ModalProvider>
+            </BleProvisioningProvider>
           </AuthProvider>
           <StatusBar barStyle="dark-content" />
         </ThemeProvider>
