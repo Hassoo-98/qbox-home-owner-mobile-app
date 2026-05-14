@@ -85,6 +85,12 @@ export default function ProfileStack() {
             },
           }}
         />
+        <Stack.Screen
+          name="bleWifiProvisioning"
+          options={{
+            title: "WiFi Provisioning",
+          }}
+        />
       </Stack>
     </ProfileProvider>
   );
