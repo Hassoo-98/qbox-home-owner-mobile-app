@@ -6,9 +6,15 @@ import { Platform } from "react-native";
 import { useHomeOwner } from "@/hooks/useHomeOwner";
 import { useQBoxStreams } from "@/hooks/useQBoxStreams";
 import { useAuth } from "@/hooks/useAuth";
+import {
+    useControlDeviceAlarm,
+    useDeviceStatusSocket,
+} from "@/hooks/api/useQBoxQueries";
 
 export const useMyQBoxLogic = () => {
     const [isAlarmEnabled, setIsAlarmEnabled] = useState(false);
+    const [alarmStartedAt, setAlarmStartedAt] = useState<number | null>(null);
+    const [alarmElapsedSeconds, setAlarmElapsedSeconds] = useState(0);
     const [externalDate, setExternalDate] = useState(new Date());
     const [internalDate, setInternalDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -22,13 +28,40 @@ export const useMyQBoxLogic = () => {
     const { userToken } = useAuth();
     const { data: homeOwnerResponse } = useHomeOwner();
     const qboxId = homeOwnerResponse?.data?.qboxes?.[0]?.qbox_id;
-    const { data: streams, isLoading: isStreamsLoading } = useQBoxStreams(qboxId!);
+    const { data: streams } = useQBoxStreams(qboxId!);
+    const statusSocket = useDeviceStatusSocket(qboxId || "");
+    const controlAlarmMutation = useControlDeviceAlarm(qboxId || "");
 
     // Debugging logs
     useEffect(() => {
         if (qboxId) console.log("Current QBox ID:", qboxId);
         if (streams) console.log("Fetched Streams:", JSON.stringify(streams, null, 2));
     }, [qboxId, streams]);
+
+    useEffect(() => {
+        if (statusSocket.data?.alarm_active) {
+            setIsAlarmEnabled(true);
+            setAlarmStartedAt((current) => current ?? Date.now());
+        } else if (statusSocket.data && statusSocket.data.alarm_active === false) {
+            setIsAlarmEnabled(false);
+            setAlarmStartedAt(null);
+            setAlarmElapsedSeconds(0);
+        }
+    }, [statusSocket.data?.alarm_active]);
+
+    useEffect(() => {
+        if (!isAlarmEnabled || alarmStartedAt === null) {
+            return;
+        }
+
+        const updateElapsed = () => {
+            setAlarmElapsedSeconds(Math.floor((Date.now() - alarmStartedAt) / 1000));
+        };
+
+        updateElapsed();
+        const intervalId = setInterval(updateElapsed, 1000);
+        return () => clearInterval(intervalId);
+    }, [isAlarmEnabled, alarmStartedAt]);
 
     // External QBox Video Player
     const externalPlayer = useVideoPlayer(streams?.streams?.external || null, (player) => {
@@ -92,6 +125,40 @@ export const useMyQBoxLogic = () => {
         onShare("My QBox Status", "https://myqbox.com/status/123");
     };
 
+    const formatAlarmTimer = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = seconds % 60;
+
+        return [hours, minutes, remainingSeconds]
+            .map((part) => String(part).padStart(2, "0"))
+            .join(":");
+    };
+
+    const handleAlarmToggle = async () => {
+        if (!qboxId) {
+            return;
+        }
+
+        try {
+            const nextValue = !isAlarmEnabled;
+            const action = nextValue ? "start" : "stop";
+
+            await controlAlarmMutation.mutateAsync(action);
+            setIsAlarmEnabled(nextValue);
+
+            if (nextValue) {
+                setAlarmStartedAt(Date.now());
+                setAlarmElapsedSeconds(0);
+            } else {
+                setAlarmStartedAt(null);
+                setAlarmElapsedSeconds(0);
+            }
+        } catch {
+            // Mutation hook already shows the error toast.
+        }
+    };
+
     const currentDate = activeVideoType === "external" ? externalDate : internalDate;
 
     return {
@@ -101,6 +168,7 @@ export const useMyQBoxLogic = () => {
         internalDate,
         showDatePicker,
         setShowDatePicker,
+        isAlarmLoading: controlAlarmMutation.isPending,
         externalPlayer,
         internalPlayer,
         externalSource,
@@ -111,5 +179,8 @@ export const useMyQBoxLogic = () => {
         openCalendar,
         formatDate,
         handleShare,
+        handleAlarmToggle,
+        isStatusSocketConnecting: statusSocket.isConnecting,
+        alarmTimerText: isAlarmEnabled ? formatAlarmTimer(alarmElapsedSeconds) : "",
     };
 };
