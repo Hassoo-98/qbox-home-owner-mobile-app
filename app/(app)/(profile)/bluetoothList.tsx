@@ -332,6 +332,7 @@ export const BluetoothList = () => {
         await connect(item.device);
         setConnStatus("connected");
       } catch (err) {
+        console.warn("[BluetoothList] Connection failed:", err);
         setConnStatus("failed");
       }
     },
