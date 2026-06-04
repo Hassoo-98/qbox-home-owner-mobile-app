@@ -1,10 +1,11 @@
 import { useAuth } from "@/hooks";
+import { router } from "expo-router";
 import React from "react";
 import { Linking } from "react-native";
 import { MenuItem } from "../MenuItem";
 import { MenuListProps } from "./props";
 
-export const MenuList = ({ menuData }: MenuListProps) => {
+export const MenuList = ({ menuData, onItemPress }: MenuListProps) => {
   const { logout } = useAuth();
 
   const handleContactUs = async () => {
@@ -18,11 +19,18 @@ export const MenuList = ({ menuData }: MenuListProps) => {
     }
   };
 
-  const handlePress = async (title: string) => {
-    if (title === "Logout") {
+  const handlePress = async (item: MenuListProps["menuData"][number]) => {
+    if (onItemPress) {
+      const handled = await onItemPress(item);
+      if (handled) return;
+    }
+
+    if (item.title === "Logout") {
       await logout();
-    } else if (title === "Contact Us") {
+    } else if (item.title === "Contact Us") {
       await handleContactUs();
+    } else if (item.path) {
+      router.navigate(item.path);
     }
   };
 
@@ -39,7 +47,7 @@ export const MenuList = ({ menuData }: MenuListProps) => {
           textColor={item?.textColor}
           icon={item?.icon}
           rightElement={item?.rightElement}
-          onPress={async () => handlePress(item?.title)}
+          onPress={async () => handlePress(item)}
         />
       ))}
     </>
