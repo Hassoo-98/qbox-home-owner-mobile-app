@@ -91,6 +91,12 @@ export default function ProfileStack() {
             title: "WiFi Provisioning",
           }}
         />
+        <Stack.Screen
+          name="telemetry"
+          options={{
+            title: "Telemetry",
+          }}
+        />
       </Stack>
     </ProfileProvider>
   );
