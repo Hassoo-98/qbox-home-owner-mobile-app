@@ -1,12 +1,13 @@
 import { Card, Text } from "@/components";
-import { Colors, Spacing } from "@/constants";
+import { Colors } from "@/constants";
 import { useBleProvisioning } from "@/context";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Modal,
   StyleSheet,
@@ -32,6 +33,54 @@ const getWifiSignalIcon = (rssi: number) => {
   return "wifi-outline";
 };
 
+const getBleWifiFailureMessage = (response: any) => {
+  const connection = response?.connection || response?.result || {};
+  const connectionStatus = String(connection?.status || response?.status || "").toLowerCase();
+  const reason =
+    connection?.reason ||
+    connection?.details?.reason ||
+    response?.reason ||
+    response?.error ||
+    response?.message;
+
+  if (
+    response?.status === false ||
+    response?.status === "failed" ||
+    ["false", "failed", "fail", "error", "auth_failed"].includes(connectionStatus)
+  ) {
+    if (
+      reason === "auth_failed" ||
+      connectionStatus === "auth_failed" ||
+      String(reason || "").toLowerCase().includes("auth") ||
+      String(reason || "").toLowerCase().includes("password") ||
+      String(reason || "").toLowerCase().includes("secret")
+    ) {
+      return "Incorrect Wi-Fi password. Please check and try again.";
+    }
+    return response?.error || response?.message || connection?.message || "Wi-Fi connection failed.";
+  }
+
+  return null;
+};
+
+const isBleWifiSuccess = (response: any) => {
+  const failureMessage = getBleWifiFailureMessage(response);
+  if (failureMessage) return false;
+
+  const connection = response?.connection || response?.result || {};
+  const connectionStatus = String(connection?.status || "").toLowerCase();
+  const connectionDetails = connection?.connection || {};
+
+  return (
+    (response?.status === true || response?.status === "success") &&
+    (
+      !connectionStatus ||
+      ["true", "success", "connected", "completed"].includes(connectionStatus) ||
+      connectionDetails?.connected === true
+    )
+  );
+};
+
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function BleWifiProvisioning() {
@@ -42,8 +91,10 @@ export default function BleWifiProvisioning() {
   const [networks, setNetworks] = useState<WifiNetwork[]>([]);
   const [selectedNetwork, setSelectedNetwork] = useState<WifiNetwork | null>(null);
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const didStartInitialScan = useRef(false);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -69,7 +120,11 @@ export default function BleWifiProvisioning() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await sendBleCommand({ action: "scan_wifi" });
+      const response = await sendBleCommand({
+        action: "scan_wifi",
+        max_networks: 6,
+        fields: ["ssid", "rssi", "security", "secured"],
+      });
       handleWifiResponse(response);
     } catch (e: any) {
       setError(e.message || "Failed to scan WiFi networks.");
@@ -86,21 +141,44 @@ export default function BleWifiProvisioning() {
         action: "connect_wifi",
         ssid: selectedNetwork.ssid,
         password: password,
+        response: "minimal",
+        include_scan_wifi: false,
+        include_networks: false,
       });
 
-      if (response.status === "success" && response.connection) {
+      const failureMessage = getBleWifiFailureMessage(response);
+      if (failureMessage) {
+        throw new Error(failureMessage);
+      }
+
+      if (isBleWifiSuccess(response)) {
+        const connectedSsid =
+          response?.connection?.ssid ||
+          response?.connection?.connection?.connected_ssid ||
+          response?.ssid ||
+          selectedNetwork.ssid;
+        const successMessage =
+          response?.message ||
+          `Connected to ${connectedSsid}.`;
+
         setIsConnecting(false);
         setSelectedNetwork(null);
         setPassword("");
-        alert("WiFi Provisioned Successfully!");
-        // We disconnect as requested by the original plan after success
+        setIsPasswordVisible(false);
         await disconnect();
-        router.push("/(app)/(profile)");
+        Alert.alert("Wi-Fi connected", successMessage, [
+          {
+            text: "OK",
+            onPress: () => router.replace("/(app)/(profile)"),
+          },
+        ]);
       } else {
         throw new Error(response.error || "WiFi connection failed");
       }
     } catch (e: any) {
-      setError(e.message || "Failed to connect to WiFi.");
+      const message = e.message || "Failed to connect to WiFi.";
+      Alert.alert("Wi-Fi connection failed", message);
+      setError(message);
       setIsConnecting(false);
     }
   };
@@ -112,6 +190,9 @@ export default function BleWifiProvisioning() {
       router.back();
       return;
     }
+
+    if (didStartInitialScan.current) return;
+    didStartInitialScan.current = true;
     fetchNetworks();
   }, [connectedDevice, fetchNetworks, router]);
 
@@ -201,14 +282,27 @@ export default function BleWifiProvisioning() {
             {selectedNetwork?.secured && (
               <View style={modalStyles.inputContainer}>
                 <Text style={modalStyles.label}>Password</Text>
-                <TextInput
-                  style={modalStyles.input}
-                  placeholder="Enter WiFi password"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  autoFocus
-                />
+                <View style={modalStyles.passwordInputWrap}>
+                  <TextInput
+                    style={modalStyles.input}
+                    placeholder="Enter WiFi password"
+                    secureTextEntry={!isPasswordVisible}
+                    value={password}
+                    onChangeText={setPassword}
+                    autoFocus
+                  />
+                  <TouchableOpacity
+                    style={modalStyles.eyeBtn}
+                    onPress={() => setIsPasswordVisible((current) => !current)}
+                    disabled={isConnecting}
+                  >
+                    <Ionicons
+                      name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+                      size={22}
+                      color={(Colors as any).secondaryText ?? "#6B7280"}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
 
@@ -218,6 +312,7 @@ export default function BleWifiProvisioning() {
                 onPress={() => {
                   setSelectedNetwork(null);
                   setPassword("");
+                  setIsPasswordVisible(false);
                 }}
                 disabled={isConnecting}
               >
@@ -284,7 +379,16 @@ const modalStyles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: Colors.text, marginBottom: 4 },
   inputContainer: { marginBottom: 24 },
   label: { fontSize: 14, fontWeight: "600", color: Colors.text, marginBottom: 8 },
-  input: { backgroundColor: "#F9FAFB", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, padding: 14, fontSize: 16 },
+  passwordInputWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+  },
+  input: { flex: 1, padding: 14, paddingRight: 4, fontSize: 16, color: Colors.text },
+  eyeBtn: { width: 48, height: 48, alignItems: "center", justifyContent: "center" },
   actions: { flexDirection: "row", gap: 12 },
   btn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: "center" },
   cancelBtn: { backgroundColor: "#F3F4F6" },
