@@ -24,10 +24,114 @@ export const RESPONSE_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e".toLower
 
 const DEFAULT_TIMEOUT_MS = 15000;
 const WIFI_CONNECT_TIMEOUT_MS = 45000;
+const WIFI_SCAN_TIMEOUT_MS = 30000;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const looksLikeCompleteJson = (text: string) => {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  let started = false;
+
+  for (let i = 0; i < trimmed.length; i++) {
+    const char = trimmed[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === "\"") {
+      inString = true;
+      continue;
+    }
+
+    if (char === "{" || char === "[") {
+      depth += 1;
+      started = true;
+    } else if (char === "}" || char === "]") {
+      depth -= 1;
+      if (depth < 0) return false;
+    }
+  }
+
+  return started && depth === 0 && !inString;
+};
+
+const extractCompleteJsonObjects = (text: string) => {
+  const objects: any[] = [];
+  let objectStart = -1;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === "\"") {
+      inString = true;
+      continue;
+    }
+
+    if (char === "{") {
+      if (depth === 0) objectStart = i;
+      depth += 1;
+    } else if (char === "}") {
+      depth -= 1;
+      if (depth === 0 && objectStart >= 0) {
+        const candidate = text.slice(objectStart, i + 1);
+        try {
+          objects.push(JSON.parse(candidate));
+        } catch {
+          // Ignore malformed object fragments and keep scanning.
+        }
+        objectStart = -1;
+      }
+    }
+  }
+
+  return objects;
+};
+
+const parsePartialWifiScanResponse = (text: string) => {
+  if (!text.includes("\"networks\"")) return null;
+
+  const networksKeyIndex = text.indexOf("\"networks\"");
+  const arrayStart = text.indexOf("[", networksKeyIndex);
+  if (arrayStart < 0) return null;
+
+  const networks = extractCompleteJsonObjects(text.slice(arrayStart + 1));
+  if (!networks.length) return null;
+
+  return {
+    status: "success",
+    partial: true,
+    networks,
+  };
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +147,7 @@ interface BleProvisioningContextType {
   isScanning: boolean;
   scanResults: DiscoveredBleDevice[];
   connectedDevice: Device | null;
-  startScan: () => void;
+  startScan: () => Promise<void>;
   stopScan: () => void;
   connect: (device: Device) => Promise<Device>;
   disconnect: () => Promise<void>;
@@ -73,15 +177,24 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
   // ── Command Pending State ──────────────────────────────────────────────────
   const pendingResolve = useRef<((value: any) => void) | null>(null);
   const pendingReject = useRef<((reason?: any) => void) | null>(null);
-  const pendingTimeout = useRef<NodeJS.Timeout | null>(null);
+  const pendingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const partialResponseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingAction = useRef<string | undefined>(undefined);
+  const responseBuffer = useRef("");
 
   const clearPending = useCallback(() => {
     if (pendingTimeout.current) {
       clearTimeout(pendingTimeout.current);
       pendingTimeout.current = null;
     }
+    if (partialResponseTimeout.current) {
+      clearTimeout(partialResponseTimeout.current);
+      partialResponseTimeout.current = null;
+    }
     pendingResolve.current = null;
     pendingReject.current = null;
+    pendingAction.current = undefined;
+    responseBuffer.current = "";
   }, []);
 
   // ── Debug Helpers ─────────────────────────────────────────────────────────
@@ -118,49 +231,98 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
 
   // ── Response Decoding ──────────────────────────────────────────────────────
 
-  const decodeBase64Json = useCallback((base64Value: string) => {
+  const decodeBase64Text = useCallback((base64Value: string) => {
     try {
-      // Clean null characters and trim whitespace
-      const text = Buffer.from(base64Value, "base64")
+      return Buffer.from(base64Value, "base64")
         .toString("utf8")
-        .replace(/\0/g, "")
-        .trim();
-      
-      console.log("[BleProvisioning] Raw response text:", text);
-      if (!text) throw new Error("Empty BLE response text");
-      
-      return JSON.parse(text);
+        .replace(/\0/g, "");
     } catch (e) {
-      console.error("[BleProvisioning] Decode/Parse error:", e);
+      console.error("[BleProvisioning] Decode error:", e);
       throw e;
     }
   }, []);
+
+  const tryParseResponseChunk = useCallback((base64Value: string) => {
+    const text = decodeBase64Text(base64Value);
+    if (!text.trim()) throw new Error("Empty BLE response text");
+
+    if (responseBuffer.current.endsWith(text)) {
+      console.log("[BleProvisioning] Duplicate BLE response chunk ignored:", text.length);
+    } else {
+      responseBuffer.current += text;
+      console.log("[BleProvisioning] BLE response chunk received:", {
+        chunkLength: text.length,
+        bufferedLength: responseBuffer.current.length,
+        complete: looksLikeCompleteJson(responseBuffer.current),
+      });
+    }
+
+    if (!looksLikeCompleteJson(responseBuffer.current)) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(responseBuffer.current.trim());
+    } catch (e) {
+      console.warn("[BleProvisioning] Buffered response is not valid JSON yet:", e);
+      return null;
+    }
+  }, [decodeBase64Text]);
+
+  const getPartialWifiScanResponse = useCallback(() => {
+    const partialResponse = parsePartialWifiScanResponse(responseBuffer.current);
+    if (partialResponse) {
+      console.warn("[BleProvisioning] Using partial WiFi scan response:", {
+        networks: partialResponse.networks.length,
+        bufferedLength: responseBuffer.current.length,
+      });
+    }
+    return partialResponse;
+  }, []);
+
+  const schedulePartialWifiScanResponse = useCallback(() => {
+    if (pendingAction.current !== "scan_wifi" || partialResponseTimeout.current) return;
+
+    partialResponseTimeout.current = setTimeout(() => {
+      partialResponseTimeout.current = null;
+      const partialResponse = getPartialWifiScanResponse();
+      if (!partialResponse || !pendingResolve.current) return;
+
+      const resolve = pendingResolve.current;
+      clearPending();
+      resolve(partialResponse);
+    }, 1200);
+  }, [clearPending, getPartialWifiScanResponse]);
 
   // ── Fallback Read with Polling ─────────────────────────────────────────────
 
   const readResponseFallback = useCallback(async (device: Device) => {
     console.log("[BleProvisioning] Starting read fallback polling...");
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 8; i++) {
       try {
         const characteristic = await device.readCharacteristicForService(
           SMART_LOCKER_SERVICE_UUID,
           RESPONSE_CHAR_UUID
         );
         if (characteristic?.value) {
-          console.log("[BleProvisioning] Read fallback success on attempt", i + 1);
-          return decodeBase64Json(characteristic.value);
+          const parsed = tryParseResponseChunk(characteristic.value);
+          if (parsed) {
+            console.log("[BleProvisioning] Read fallback completed on attempt", i + 1);
+            return parsed;
+          }
+          console.log("[BleProvisioning] Read fallback waiting for more response data");
         }
       } catch (e) {
         console.warn(`[BleProvisioning] Read fallback attempt ${i + 1} failed:`, e);
       }
       await sleep(500);
     }
-    throw new Error("Empty BLE response characteristic after polling");
-  }, [decodeBase64Json]);
+    throw new Error("Incomplete BLE response after polling");
+  }, [tryParseResponseChunk]);
 
   // ── Permissions ────────────────────────────────────────────────────────────
 
-  const requestPermissions = async (): Promise<boolean> => {
+  const requestPermissions = useCallback(async (): Promise<boolean> => {
     if (Platform.OS !== "android") return true;
 
     const apiLevel = Platform.Version as number;
@@ -179,7 +341,7 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
       );
       return result === PermissionsAndroid.RESULTS.GRANTED;
     }
-  };
+  }, []);
 
   // ── BLE State ──────────────────────────────────────────────────────────────
 
@@ -192,8 +354,14 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
 
   // ── Scanning ───────────────────────────────────────────────────────────────
 
-  const startScan = useCallback(() => {
+  const startScan = useCallback(async () => {
     if (!bleReady || isScanning) return;
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) {
+      console.warn("[BleProvisioning] BLE scan permission denied");
+      setIsScanning(false);
+      return;
+    }
 
     deviceMap.current.clear();
     setScanResults([]);
@@ -204,7 +372,12 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
       { allowDuplicates: false },
       (error, device) => {
         if (error) {
-          console.error("[BleProvisioning] Scan error:", error);
+          const message = String(error?.message || error);
+          if (message.includes("not authorized")) {
+            console.warn("[BleProvisioning] BLE scan is not authorized. Recheck Bluetooth permissions.");
+          } else {
+            console.error("[BleProvisioning] Scan error:", error);
+          }
           setIsScanning(false);
           return;
         }
@@ -227,7 +400,7 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
     setTimeout(() => {
       stopScan();
     }, 30000);
-  }, [bleReady, isScanning]);
+  }, [bleReady, isScanning, requestPermissions]);
 
   const stopScan = useCallback(() => {
     bleManager.stopDeviceScan();
@@ -247,17 +420,24 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
       RESPONSE_CHAR_UUID,
       (error, characteristic) => {
         if (error) {
-          console.error("[BleProvisioning] Notify error:", error);
-          if (pendingReject.current) {
-            const reject = pendingReject.current;
-            clearPending();
-            reject(error);
+          const message = String(error?.message || error);
+          if (message.includes("disconnected")) {
+            console.warn("[BleProvisioning] Notify stopped because device disconnected");
+          } else {
+            console.error("[BleProvisioning] Notify error:", error);
           }
           return;
         }
         if (characteristic?.value) {
           try {
-            const data = decodeBase64Json(characteristic.value);
+            const data = tryParseResponseChunk(characteristic.value);
+            if (!data) {
+              if (parsePartialWifiScanResponse(responseBuffer.current)) {
+                schedulePartialWifiScanResponse();
+              }
+              return;
+            }
+
             console.log("[BleProvisioning] Notify received valid JSON:", data.status);
             if (pendingResolve.current) {
               const resolve = pendingResolve.current;
@@ -265,12 +445,12 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
               resolve(data);
             }
           } catch (e) {
-            console.warn("[BleProvisioning] Notify parse failed:", e);
+            console.warn("[BleProvisioning] Notify response handling failed:", e);
           }
         }
       }
     );
-  }, [decodeBase64Json, clearPending]);
+  }, [tryParseResponseChunk, clearPending, schedulePartialWifiScanResponse]);
 
   const connect = async (device: Device): Promise<Device> => {
     stopScan();
@@ -329,13 +509,40 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
     }
 
     const action = payload?.action;
-    const timeoutMs = action === "connect_wifi" ? WIFI_CONNECT_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+    const timeoutMs =
+      action === "connect_wifi"
+        ? WIFI_CONNECT_TIMEOUT_MS
+        : action === "scan_wifi"
+          ? WIFI_SCAN_TIMEOUT_MS
+          : DEFAULT_TIMEOUT_MS;
 
     return new Promise(async (resolve, reject) => {
+      responseBuffer.current = "";
+      pendingAction.current = action;
       pendingResolve.current = resolve;
       pendingReject.current = reject;
 
       pendingTimeout.current = setTimeout(async () => {
+        const partialResponse =
+          action === "scan_wifi" ? getPartialWifiScanResponse() : null;
+        if (partialResponse) {
+          const originalResolve = pendingResolve.current;
+          clearPending();
+          originalResolve?.(partialResponse);
+          return;
+        }
+
+        if (action === "scan_wifi") {
+          const originalReject = pendingReject.current;
+          clearPending();
+          originalReject?.(
+            new Error(
+              "Pi did not send a complete BLE scan response. Check that notifications are enabled and the Pi sends JSON in multiple notify chunks."
+            )
+          );
+          return;
+        }
+
         console.log(`[BleProvisioning] Command '${action}' timed out, trying read fallback...`);
         try {
           const fallbackResponse = await readResponseFallback(connectedDevice!);
@@ -345,7 +552,13 @@ export const BleProvisioningProvider: React.FC<{ children: React.ReactNode }> = 
         } catch (e: any) {
           const originalReject = pendingReject.current;
           clearPending();
-          originalReject?.(new Error(`BLE response timeout: ${e?.message || e}`));
+          originalReject?.(
+            new Error(
+              action === "connect_wifi"
+                ? "Timed out waiting for the Pi Wi-Fi connection result."
+                : `BLE response timeout: ${e?.message || e}`
+            )
+          );
         }
       }, timeoutMs);
 
