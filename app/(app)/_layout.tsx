@@ -5,10 +5,12 @@ import {
   HapticTab,
 } from "@/components";
 import { BOTTOM_TABS, Colors, NESTED_SCREEN_TITLES } from "@/constants";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, Tabs, usePathname } from "expo-router";
 
 export const AppTabLayout = () => {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   const handleQRPress = () => {
     router.navigate("/qrCodeHistory");
@@ -16,6 +18,17 @@ export const AppTabLayout = () => {
 
   const handleNotificationPress = () => {
     // TODO: Implement notification navigation
+  };
+
+  const handleRefreshPress = async () => {
+    if (!pathname.includes("/myQbox") && !pathname.includes("(myQbox)")) {
+      return;
+    }
+
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["homeOwner"] }),
+      queryClient.invalidateQueries({ queryKey: ["qboxStreams"] }),
+    ]);
   };
 
   // Check if current pathname is a nested screen
@@ -59,6 +72,7 @@ export const AppTabLayout = () => {
               activeTab={routeName}
               handleQRPress={handleQRPress}
               handleNotificationPress={handleNotificationPress}
+              handleRefreshPress={handleRefreshPress}
             />
           );
         },
