@@ -1,5 +1,6 @@
 import { NotificationBellIcon, QRHistoryIcon } from "@/assets/icons";
 import { HapticPressable, Text } from "@/components";
+import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { AppHeaderRightProps } from "./props";
 import { styles } from "./styles";
@@ -8,6 +9,8 @@ export const AppHeaderRight = ({
   activeTab,
   handleQRPress,
   handleNotificationPress,
+  handleRefreshPress,
+  isRefreshLoading,
 }: AppHeaderRightProps) => {
   const notificationCount = 3;
   return (
@@ -28,6 +31,16 @@ export const AppHeaderRight = ({
           </View>
         )}
       </HapticPressable>
+
+      {activeTab === "(myQbox)" && handleRefreshPress ? (
+        <HapticPressable onPress={handleRefreshPress} disabled={!!isRefreshLoading}>
+          <Ionicons
+            name={isRefreshLoading ? "refresh" : "refresh-outline"}
+            size={24}
+            color="#28475C"
+          />
+        </HapticPressable>
+      ) : null}
     </View>
   );
 };
