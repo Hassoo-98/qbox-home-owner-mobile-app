@@ -7,6 +7,9 @@ export const styles = StyleSheet.create({
     },
     contentContainer: {
         alignItems: "center",
+        paddingHorizontal: mvs(16),
+        paddingTop: mvs(12),
         paddingBottom: mvs(20),
+        gap: mvs(12),
     },
 });
