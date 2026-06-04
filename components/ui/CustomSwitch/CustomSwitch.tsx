@@ -4,7 +4,7 @@ import React from "react";
 import { Animated, StyleSheet, TouchableOpacity } from "react-native";
 import { CustomSwitchProps } from "./props";
 
-export const CustomSwitch = ({ value, onValueChange }: CustomSwitchProps) => {
+export const CustomSwitch = ({ value, onValueChange, disabled = false }: CustomSwitchProps) => {
   const animatedValue = React.useRef(new Animated.Value(value ? 1 : 0)).current;
 
   React.useEffect(() => {
@@ -26,13 +26,22 @@ export const CustomSwitch = ({ value, onValueChange }: CustomSwitchProps) => {
   });
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={() => onValueChange(!value)}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        if (!disabled) {
+          onValueChange(!value);
+        }
+      }}
+      disabled={disabled}
+    >
       <Animated.View style={[styles.track]}>
         <Animated.View
           style={[
             styles.thumb,
             { transform: [{ translateX }] },
             { backgroundColor: thumbPointer },
+            disabled ? { opacity: 0.6 } : null,
           ]}
         />
       </Animated.View>
