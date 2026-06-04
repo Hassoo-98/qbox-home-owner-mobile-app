@@ -93,6 +93,56 @@ export interface VerifyQBoxPayload {
     qbox_id: string;
 }
 
+export interface DeviceTelemetryResponse {
+    device_id: string;
+    cpu_usage: number;
+    ram_usage: number;
+    disk_usage: number;
+    cpu_temperature: number;
+    uptime_seconds: number;
+    network_connected: boolean;
+    local_ip: string | null;
+    wifi_ssid: string | null;
+    timestamp: string;
+}
+
+export interface DeviceStatusResponse {
+    device_id: string;
+    status: string;
+    mqtt_status: string;
+    internal_camera_status?: string | null;
+    external_camera_status?: string | null;
+    qbox_status?: string | null;
+    alarm_active?: boolean | null;
+    last_mqtt_reconnect?: string | null;
+    service_status?: string | null;
+    last_seen: string | null;
+    last_heartbeat_at: string | null;
+    last_telemetry_at: string | null;
+    last_health_at: string | null;
+}
+
+export interface QBoxActionResponse<T = unknown> {
+    success: boolean;
+    statusCode: number;
+    data: T;
+    message: string;
+    errors?: unknown;
+}
+
+export interface MqttReconnectResponseData {
+    device_id: string;
+    request_topic: string;
+    response_topic: string;
+    response: DeviceStatusResponse;
+}
+
+export interface ServiceRestartResponseData {
+    service: string;
+    device_id?: string;
+    status?: string;
+}
+
 export interface VerifyAddressPayload {
     short_address: string;
 }
