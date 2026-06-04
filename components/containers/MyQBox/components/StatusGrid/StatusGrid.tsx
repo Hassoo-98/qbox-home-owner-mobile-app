@@ -1,43 +1,70 @@
-import { CameraIcon, LED_IndicatorIcon, OnlineStatusIcon, PowerStatusIcom } from "@/assets/icons";
+import { CameraIcon, OnlineStatusIcon } from "@/assets/icons";
 import { AttributeView } from "@/components";
 import { Colors } from "@/constants";
+import { useDeviceStatusSocket } from "@/hooks/api/useQBoxQueries";
 import { mvs } from "@/utils/metrices";
 import { StyleSheet, View } from "react-native";
 
 export const StatusCardsGrid = ({ qboxesDetails }: { qboxesDetails: any }) => {
-
-  console.log("homeOwnerResponse", JSON.stringify(qboxesDetails, null, 4));
-
   const details = Array.isArray(qboxesDetails) ? qboxesDetails[0] : qboxesDetails;
+  const qboxId = details?.qbox_id;
+  const { data: deviceStatus, isConnecting } = useDeviceStatusSocket(qboxId);
+
+  const normalizeStatus = (value?: string | null, fallback = "Unknown") => {
+    if (typeof value !== "string") return fallback;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : fallback;
+  };
+
+  const getTone = (value: string, activeValue: string) => {
+    const normalized = value.toLowerCase();
+    if (normalized === "connecting...") return Colors.warning;
+    if (normalized === activeValue.toLowerCase()) return Colors.success;
+    return isConnecting && !deviceStatus ? Colors.warning : Colors.danger;
+  };
+
+  const internalCameraStatus = normalizeStatus(
+    deviceStatus?.internal_camera_status,
+    isConnecting ? "Connecting..." : "Not Working"
+  );
+  const externalCameraStatus = normalizeStatus(
+    deviceStatus?.external_camera_status,
+    isConnecting ? "Connecting..." : "Not Working"
+  );
+  const qboxStatus = normalizeStatus(
+    deviceStatus?.qbox_status ?? deviceStatus?.status,
+    isConnecting ? "Connecting..." : "Offline"
+  );
+  const alarmStatus = isConnecting && !deviceStatus ? "Connecting..." : deviceStatus?.alarm_active ? "Active" : "Inactive";
 
   const STATUS_CARDS_DATA = [
     {
       id: "1",
       icon: OnlineStatusIcon,
       title: "QBox Status",
-      statusText: details?.status || "Offline",
-      statusColor: details?.status === "Online" ? Colors.success : Colors.danger,
+      statusText: qboxStatus,
+      statusColor: getTone(qboxStatus, "Online"),
     },
     {
       id: "2",
       icon: CameraIcon,
-      title: "Camera",
-      statusText: details?.camera_status || "Not Working",
-      statusColor: details?.camera_status === "Working" ? Colors.success : Colors.danger,
+      title: "Internal Camera",
+      statusText: internalCameraStatus,
+      statusColor: getTone(internalCameraStatus, "Working"),
     },
     {
       id: "3",
-      icon: LED_IndicatorIcon,
-      title: "LED Indicator",
-      statusText: details?.led_indicator || "Red",
-      statusColor: details?.led_indicator === "Green" ? Colors.success : Colors.danger,
+      icon: CameraIcon,
+      title: "External Camera",
+      statusText: externalCameraStatus,
+      statusColor: getTone(externalCameraStatus, "Working"),
     },
     {
       id: "4",
-      icon: PowerStatusIcom,
-      title: "Power Status",
-      statusText: details?.power_status || "Unplugged",
-      statusColor: details?.power_status === "Plugged" ? Colors.success : Colors.danger,
+      icon: CameraIcon,
+      title: "Alarm",
+      statusText: alarmStatus,
+      statusColor: isConnecting && !deviceStatus ? Colors.warning : deviceStatus?.alarm_active ? Colors.warning : Colors.success,
     },
   ];
   return (
