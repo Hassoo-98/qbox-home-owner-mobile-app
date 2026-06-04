@@ -8,6 +8,7 @@ export interface PhoneInputProps extends Partial<RNPhoneInputProps> {
   iconPath?: string;
   control: Control<any>;
   placeholder?: string;
+  editable?: boolean;
   endButtonText?: string;
   onEndButtonClick?: () => void;
   endButtonProps?: ButtonProps;

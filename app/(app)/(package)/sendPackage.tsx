@@ -20,6 +20,11 @@ export const SendPackage = () => {
     phoneNumber,
     pickImage,
     qboxImage,
+    verifyQBox,
+    isQBoxVerified,
+    isVerifyingQBox,
+    paymentMethods,
+    validateStep,
     isPending,
   } = useSendPackage();
 
@@ -44,12 +49,19 @@ export const SendPackage = () => {
           onSubmit={onSubmit}
           phoneNumber={phoneNumber}
           isPending={isPending}
+          isQBoxVerified={isQBoxVerified}
+          validateStep={validateStep}
         />
       }
     >
       <View style={styles.container}>
         {currentStep === 1 ? (
-          <RecipientInformation control={control} />
+          <RecipientInformation
+            control={control}
+            onVerifyQBox={verifyQBox}
+            isQBoxVerified={isQBoxVerified}
+            isVerifyingQBox={isVerifyingQBox}
+          />
         ) : currentStep === 2 ? (
           <PackageInformation
             control={control}
@@ -57,7 +69,11 @@ export const SendPackage = () => {
             pickImage={pickImage}
           />
         ) : (
-          <DeliveryInformation control={control} setValue={setValue} />
+          <DeliveryInformation
+            control={control}
+            setValue={setValue}
+            paymentMethods={paymentMethods}
+          />
         )}
       </View>
     </FormLayout>

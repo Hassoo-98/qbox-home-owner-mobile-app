@@ -9,10 +9,10 @@ import { SendPackageFooterProps } from "./props";
 export const SendPackageFooter = ({
   currentStep,
   setCurrentStep,
-  isFormValid,
   onSubmit,
-  phoneNumber,
   isPending,
+  isQBoxVerified,
+  validateStep,
 }: SendPackageFooterProps) => {
   const packageGuidelines = [
     "Maximum weight: 5kg",
@@ -48,9 +48,15 @@ export const SendPackageFooter = ({
         />
         <Button
           title={currentStep === 3 ? "Submit" : "Next"}
-          disabled={!isFormValid}
-          onPress={() => {
+          disabled={currentStep === 1 && !isQBoxVerified}
+          onPress={async () => {
             console.log("current step: ", currentStep);
+
+            const canProceed = await validateStep(currentStep);
+            if (!canProceed) {
+              return;
+            }
+
             switch (currentStep) {
               case 1:
                 setCurrentStep((prev) => ++prev);
@@ -76,12 +82,11 @@ export const SendPackageFooter = ({
             borderRadius: Spacing.sm,
             flexDirection: "row",
             gap: Spacing.sm,
-            alignItems: "flex-start", // Important: align to top, not center
+            alignItems: "flex-start",
           }}
         >
           <WarningIconOutline width={20} height={20} />
 
-          {/* Wrap text content in a flexible container */}
           <View style={{ flex: 1, flexShrink: 1 }}>
             <Text
               size="sm"

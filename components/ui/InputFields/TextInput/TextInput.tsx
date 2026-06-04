@@ -28,6 +28,16 @@ export const TextInput = ({
   width,
   ...restProps
 }: TextInputProps) => {
+  const formatExpiry = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+
+    if (digits.length <= 2) {
+      return digits;
+    }
+
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  };
+
   return (
     <View style={[styles.container, { width: width ? width : "100%" }]}>
       {label && (
@@ -68,7 +78,9 @@ export const TextInput = ({
               <RNTextInput
                 {...restProps}
                 value={value}
-                onChangeText={onChange}
+                onChangeText={(text) =>
+                  onChange(name === "expiry" ? formatExpiry(text) : text)
+                }
                 onBlur={onBlur}
                 placeholder={placeholder}
                 placeholderTextColor="#777E90"

@@ -5,6 +5,9 @@ import { RecipientInformationProps } from "./props";
 
 export const RecipientInformation = ({
   control,
+  onVerifyQBox,
+  isVerifyingQBox,
+  isQBoxVerified,
 }: RecipientInformationProps) => {
   return (
     <View>
@@ -17,6 +20,7 @@ export const RecipientInformation = ({
         label="Full Name"
         autoComplete="name"
         placeholder="Enter your full name"
+        editable={false}
       />
       <TextInput
         name="email"
@@ -27,6 +31,7 @@ export const RecipientInformation = ({
         label="Email Address"
         keyboardType="email-address"
         placeholder="Enter email address"
+        editable={false}
       />
       <PhoneNumberInput
         name="phone"
@@ -34,6 +39,8 @@ export const RecipientInformation = ({
         label="Phone Number"
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
+        disableCountryPicker
+        editable={false}
       />
       <TextInput
         name="qBoxId"
@@ -42,6 +49,15 @@ export const RecipientInformation = ({
         autoCorrect={false}
         label="QBox ID"
         placeholder="XXXXXX"
+        autoCapitalize="characters"
+        endButtonText={isQBoxVerified ? "Verified" : "Verify"}
+        onEndButtonClick={onVerifyQBox}
+        endButtonProps={{
+          size: "sm",
+          variant: isQBoxVerified ? "success" : "primary",
+          loading: isVerifyingQBox,
+          disabled: isVerifyingQBox || isQBoxVerified,
+        }}
       />
     </View>
   );

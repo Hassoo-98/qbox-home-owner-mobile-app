@@ -1,8 +1,8 @@
 import api from '../config';
-import { QBoxStreamsResponse, VerifyQBoxPayload } from '../types';
+import { QBoxStreamsResponse, VerifyQBoxPayload, VerifyQBoxResponse } from '../types';
 
 export const verifyQBoxId = async (data: VerifyQBoxPayload) => {
-    const response = await api.post('/qbox/verify-id', data);
+    const response = await api.post<VerifyQBoxResponse>('/qbox/verify-id', data);
     return response.data;
 };
 

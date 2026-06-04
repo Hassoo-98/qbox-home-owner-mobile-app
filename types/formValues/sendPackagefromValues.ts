@@ -3,6 +3,9 @@ export type SendPackageFormValues = {
   email: string;
   phone: string;
   qBoxId: string;
+  receiverHomeOwnerId: string;
+  senderHomeOwnerId: string;
+  serviceProviderId: string;
   packageType: string;
   packageWeight: number;
   currency: string;
@@ -10,6 +13,12 @@ export type SendPackageFormValues = {
   packageDescription: string;
   qboxImage: string;
   shippingCompany: string;
+  shippingCompanyName: string;
   paymentMethod: string;
+  paymentMethodId: string;
+  cardHolderName: string;
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
   charges: number;
 };

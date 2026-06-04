@@ -44,11 +44,13 @@ export const PhoneNumberInput = ({
                 {disableCountryPicker ? (
                   // 👇 Simple TextInput — no FlatList, no VirtualizedList warning
                   <RNTextInput
+                    {...restProps}
                     value={value}
                     onChangeText={onChange}
                     placeholder={placeholder}
                     placeholderTextColor="#777E90"
                     keyboardType="phone-pad"
+                    editable={restProps.editable}
                     style={[
                       styles.phoneInputContainer,
                       styles.phoneInputText,
