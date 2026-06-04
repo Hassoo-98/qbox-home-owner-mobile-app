@@ -71,7 +71,7 @@ export const WifiList = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
 
-  const { control, handleSubmit, setValue, reset } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       password: "",
     }
@@ -96,8 +96,8 @@ export const WifiList = () => {
 
     try {
       const [networksResponse, stateResponse] = await Promise.all([
-        api.get(`/devices/${qboxId}/wifi/networks/`),
-        api.get(`/devices/${qboxId}/state/`)
+        api.get(`/devices/${qboxId}/wifi/networks/`, { timeout: 10000 }),
+        api.get(`/devices/${qboxId}/state/`, { timeout: 10000 })
       ]);
 
       const networksData = networksResponse.data;
@@ -129,7 +129,12 @@ export const WifiList = () => {
 
       setNetworks(fetchedNetworks);
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      const isTimeout = err.code === "ECONNABORTED" || String(err.message).includes("timeout");
+      setError(
+        isTimeout
+          ? "Your QBox is not responding. Please check that the device is online."
+          : err.message || "An unexpected error occurred"
+      );
     } finally {
       setLoading(false);
       setIsRescanning(false);
