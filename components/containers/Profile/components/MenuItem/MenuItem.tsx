@@ -30,7 +30,7 @@ export const MenuItem = ({
         justifyContent: "space-between",
         alignItems: "center",
       }}
-      onPress={path ? () => router.navigate(path) : onPress}
+      onPress={onPress || (path ? () => router.navigate(path) : undefined)}
     >
       <View style={{ flexDirection: "row", gap: mvs(10), alignItems: "center" }}>
         {Icon && <Icon size={24} />}
