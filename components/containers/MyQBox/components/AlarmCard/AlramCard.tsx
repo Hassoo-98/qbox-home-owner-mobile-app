@@ -4,7 +4,7 @@ import { mvs } from "@/utils/metrices";
 import { StyleSheet, View } from "react-native";
 import { QBoxAlarmCardProps } from "./prpos";
 
-export const QBoxAlarmCard = ({ isEnabled, onToggle }: QBoxAlarmCardProps) => {
+export const QBoxAlarmCard = ({ isEnabled, onToggle, timerText, isLoading }: QBoxAlarmCardProps) => {
   return (
     <Card
       style={[
@@ -14,13 +14,13 @@ export const QBoxAlarmCard = ({ isEnabled, onToggle }: QBoxAlarmCardProps) => {
       variant="filled"
       contentStyle={styles.content}
     >
-      <Text style={styles.title} size="md">
-        QBox Alarm
-      </Text>
+        <Text style={styles.title} size="md">
+          QBox Alarm
+        </Text>
       <View style={styles.controlsContainer}>
-        {isEnabled && <Text style={styles.timer}>00:00:00</Text>}
-        <View style={styles.SubControlsContainer}>
-          <CustomSwitch value={isEnabled} onValueChange={onToggle} />
+        {isEnabled && <Text style={styles.timer}>{timerText || "00:00:00"}</Text>}
+        <View style={styles.subControlsContainer}>
+          <CustomSwitch value={isEnabled} onValueChange={onToggle} disabled={isLoading} />
         </View>
       </View>
     </Card>
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     borderRadius: mvs(12),
+    gap: mvs(10),
   },
   title: {
     fontWeight: "bold",
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: mvs(10),
   },
-  SubControlsContainer: {
+  subControlsContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
