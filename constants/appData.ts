@@ -384,6 +384,9 @@ export const PACKAGE_ATTRIBUTE_DATA = [
 const BluetoothMenuIcon = ({ size, color }: { size?: number; color?: string }) =>
   React.createElement(Ionicons, { name: "bluetooth", size: size ?? 24, color: color ?? "#000" });
 
+const TelemetryMenuIcon = ({ size, color }: { size?: number; color?: string }) =>
+  React.createElement(Ionicons, { name: "analytics-outline", size: size ?? 24, color: color ?? "#000" });
+
 export const MENU_ITEM: ProfileItem[] = [
   {
     id: 1,
@@ -417,6 +420,12 @@ export const MENU_ITEM: ProfileItem[] = [
     path: "/wifiList",
     rightText: "Connected",
     isBadge: true,
+  },
+  {
+    id: 10,
+    icon: TelemetryMenuIcon,
+    title: "Telemetry",
+    path: "/telemetry",
   },
   {
     id: 4,
