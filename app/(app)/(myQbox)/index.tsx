@@ -14,7 +14,9 @@ import { useMyQBoxLogic } from "./useMyQBoxLogic";
 export const MyQBox = () => {
   const {
     isAlarmEnabled,
-    setIsAlarmEnabled,
+    isAlarmLoading,
+    alarmTimerText,
+    handleAlarmToggle,
     externalDate,
     internalDate,
     showDatePicker,
@@ -31,11 +33,10 @@ export const MyQBox = () => {
     handleShare,
   } = useMyQBoxLogic();
 
-  const { data: homeOwnerResponse, isLoading, error } = useHomeOwner();
+  const { data: homeOwnerResponse } = useHomeOwner();
 
 
   const qboxesDetails = homeOwnerResponse?.data?.qboxes;
-  console.log("homeOwnerResponse", JSON.stringify(qboxesDetails, null, 4));
 
   return (
     <ScrollView
@@ -44,7 +45,9 @@ export const MyQBox = () => {
     >
       <QBoxAlarmCard
         isEnabled={isAlarmEnabled}
-        onToggle={() => setIsAlarmEnabled(!isAlarmEnabled)}
+        onToggle={handleAlarmToggle}
+        timerText={alarmTimerText}
+        isLoading={isAlarmLoading}
       />
 
       {/* QBox Status Grid */}
