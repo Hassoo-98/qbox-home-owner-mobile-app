@@ -7,12 +7,13 @@ import {
     QBoxStreamsResponse,
     ServiceRestartResponseData,
     VerifyQBoxPayload,
+    VerifyQBoxResponse,
 } from '../types';
 
 export type AlarmControlAction = 'start' | 'stop';
 
 export const verifyQBoxId = async (data: VerifyQBoxPayload) => {
-    const response = await api.post('/qbox/verify-id', data);
+    const response = await api.post<VerifyQBoxResponse>('/qbox/verify-id', data);
     return response.data;
 };
 

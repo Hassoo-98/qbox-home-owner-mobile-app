@@ -1,3 +1,5 @@
+import { QR_VALIDITY_DURATION_TYPE } from '@/constants/enums';
+
 // Auth Types
 export interface AddressDetails {
     short_address: string;
@@ -143,6 +145,45 @@ export interface ServiceRestartResponseData {
     status?: string;
 }
 
+export interface VerifyQBoxHomeowner {
+    id: string;
+    owner_id: string;
+    full_name: string;
+    email: string;
+    phone_number: string;
+    secondary_phone_number: string;
+    is_verified: boolean;
+    email_verified: boolean;
+    phone_verified: boolean;
+    is_approved: boolean;
+}
+
+export interface VerifyQBoxData {
+    id: string;
+    qbox_id: string;
+    homeowner: VerifyQBoxHomeowner;
+    homeowner_name_snapshot: string;
+    short_address_snapshot: string;
+    city_snapshot: string;
+    status: string;
+    led_indicator: string;
+    camera_status: string;
+    last_online: string;
+    activation_date: string;
+    qbox_image: string;
+    qbox_image_url: string;
+    created_at: string;
+    updated_at: string;
+    power_status: string;
+}
+
+export interface VerifyQBoxResponse {
+    success: boolean;
+    statusCode: number;
+    data: VerifyQBoxData;
+    message: string;
+}
+
 export interface VerifyAddressPayload {
     short_address: string;
 }
@@ -285,22 +326,38 @@ export interface PackageTimelineItem {
     issueRelatedTo?: string;
 }
 
-export interface SendPackageRequest {
-    shippingCompany: string;
-    qboxImage: string;
-    packageDescription: string;
+export interface ShipmentAttribute {
+    type: string;
+    value: string;
+}
+
+export interface ShipmentCardDetails {
+    cardholderName: string;
+    cardNumber: string;
+    expiry: string;
+    cvv: string;
+}
+
+export interface CreateShipmentRequest {
+    serviceProviderId: string;
+    receiverHomeOwnerId: string;
+    senderHomeOwnerId: string;
+    packageImage: string;
+    shipmentCategory: string;
+    description: string;
     qBoxId: string;
-    phone: string;
-    email: string;
-    fullName: string;
-    paymentSummary: {
-        paymentMethod: string;
-        charges: number;
-    };
-    attributes: {
-        type: string;
-        value: string;
-    }[];
+    shipment_type: string;
+    shipmentType: string;
+    paymentMethodId: string;
+    cardDetails?: ShipmentCardDetails | null;
+    attributes: ShipmentAttribute[];
+}
+
+export interface CreateShipmentResponse {
+    success: boolean;
+    statusCode: number;
+    message: string;
+    data?: any;
 }
 
 export interface ReturnPackageRequest {
@@ -341,6 +398,34 @@ export interface CreateReportResponse {
     statusCode: number;
     message: string;
     data?: any;
+}
+
+export interface ServiceProviderLookupItem {
+    id: string;
+    name: string;
+}
+
+export interface ServiceProviderLookupResponse {
+    success: boolean;
+    statusCode: number;
+    items: ServiceProviderLookupItem[];
+    message?: string;
+}
+
+export interface PaymentMethodItem {
+    id: string;
+    name: string;
+    description: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PaymentMethodsResponse {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: PaymentMethodItem[];
 }
 
 export interface Address {
@@ -445,7 +530,6 @@ export interface UpdateHomeOwnerResponse {
 }
 
 // QR Types
-import { QR_VALIDITY_DURATION_TYPE } from '@/constants/enums';
 
 export interface GenerateQRPayload {
     user_id: string;

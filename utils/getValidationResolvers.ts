@@ -63,7 +63,7 @@ export const LoginFormResolver = yupResolver(
                       phoneNumber.country as any
                     );
                     return isValid;
-                  } catch (error) {
+                  } catch {
                     // error handling
                     return false;
                   }
@@ -126,7 +126,7 @@ export const ForgotPasswordFormResolver = yupResolver(
                       phoneNumber.country as any
                     );
                     return isValid;
-                  } catch (error) {
+                  } catch {
                     // error handling
                     return false;
                   }
@@ -513,6 +513,12 @@ export const SendPackageFormResolver = yupResolver(
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .min(5, "QBox ID must be at least 5 characters"),
 
+    receiverHomeOwnerId: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    senderHomeOwnerId: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    serviceProviderId: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
     packageType: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
 
     packageWeight: yup
@@ -537,7 +543,44 @@ export const SendPackageFormResolver = yupResolver(
 
     shippingCompany: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
 
+    shippingCompanyName: yup.string().optional(),
+
     paymentMethod: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    paymentMethodId: yup.string().required(ERROR_MESSAGES.REQUIRED_FIELD),
+
+    cardHolderName: yup.string().when("paymentMethod", {
+      is: (value: string) => value === "Credit/Debit Card",
+      then: (schema) => schema.required(ERROR_MESSAGES.REQUIRED_FIELD),
+      otherwise: (schema) => schema.optional(),
+    }),
+
+    cardNumber: yup.string().when("paymentMethod", {
+      is: (value: string) => value === "Credit/Debit Card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(/^\d{13,19}$/, "Card number must be between 13 and 19 digits"),
+      otherwise: (schema) => schema.optional(),
+    }),
+
+    expiry: yup.string().when("paymentMethod", {
+      is: (value: string) => value === "Credit/Debit Card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(/^\d{2}\/\d{2}$/, "Expiry format should be MM/YY"),
+      otherwise: (schema) => schema.optional(),
+    }),
+
+    cvv: yup.string().when("paymentMethod", {
+      is: (value: string) => value === "Credit/Debit Card",
+      then: (schema) =>
+        schema
+          .required(ERROR_MESSAGES.REQUIRED_FIELD)
+          .matches(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
+      otherwise: (schema) => schema.optional(),
+    }),
 
     charges: yup.number().required(ERROR_MESSAGES.REQUIRED_FIELD),
   }) as yup.ObjectSchema<SendPackageFormValues>

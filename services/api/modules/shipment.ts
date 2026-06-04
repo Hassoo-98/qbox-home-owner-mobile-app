@@ -2,13 +2,13 @@ import api from '../config';
 import {
     CreateReportPayload,
     CreateReportResponse,
+    CreateShipmentRequest,
+    CreateShipmentResponse,
     GetPackageDetailsResponse,
     PackageListResponse,
     PackageTimelineItem,
     ReturnPackageRequest,
-    ReturnPackageResponse,
-    SendPackageRequest,
-    SendPackageResponse
+    ReturnPackageResponse
 } from '../types';
 
 
@@ -41,8 +41,8 @@ export const getDeliveredPackagesDetails = async (id: string | number): Promise<
     return response.data;
 };
 
-export const sendPackage = async (data: SendPackageRequest): Promise<SendPackageResponse> => {
-    const response = await api.post('/packages/send/', data);
+export const createShipment = async (data: CreateShipmentRequest): Promise<CreateShipmentResponse> => {
+    const response = await api.post('/shipments/create/', data);
     return response.data;
 };
 

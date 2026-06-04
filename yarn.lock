@@ -6806,6 +6806,11 @@ react-native-ble-plx@^3.5.1:
   resolved "https://registry.yarnpkg.com/react-native-ble-plx/-/react-native-ble-plx-3.5.1.tgz#344ce0d8803cf63d35b4f0588f18f795a05afea7"
   integrity sha512-SxksmrUt9jG6DOarrrdkb5c/HBLSfZOKauo/9VQSSi3WJA4bmF78GkrtXrgSoGNk0m1ksacFTjB5DuL39xZq/g==
 
+react-native-ble-plx@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-ble-plx/-/react-native-ble-plx-3.5.1.tgz#344ce0d8803cf63d35b4f0588f18f795a05afea7"
+  integrity sha512-SxksmrUt9jG6DOarrrdkb5c/HBLSfZOKauo/9VQSSi3WJA4bmF78GkrtXrgSoGNk0m1ksacFTjB5DuL39xZq/g==
+
 react-native-country-picker-modal@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-country-picker-modal/-/react-native-country-picker-modal-2.0.0.tgz#005421303349a81fedf5975e465405bb4b7312d5"

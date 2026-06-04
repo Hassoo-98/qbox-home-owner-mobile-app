@@ -1,17 +1,62 @@
 import { RadioButton, Text, TextInput } from "@/components";
+import { PaymentMethodItem } from "@/services/api/types";
 import { Colors } from "@/constants";
 import { mvs } from "@/utils/metrices";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Control, UseFormSetValue } from "react-hook-form";
 import { View } from "react-native";
 
 interface PaymentSectionProps {
   control: Control<any>;
-  setValue: UseFormSetValue<any>;
+  setValue?: UseFormSetValue<any>;
+  paymentMethods?: PaymentMethodItem[];
 }
 
-export const PaymentSection: React.FC<PaymentSectionProps> = ({ control, setValue }) => {
+export const PaymentSection: React.FC<PaymentSectionProps> = ({
+  control,
+  setValue,
+  paymentMethods = [],
+}) => {
   const [method, setMethod] = useState<"card" | "stc">("card");
+
+  const activeMethods = useMemo(
+    () => paymentMethods.filter((paymentMethod) => paymentMethod.is_active),
+    [paymentMethods]
+  );
+
+  const cardMethod = activeMethods.find((paymentMethod) =>
+    /card/i.test(paymentMethod.name)
+  );
+  const stcMethod = activeMethods.find((paymentMethod) =>
+    /stc/i.test(paymentMethod.name)
+  );
+
+  useEffect(() => {
+    if (cardMethod) {
+      setMethod("card");
+      setValue?.("paymentMethodId", cardMethod.id, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+      setValue?.("paymentMethod", cardMethod.name, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    if (stcMethod) {
+      setMethod("stc");
+      setValue?.("paymentMethodId", stcMethod.id, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+      setValue?.("paymentMethod", stcMethod.name, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [cardMethod, setValue, stcMethod]);
 
   return (
     <View
@@ -25,27 +70,33 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ control, setValu
     >
       <Text bold>Payment summary</Text>
 
-      <RadioButton
-        title="STC Payment"
-        subtitle="Digital wallet payment"
-        selected={method === "stc"}
-        onPress={() => {
-          setMethod("stc");
-          setValue("paymentMethod", "STC Pay");
-        }}
-      />
+      {stcMethod && (
+        <RadioButton
+          title={stcMethod.name}
+          subtitle={stcMethod.description}
+          selected={method === "stc"}
+          onPress={() => {
+            setMethod("stc");
+            setValue?.("paymentMethodId", stcMethod.id);
+            setValue?.("paymentMethod", stcMethod.name);
+          }}
+        />
+      )}
 
-      <RadioButton
-        title="Credit/Debit Card"
-        subtitle="Visa, Mastercard, Mada"
-        selected={method === "card"}
-        onPress={() => {
-          setMethod("card");
-          setValue("paymentMethod", "Credit Card");
-        }}
-      />
+      {cardMethod && (
+        <RadioButton
+          title={cardMethod.name}
+          subtitle={cardMethod.description}
+          selected={method === "card"}
+          onPress={() => {
+            setMethod("card");
+            setValue?.("paymentMethodId", cardMethod.id);
+            setValue?.("paymentMethod", cardMethod.name);
+          }}
+        />
+      )}
 
-      {method === "card" && (
+      {method === "card" && cardMethod && (
         <View
           style={{
             padding: mvs(20),
@@ -74,15 +125,15 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ control, setValu
           />
 
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <TextInput
-              name="expiry"
-              inputMode="numeric"
-              control={control}
-              label="Expiry"
-              placeholder="MM/YYYY"
-              width="48%"
-              maxLength={7}
-            />
+          <TextInput
+            name="expiry"
+            inputMode="numeric"
+            control={control}
+            label="Expiry"
+            placeholder="MM/YY"
+            width="48%"
+            maxLength={5}
+          />
 
             <TextInput
               name="cvv"

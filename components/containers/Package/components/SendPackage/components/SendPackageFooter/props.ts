@@ -5,4 +5,6 @@ export interface SendPackageFooterProps {
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   phoneNumber: string;
   isPending?: boolean;
+  isQBoxVerified?: boolean;
+  validateStep: (step: number) => Promise<boolean>;
 }

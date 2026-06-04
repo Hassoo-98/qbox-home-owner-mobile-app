@@ -1,12 +1,16 @@
 import * as Shipment from '@/services/api/modules/shipment';
+import * as PaymentMethod from '@/services/api/modules/paymentMethod';
+import * as ServiceProvider from '@/services/api/modules/serviceProvider';
 import {
+    CreateShipmentRequest,
     GetPackageDetailsResponse,
+    PaymentMethodsResponse,
     PackageListResponse,
     PackageTimelineItem,
     ReturnPackageRequest,
     ReturnPackageResponse,
-    SendPackageRequest,
-    SendPackageResponse,
+    CreateShipmentResponse,
+    ServiceProviderLookupResponse,
 } from '@/services/api/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -58,12 +62,26 @@ export const useDeliveredPackagesDetails = (id: string | number) => {
 
 export const useSendPackageMutation = () => {
     const queryClient = useQueryClient();
-    return useMutation<SendPackageResponse, Error, SendPackageRequest>({
-        mutationFn: Shipment.sendPackage,
+    return useMutation<CreateShipmentResponse, Error, CreateShipmentRequest>({
+        mutationFn: Shipment.createShipment,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['outgoing-packages'] });
             queryClient.invalidateQueries({ queryKey: ['packages'] });
         },
+    });
+};
+
+export const usePaymentMethods = () => {
+    return useQuery<PaymentMethodsResponse>({
+        queryKey: ['payment-methods'],
+        queryFn: PaymentMethod.getPaymentMethods,
+    });
+};
+
+export const useServiceProviderLookup = () => {
+    return useQuery<ServiceProviderLookupResponse>({
+        queryKey: ['service-provider-lookup'],
+        queryFn: () => ServiceProvider.lookupServiceProvider(),
     });
 };
 
