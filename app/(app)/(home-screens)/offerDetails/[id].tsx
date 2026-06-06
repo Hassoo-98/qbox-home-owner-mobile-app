@@ -1,12 +1,14 @@
 import { Button, OfferClaimedModal, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
 import { usePromotionDetail } from "@/hooks/api/useHomeQueries";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export const OfferDetails = () => {
+  const { t } = useLocale();
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const { data: promotionResponse, isLoading, error } = usePromotionDetail(id);
@@ -56,7 +58,7 @@ export const OfferDetails = () => {
           {/* Promotion Title */}
           <View style={styles.section}>
             <Text variant="primary" bold size="lg" style={styles.sectionTitle}>
-              Promotion Title
+              {t("promotionTitle")}
             </Text>
             <Text variant="secondary" size="sm">
               {promotion.subtitle}
@@ -66,7 +68,7 @@ export const OfferDetails = () => {
           {/* Description */}
           <View style={styles.section}>
             <Text variant="primary" bold size="lg" style={styles.sectionTitle}>
-              Description
+              {t("description")}
             </Text>
             <Text variant="secondary" size="sm" style={styles.descriptionText}>
               {promotion.description}
@@ -76,7 +78,7 @@ export const OfferDetails = () => {
           {/* Promotion Code */}
           <View style={styles.section}>
             <Text variant="primary" bold size="lg" style={styles.sectionTitle}>
-              Promotion Code
+              {t("promotionCode")}
             </Text>
             <View style={styles.codeContainer}>
               <Text variant="secondary" size="xs" style={styles.codeLabel}>
@@ -91,7 +93,7 @@ export const OfferDetails = () => {
           {/* Promotion Summary */}
           <View style={styles.section}>
             <Text variant="primary" bold size="lg" style={styles.sectionTitle}>
-              Promotion Summary
+              {t("promotionSummary")}
             </Text>
             <View style={styles.summaryContainer}>
               <View style={styles.summaryRow}>
@@ -112,7 +114,7 @@ export const OfferDetails = () => {
               </View>
               <View style={styles.summaryRow}>
                 <Text variant="secondary" size="sm">
-                  Service Provider
+                  {t("serviceProvider")}
                 </Text>
                 <Text variant="primary" size="sm" bold>
                   {serviceProvider}
@@ -120,7 +122,7 @@ export const OfferDetails = () => {
               </View>
               <View style={styles.summaryRow}>
                 <Text variant="secondary" size="sm">
-                  Start Date
+                  {t("startDate")}
                 </Text>
                 <Text variant="primary" size="sm" bold>
                   {startDate}
@@ -128,7 +130,7 @@ export const OfferDetails = () => {
               </View>
               <View style={styles.summaryRow}>
                 <Text variant="secondary" size="sm">
-                  End Date
+                  {t("endDate")}
                 </Text>
                 <Text variant="primary" size="sm" bold>
                   {endDate}
@@ -141,7 +143,7 @@ export const OfferDetails = () => {
       {/* Bottom Button */}
       <View style={styles.buttonContainer}>
         <Button
-          title="Claim Offer"
+          title={t("claimOffer")}
           fullWidth
           onPress={() => setShowSuccessModal(true)}
         />
