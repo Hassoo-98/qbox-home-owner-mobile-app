@@ -1,49 +1,41 @@
+import { Button, Text } from "@/components";
+import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 
-import { Button, Text } from "@/components";
-import { Colors, Spacing } from "@/constants";
-
 const LOCKER_IMAGE = require("@/assets/images/welcome-locker.png");
 
 export const Welcome = () => {
+  const { t } = useLocale();
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" backgroundColor={Colors.primary} />
 
       <View style={styles.backgroundCircle} />
 
-      <Image
-        source={LOCKER_IMAGE}
-        style={styles.lockerImage}
-        resizeMode="cover"
-      />
+      <Image source={LOCKER_IMAGE} style={styles.lockerImage} resizeMode="cover" />
 
       <View style={styles.contentWrapper}>
         <Text size="xl" style={styles.title}>
-          Deliver Smarter with QBOX
+          {t("deliverSmarter")}
         </Text>
-        <Text style={styles.subtitle}>
-          Fast, Secure, and Hassle-Free Drop-Offs.
-        </Text>
+        <Text style={styles.subtitle}>{t("fastSecure")}</Text>
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="Sign in"
-          fullWidth
-          onPress={() => router.navigate("/(auth)/login")}
-        />
+        <Button title={t("signIn")} fullWidth onPress={() => router.navigate("/(auth)/login")} />
         <Text style={styles.signupText}>
-          Don’t have an account?{" "}
+          {t("dontHaveAccount")}{" "}
           <Text
             variant="primary"
             style={styles.link}
             onPress={() => router.navigate("/(auth)/signup")}
           >
-            Sign up
+            {t("signUp")}
           </Text>
         </Text>
       </View>
@@ -60,7 +52,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     justifyContent: "center",
   },
-
   backgroundCircle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
@@ -71,14 +62,12 @@ const styles = StyleSheet.create({
     left: -CIRCLE_SIZE * 0.15,
     transform: [{ rotate: "-4deg" }],
   },
-
   lockerImage: {
     width: "45%",
     height: "45%",
     position: "absolute",
     top: 80,
   },
-
   contentWrapper: {
     marginTop: "70%",
     alignItems: "center",
@@ -86,18 +75,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     gap: Spacing.sm,
   },
-
   title: {
     fontWeight: "bold",
     textAlign: "center",
   },
-
   subtitle: {
     color: Colors.secondaryText,
     fontSize: 16,
     textAlign: "center",
   },
-
   buttonContainer: {
     position: "absolute",
     bottom: Spacing.lg,

@@ -243,7 +243,7 @@ export const useSendPackage = () => {
       receiverHomeOwnerId: data.receiverHomeOwnerId || receiverHomeOwnerId,
       senderHomeOwnerId: data.senderHomeOwnerId || user?.id || "",
       packageImage: data.qboxImage,
-      shipmentCategory: data.shippingCompanyName || data.shippingCompany,
+      shipmentCategory: data.packageType,
       description: data.packageDescription,
       qBoxId: data.qBoxId,
       shipment_type: "H2H",

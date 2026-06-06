@@ -9,6 +9,7 @@ import { useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, Animated, Easing, FlatList, Modal, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useLocale } from "@/hooks";
 
 interface WifiNetwork {
   ssid: string;
@@ -27,6 +28,7 @@ interface WifiStateResponse {
 }
 
 export const WifiList = () => {
+  const { t } = useLocale();
   const { data: homeOwnerResponse } = useHomeOwner();
   const homeOwner = homeOwnerResponse?.data;
   const qboxId = homeOwner?.qboxes?.[0]?.qbox_id;
@@ -80,7 +82,7 @@ export const WifiList = () => {
   const fetchWifiNetworks = useCallback(async (isManualRescan = false) => {
     if (!qboxId) {
       if (homeOwnerResponse) {
-        setError("No QBox found for this user");
+        setError(t("noQBoxFoundForThisUser"));
         setLoading(false);
       }
       return;
@@ -132,8 +134,8 @@ export const WifiList = () => {
       const isTimeout = err.code === "ECONNABORTED" || String(err.message).includes("timeout");
       setError(
         isTimeout
-          ? "Your QBox is not responding. Please check that the device is online."
-          : err.message || "An unexpected error occurred"
+          ? t("yourQBoxNotResponding")
+          : err.message || t("error")
       );
     } finally {
       setLoading(false);
@@ -189,15 +191,15 @@ export const WifiList = () => {
       if (result?.status === "FAILED") {
         const reason = result?.details?.reason;
         if (reason === "auth_failed") {
-          setConnectionError("Incorrect password. Please check and try again.");
+          setConnectionError(t("wifiPasswordIncorrect"));
         } else {
-          setConnectionError(result?.message || "Connection failed. Network may be unavailable.");
+          setConnectionError(result?.message || t("wifiConnectionFailed"));
         }
         return;
       }
 
       // Success
-      Alert.alert("Success", `Connecting to ${selectedNetwork.ssid}...`);
+      Alert.alert(t("success"), `${t("connectingTo")} ${selectedNetwork.ssid}...`);
       setIsModalVisible(false);
       reset();
       setConnectionError(null);
@@ -245,7 +247,7 @@ export const WifiList = () => {
                 {item.ssid}
               </Text>
               <Text variant="secondary" size="sm" style={isConnected && { color: Colors.primary, fontWeight: "500" }}>
-                {isConnected ? "Connected" : `Signal: ${item.rssi} dBm`}
+                {isConnected ? t("connected") : `${t("signal")}: ${item.rssi} dBm`}
               </Text>
             </View>
           </View>
@@ -264,7 +266,7 @@ export const WifiList = () => {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Scanning for networks...</Text>
+        <Text style={styles.loadingText}>{t("scanForNetworks")}</Text>
       </View>
     );
   }
@@ -288,7 +290,7 @@ export const WifiList = () => {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.centerContainer}>
-            <Text variant="secondary">No Wi-Fi networks found.</Text>
+            <Text variant="secondary">{t("noWifiNetworksFound")}</Text>
           </View>
         }
       />
@@ -312,7 +314,7 @@ export const WifiList = () => {
               <View style={styles.modalIconContainer}>
                 <Ionicons name="wifi" size={32} color={Colors.primary} />
               </View>
-              <Text style={styles.modalTitle}>Connect to Network</Text>
+              <Text style={styles.modalTitle}>{t("connectToNetwork")}</Text>
               <Text style={styles.modalSubtitle}>{selectedNetwork?.ssid}</Text>
             </View>
 
@@ -320,13 +322,13 @@ export const WifiList = () => {
               <PasswordInput
                 name="password"
                 control={control}
-                label={selectedNetwork?.is_secured ? "Password" : "Password (Optional)"}
-                placeholder={selectedNetwork?.is_secured ? "Enter Wi-Fi password" : "Leave empty for open network"}
+                label={selectedNetwork?.is_secured ? t("password") : t("passwordOptional")}
+                placeholder={selectedNetwork?.is_secured ? t("enterWifiPassword") : t("leaveEmptyForOpenNetwork")}
                 containerStyle={styles.inputContainer}
               />
               {!selectedNetwork?.is_secured && !connectionError && (
                 <Text style={styles.unsecuredText}>
-                  This is an open network. You can connect without a password.
+                  {t("openNetwork")}
                 </Text>
               )}
               {connectionError && (
@@ -339,14 +341,14 @@ export const WifiList = () => {
 
             <View style={styles.modalFooter}>
               <Button
-                title="Connect"
+                title={t("connect")}
                 onPress={handleConnect}
                 loading={isConnecting}
                 variant="primary"
                 style={styles.connectButton}
               />
               <Button
-                title="Cancel"
+                title={t("cancel")}
                 onPress={() => setIsModalVisible(false)}
                 variant="outline"
                 style={styles.cancelButton}

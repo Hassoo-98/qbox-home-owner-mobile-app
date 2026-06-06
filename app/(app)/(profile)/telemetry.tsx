@@ -20,6 +20,7 @@ import {
   View,
 } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { useLocale } from "@/hooks";
 
 const FALLBACK_DEVICE_ID = "TEWPUH775796";
 
@@ -184,6 +185,7 @@ const InfoCard = ({ label, value, icon }: InfoCardProps) => {
 };
 
 export const Telemetry = () => {
+  const { t } = useLocale();
   const { profile } = useProfileLogic();
   const deviceId = profile?.qboxes?.[0]?.qbox_id ?? FALLBACK_DEVICE_ID;
 
@@ -212,12 +214,12 @@ export const Telemetry = () => {
 
   const handleReboot = () => {
     Alert.alert(
-      "Reboot device",
-      "This will restart the device remotely. Do you want to continue?",
+    t("restartDevice"),
+    t("deviceStatusUpdatesAreRefreshedInRealTimeWhenThePageIsOpenPullDownToRefreshManually"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Reboot",
+          text: t("restartDevice"),
           style: "destructive",
           onPress: () => rebootMutation.mutate(),
         },
@@ -227,12 +229,12 @@ export const Telemetry = () => {
 
   const handleFactoryReset = () => {
     Alert.alert(
-      "Factory reset",
-      "This action will reset the device to factory settings. All local configuration may be lost. Continue?",
+    t("factoryReset"),
+    t("deviceStatusUpdatesAreRefreshedInRealTimeWhenThePageIsOpenPullDownToRefreshManually"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Reset",
+          text: t("factoryReset"),
           style: "destructive",
           onPress: () => factoryResetMutation.mutate(),
         },
@@ -258,7 +260,7 @@ export const Telemetry = () => {
         <Card variant="outlined" style={styles.connectingCard} contentStyle={styles.connectingContent}>
           <ActivityIndicator size="small" color={Colors.primary} />
           <Text size="xs" variant="secondary">
-            Connecting live updates...
+            {t("connectingToLiveUpdates")}
           </Text>
         </Card>
       ) : null}
@@ -269,10 +271,10 @@ export const Telemetry = () => {
         <View style={styles.heroTopRow}>
           <View style={styles.heroTitleWrap}>
             <Text bold size="lg" style={styles.heroTitle}>
-              Device Telemetry
+              {t("deviceMetrics")}
             </Text>
             <Text size="xs" style={styles.heroSubTitle}>
-              Real-time status and health for {deviceId}
+              {t("realTimeDeviceStatusAndHealth")} {deviceId}
             </Text>
           </View>
           <View style={styles.heroIcon}>
@@ -288,13 +290,13 @@ export const Telemetry = () => {
           </View>
           <View style={styles.heroMetaChip}>
             <Text size="xs" style={styles.heroMetaText}>
-              MQTT {status?.mqtt_status || "unknown"}
+              MQTT {status?.mqtt_status || "Unknown"}
             </Text>
           </View>
         </View>
 
         <Text size="xs" style={styles.heroTimestamp}>
-          Last synced {formatTimestamp(status?.last_seen || telemetry?.timestamp)}
+          {t("lastUpdate")} {formatTimestamp(status?.last_seen || telemetry?.timestamp)}
         </Text>
       </Card>
 
@@ -302,10 +304,10 @@ export const Telemetry = () => {
         <View style={styles.sectionHeader}>
           <View>
             <Text bold size="lg" style={styles.sectionTitle}>
-              Connection Status
+              {t("connectionStatus")}
             </Text>
             <Text size="xs" variant="secondary">
-              Wi-Fi and MQTT health with remote actions
+              {t("wifiAndMqttStatusWithRemoteActions")}
             </Text>
           </View>
           <View style={styles.sectionHeaderActions}>
@@ -347,7 +349,7 @@ export const Telemetry = () => {
         <View style={styles.actionRow}>
           <View style={styles.actionButtonWrap}>
             <Button
-              title="Reboot"
+              title="Restart"
               variant="outline"
               fullWidth
               icon={<Ionicons name="refresh-outline" size={18} color={Colors.primary} />}
@@ -374,10 +376,10 @@ export const Telemetry = () => {
         <View style={styles.sectionHeader}>
           <View>
             <Text bold size="lg" style={styles.sectionTitle}>
-              Snapshot
+              {t("snapshot")}
             </Text>
             <Text size="xs" variant="secondary">
-              Quick device details at a glance
+              {t("quickDeviceDetailsAtAGlance")}
             </Text>
           </View>
           <View style={styles.sectionIcon}>
@@ -386,15 +388,15 @@ export const Telemetry = () => {
         </View>
 
         <View style={styles.infoGrid}>
-          <InfoCard label="Local IP" value={telemetry?.local_ip || "Not available"} icon="phone-portrait-outline" />
-          <InfoCard label="Wi-Fi SSID" value={telemetry?.wifi_ssid || "Not available"} icon="wifi-outline" />
-          <InfoCard label="CPU Temp" value={`${formatNumber(telemetry?.cpu_temperature)}°C`} icon="thermometer-outline" />
-          <InfoCard label="Uptime" value={formatUptime(telemetry?.uptime_seconds)} icon="time-outline" />
+          <InfoCard label={t("localIp")} value={telemetry?.local_ip || t("notFound")} icon="phone-portrait-outline" />
+          <InfoCard label={t("wifiSsid")} value={telemetry?.wifi_ssid || t("notFound")} icon="wifi-outline" />
+          <InfoCard label={t("cpuTemp")} value={`${formatNumber(telemetry?.cpu_temperature)}°C`} icon="thermometer-outline" />
+          <InfoCard label={t("uptime")} value={formatUptime(telemetry?.uptime_seconds)} icon="time-outline" />
         </View>
 
         <View style={styles.snapshotFooter}>
           <Text size="xs" variant="secondary">
-            Device ID
+            {t("deviceId")}
           </Text>
           <Text bold>{telemetry?.device_id || deviceId}</Text>
         </View>
@@ -404,10 +406,10 @@ export const Telemetry = () => {
         <View style={styles.sectionHeader}>
           <View>
             <Text bold size="lg" style={styles.sectionTitle}>
-              Device Usage
+              {t("deviceUsage")}
             </Text>
             <Text size="xs" variant="secondary">
-              CPU, RAM, and disk utilization from the latest telemetry sample
+              {t("cpuRamAndDiskUtilizationFromTheLatestTelemetrySample")}
             </Text>
           </View>
           <View style={styles.sectionIcon}>
@@ -424,7 +426,7 @@ export const Telemetry = () => {
 
       <View style={styles.footerNote}>
         <Text variant="secondary" size="xs" style={styles.footerNoteText}>
-          Device status updates are refreshed in real time when the page is open. Pull down to refresh manually.
+          {t("deviceStatusUpdatesAreRefreshedInRealTimeWhenThePageIsOpenPullDownToRefreshManually")}
         </Text>
       </View>
     </ScrollView>

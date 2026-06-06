@@ -9,7 +9,8 @@ import {
   Text,
   TextInput,
 } from "@/components";
-import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
+import { AUTH_PROVIDERS, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { useLogin } from "@/hooks/api/useAuthQueries";
 import { LoginPayload } from "@/services/api/types";
 import { LoginFormValues } from "@/types";
@@ -20,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const Login = () => {
+  const { t } = useLocale();
   const { mutate: loginUser, isPending } = useLogin();
   const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
     AUTH_PROVIDERS.PHONE
@@ -43,20 +45,13 @@ export const Login = () => {
   });
 
   const onSubmit = (data: LoginFormValues) => {
-    console.log("login submission: ", JSON.stringify(data, null, 4));
-
-    // Construct the payload based on the selected provider
     const payload = {
       password: data.password,
-      // If email provider is selected, send email, otherwise send phone
       ...(selectedAuthProvider === AUTH_PROVIDERS.EMAIL
         ? { email: data.email }
-        : { phone_number: data.phone } // Updated to phone_number
-      )
+        : { phone_number: data.phone }),
     };
 
-    // We cast to any because the specific payload type interface might need to be adjusted
-    // depending on exactly what your API expects for phone vs email 
     loginUser(payload as LoginPayload);
   };
 
@@ -67,11 +62,14 @@ export const Login = () => {
 
   return (
     <FormLayout
-      title="Welcome Back!"
-      description="Sign in to your Qbox account."
+      title={t("welcomeBack")}
+      description={t("signInToAccount")}
       headerContent={
         <SegmentedControl
-          options={AUTH_PROVIDER_OPTIONS}
+          options={[
+            { label: t("phoneNumber"), value: AUTH_PROVIDERS.PHONE },
+            { label: t("emailAddress"), value: AUTH_PROVIDERS.EMAIL },
+          ]}
           style={{ marginVertical: Spacing.md }}
           onChange={handleAuthProviderChange}
           value={selectedAuthProvider}
@@ -86,15 +84,15 @@ export const Login = () => {
             control={control}
             autoCapitalize="none"
             autoComplete="email"
-            label="Email Address"
+            label={t("emailAddress")}
             keyboardType="email-address"
-            placeholder="Enter email address"
+            placeholder={t("enterEmailAddress")}
           />
         ) : (
           <PhoneNumberInput
             name="phone"
             control={control}
-            label="Phone Number"
+            label={t("phoneNumber")}
             placeholder="+966 XX XXX XXXX"
             defaultCode="PK"
           />
@@ -103,32 +101,32 @@ export const Login = () => {
           name="password"
           control={control}
           autoComplete="password"
-          label="Password"
-          placeholder="Enter password"
+          label={t("password")}
+          placeholder={t("enterNewPassword")}
         />
 
         <View style={{ alignItems: "flex-end" }}>
           <HapticPressable href={"/forgotPassword"}>
-            <Text size="sm">Forgot Password?</Text>
+            <Text size="sm">{t("forgotPassword")}</Text>
           </HapticPressable>
         </View>
 
         <Button
           style={{ marginTop: Spacing.xl }}
-          title="Sign in"
+          title={t("signIn")}
           disabled={!isDirty || isPending}
           loading={isPending}
           onPress={handleSubmit(onSubmit)}
         />
 
         <Text style={{ textAlign: "center", marginTop: Spacing.md }}>
-          Don’t have an account?{" "}
+          {t("dontHaveAccount")}{" "}
           <Text
             variant="primary"
             style={{ fontWeight: "bold" }}
             onPress={() => router.navigate("/(auth)/signup")}
           >
-            Sign up
+            {t("signUp")}
           </Text>
         </Text>
       </Form>

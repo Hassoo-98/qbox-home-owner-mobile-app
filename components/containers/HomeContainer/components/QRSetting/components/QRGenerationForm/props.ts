@@ -11,4 +11,7 @@ export interface QRGenerationFormProps {
   isQrCodeGenerated: boolean;
   validityDurationType: QR_VALIDITY_DURATION_TYPE;
   control: Control<QRGenerationFormValues, any, QRGenerationFormValues>;
+  qrCodeImage: string;
+  qrCodeName: string;
+  onCopyQrCode: () => void;
 }

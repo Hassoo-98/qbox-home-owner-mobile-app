@@ -1,5 +1,5 @@
 import { CustomDropdown } from "@/components/ui/Dropdown";
-import { useProfile } from "@/hooks/useProfile";
+import { useLocale, useProfile } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -8,14 +8,20 @@ import { ScrollView } from "react-native";
 
 export const AppLanguage = () => {
   const { setOnSave } = useProfile();
+  const { locale, setLocale, t } = useLocale();
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
-      language: "",
+      language: locale,
     },
   });
-  const onSubmit = handleSubmit((data) => {
-    console.log("this is language", JSON.stringify(data, null, 4));
+
+  useEffect(() => {
+    reset({ language: locale });
+  }, [locale, reset]);
+
+  const onSubmit = handleSubmit(async (data) => {
+    await setLocale(data.language === "ar" ? "ar" : "en");
     router.dismiss();
   });
 
@@ -23,7 +29,7 @@ export const AppLanguage = () => {
     setOnSave(() => onSubmit);
 
     return () => setOnSave(null);
-  }, []);
+  }, [onSubmit, setOnSave]);
 
   return (
     <ScrollView
@@ -36,12 +42,11 @@ export const AppLanguage = () => {
       <CustomDropdown
         name="language"
         control={control}
-        label="Language"
-        placeholder="Select Language"
+        label={t("language")}
+        placeholder={t("selectLanguage")}
         options={[
-          { label: "English", value: "en" },
-          { label: "Urdu", value: "ur" },
-          { label: "Arabic", value: "ar" },
+          { label: t("english"), value: "en" },
+          { label: t("arabic"), value: "ar" },
         ]}
         containerStyle={{ width: "100%" }}
       />

@@ -91,6 +91,7 @@ export const useSignup = () => {
           "fullName",
           "email",
           "phone",
+          "secondaryPhone",
           "password",
           "confirmPassword",
         ];

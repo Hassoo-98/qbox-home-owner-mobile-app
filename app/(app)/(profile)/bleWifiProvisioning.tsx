@@ -1,5 +1,6 @@
 import { Card, Text } from "@/components";
 import { Colors } from "@/constants";
+import { useLocale } from "@/hooks";
 import { useBleProvisioning } from "@/context";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
@@ -84,6 +85,7 @@ const isBleWifiSuccess = (response: any) => {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function BleWifiProvisioning() {
+  const { t } = useLocale();
   const router = useRouter();
   const { connectedDevice, sendBleCommand, disconnect } = useBleProvisioning();
 
@@ -111,10 +113,10 @@ export default function BleWifiProvisioning() {
       setNetworks(uniqueNetworks);
       setIsLoading(false);
     } else if (data.status === "failed") {
-      setError(data.error || "Operation failed");
+      setError(data.error || t("error"));
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const fetchNetworks = useCallback(async () => {
     setIsLoading(true);
@@ -127,10 +129,10 @@ export default function BleWifiProvisioning() {
       });
       handleWifiResponse(response);
     } catch (e: any) {
-      setError(e.message || "Failed to scan WiFi networks.");
+      setError(e.message || t("noWifiNetworksFound"));
       setIsLoading(false);
     }
-  }, [sendBleCommand, handleWifiResponse]);
+  }, [sendBleCommand, handleWifiResponse, t]);
 
   const handleConnect = async () => {
     if (!selectedNetwork) return;
@@ -157,27 +159,25 @@ export default function BleWifiProvisioning() {
           response?.connection?.connection?.connected_ssid ||
           response?.ssid ||
           selectedNetwork.ssid;
-        const successMessage =
-          response?.message ||
-          `Connected to ${connectedSsid}.`;
+        const successMessage = response?.message || `${t("connected")} ${connectedSsid}.`;
 
         setIsConnecting(false);
         setSelectedNetwork(null);
         setPassword("");
         setIsPasswordVisible(false);
         await disconnect();
-        Alert.alert("Wi-Fi connected", successMessage, [
+        Alert.alert(t("wifiConnected"), successMessage, [
           {
             text: "OK",
             onPress: () => router.replace("/(app)/(profile)"),
           },
         ]);
       } else {
-        throw new Error(response.error || "WiFi connection failed");
+        throw new Error(response.error || t("wifiConnectionFailed"));
       }
     } catch (e: any) {
-      const message = e.message || "Failed to connect to WiFi.";
-      Alert.alert("Wi-Fi connection failed", message);
+      const message = e.message || t("wifiConnectionFailed");
+      Alert.alert(t("wifiConnectionFailed"), message);
       setError(message);
       setIsConnecting(false);
     }
@@ -233,14 +233,14 @@ export default function BleWifiProvisioning() {
   return (
     <View style={styles.container}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerTitle}>Available Networks</Text>
+        <Text style={styles.headerTitle}>{t("scanForNetworks")}</Text>
         <TouchableOpacity style={styles.rescanBtn} onPress={fetchNetworks} disabled={isLoading}>
           {isLoading ? (
             <ActivityIndicator size="small" color={Colors.primary ?? "#2563EB"} />
           ) : (
             <>
               <Ionicons name="refresh" size={16} color={Colors.primary ?? "#2563EB"} />
-              <Text style={styles.rescanText}>Rescan</Text>
+              <Text style={styles.rescanText}>{t("rescan")}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -263,7 +263,7 @@ export default function BleWifiProvisioning() {
             <View style={styles.emptyContainer}>
               <Ionicons name="wifi-outline" size={56} color={(Colors as any).secondaryText ?? "#9CA3AF"} />
               <Text variant="secondary" style={{ marginTop: mvs(12), textAlign: "center" }}>
-                No WiFi networks found.{"\n"}Try moving the SmartLocker or router closer.
+                {t("noWifiNetworksFound")}{"\n"}{t("makeSureSmartLocker")}
               </Text>
             </View>
           ) : null
@@ -275,17 +275,17 @@ export default function BleWifiProvisioning() {
         <View style={modalStyles.backdrop}>
           <View style={modalStyles.sheet}>
             <View style={modalStyles.header}>
-              <Text style={modalStyles.title}>Connect to WiFi</Text>
+              <Text style={modalStyles.title}>{t("connectToNetwork")}</Text>
               <Text variant="secondary" size="sm">{selectedNetwork?.ssid}</Text>
             </View>
 
             {selectedNetwork?.secured && (
               <View style={modalStyles.inputContainer}>
-                <Text style={modalStyles.label}>Password</Text>
+                <Text style={modalStyles.label}>{t("password")}</Text>
                 <View style={modalStyles.passwordInputWrap}>
                   <TextInput
                     style={modalStyles.input}
-                    placeholder="Enter WiFi password"
+                    placeholder={t("enterWifiPassword")}
                     secureTextEntry={!isPasswordVisible}
                     value={password}
                     onChangeText={setPassword}
@@ -316,7 +316,7 @@ export default function BleWifiProvisioning() {
                 }}
                 disabled={isConnecting}
               >
-                <Text style={modalStyles.cancelBtnText}>Cancel</Text>
+                <Text style={modalStyles.cancelBtnText}>{t("cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[modalStyles.btn, modalStyles.connectBtn]}
@@ -326,7 +326,7 @@ export default function BleWifiProvisioning() {
                 {isConnecting ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={modalStyles.connectBtnText}>Connect</Text>
+                  <Text style={modalStyles.connectBtnText}>{t("connect")}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -337,7 +337,7 @@ export default function BleWifiProvisioning() {
       {isLoading && networks.length === 0 && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color={Colors.primary ?? "#2563EB"} />
-          <Text style={{ marginTop: 16 }}>Scanning for WiFi...</Text>
+          <Text style={{ marginTop: 16 }}>{t("scanForNetworks")}</Text>
         </View>
       )}
     </View>

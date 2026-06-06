@@ -5,10 +5,12 @@ import {
   HapticTab,
 } from "@/components";
 import { BOTTOM_TABS, Colors, NESTED_SCREEN_TITLES } from "@/constants";
+import { useLocale } from "@/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, Tabs, usePathname } from "expo-router";
 
 export const AppTabLayout = () => {
+  const { t } = useLocale();
   const pathname = usePathname();
   const queryClient = useQueryClient();
 
@@ -44,13 +46,15 @@ export const AppTabLayout = () => {
   const getScreenTitle = () => {
     for (const [path, title] of Object.entries(NESTED_SCREEN_TITLES)) {
       if (pathname.includes(path)) {
+        if (path.includes("/qrCodeHistory")) return t("qrCodeHistory");
+        if (path.includes("/qrCodeDetails/")) return t("qrCodeDetails");
+        if (path.includes("/basicInformation")) return t("basicInformation");
+        if (path.includes("/telemetry")) return t("telemetry");
         return title;
       }
     }
     return null;
   };
-
-  const isHomeScreen = pathname === "/";
 
   return (
     <Tabs
@@ -108,7 +112,14 @@ export const AppTabLayout = () => {
             key={tab.id}
             name={tab.name}
             options={{
-              title: tab.title,
+              title:
+                tab.id === 1
+                  ? t("home")
+                  : tab.id === 2
+                    ? t("myQBoxLocation")
+                    : tab.id === 3
+                      ? t("package")
+                      : t("profile"),
               ...(tab?.isBottomTab
                 ? {
                   tabBarIcon: ({ focused }) => {

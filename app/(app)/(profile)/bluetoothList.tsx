@@ -1,5 +1,6 @@
 import { Card, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -163,7 +164,7 @@ const ConnectModal = ({
               <Text
                 style={{ marginLeft: 10, color: Colors.primary ?? "#2563EB" }}
               >
-                Connecting…
+                {t("connectingNow")}
               </Text>
             </View>
           )}
@@ -176,7 +177,7 @@ const ConnectModal = ({
                 color={Colors.success}
               />
               <Text style={{ marginLeft: 8, color: Colors.success }}>
-                Connected!
+                {t("connected")}!
               </Text>
             </View>
           )}
@@ -189,7 +190,7 @@ const ConnectModal = ({
                 color={Colors.danger}
               />
               <Text style={{ marginLeft: 8, color: Colors.danger }}>
-                Connection failed
+                {t("error")}
               </Text>
             </View>
           )}
@@ -200,7 +201,7 @@ const ConnectModal = ({
                 style={[modalStyles.btn, modalStyles.primaryBtn]}
                 onPress={onRetry}
               >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>Retry</Text>
+                <Text style={{ color: "#fff", fontWeight: "600" }}>{t("retry")}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -222,7 +223,7 @@ const ConnectModal = ({
                   fontWeight: "600",
                 }}
               >
-                {status === "connected" ? "Continue" : "Cancel"}
+                {status === "connected" ? t("continue") : t("cancel")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -290,6 +291,7 @@ const modalStyles = StyleSheet.create({
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export const BluetoothList = () => {
+  const { t } = useLocale();
   const router = useRouter();
   const {
     bleReady,
@@ -396,15 +398,14 @@ export const BluetoothList = () => {
       <View style={styles.centerContainer}>
         <Ionicons name="ban" size={52} color={Colors.danger} />
         <Text style={[styles.centeredTitle, { color: Colors.danger }]}>
-          Permission Denied
+          {t("permissionDenied")}
         </Text>
         <Text
           variant="secondary"
           size="sm"
           style={{ textAlign: "center", marginTop: mvs(8) }}
         >
-          Bluetooth and Location permissions are required to scan for SmartLocker
-          devices. Please enable them in your device Settings.
+          Bluetooth and location permissions are required to search for SmartLocker devices. Please enable them in device settings.
         </Text>
       </View>
     );
@@ -420,13 +421,13 @@ export const BluetoothList = () => {
           size={52}
           color={(Colors as any).secondaryText ?? "#9CA3AF"}
         />
-        <Text style={styles.centeredTitle}>Bluetooth is Off</Text>
+        <Text style={styles.centeredTitle}>{t("bluetoothOff")}</Text>
         <Text
           variant="secondary"
           size="sm"
           style={{ textAlign: "center", marginTop: mvs(8) }}
         >
-          Please turn on Bluetooth to discover your SmartLocker.
+          {t("makeSureSmartLocker")}
         </Text>
       </View>
     );
@@ -441,7 +442,7 @@ export const BluetoothList = () => {
           <PulseRing />
           <Ionicons name="bluetooth" size={32} color={Colors.primary ?? "#2563EB"} />
         </View>
-        <Text style={styles.centeredTitle}>Searching for SmartLocker…</Text>
+        <Text style={styles.centeredTitle}>{t("searchingForSmartLocker")}</Text>
         <Text variant="secondary" size="sm" style={{ textAlign: "center" }}>
           Make sure your SmartLocker is powered on and nearby.
         </Text>
@@ -470,7 +471,7 @@ export const BluetoothList = () => {
           ) : (
             <>
               <Ionicons name="refresh" size={16} color={Colors.primary ?? "#2563EB"} />
-              <Text style={styles.rescanText}>Rescan</Text>
+              <Text style={styles.rescanText}>{t("rescan")}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -490,7 +491,7 @@ export const BluetoothList = () => {
               color={(Colors as any).secondaryText ?? "#9CA3AF"}
             />
             <Text variant="secondary" style={{ marginTop: mvs(12), textAlign: "center" }}>
-              No SmartLocker devices found.{"\n"}Try moving closer or restarting the device.
+              {t("noDevicesFound")}{"\n"}{t("makeSureSmartLocker")}
             </Text>
           </View>
         }

@@ -1,11 +1,11 @@
 import { Button, Card, Text } from "@/components";
 import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { useOffers } from "@/hooks/api/useHomeQueries";
 import { Offer } from "@/services/api/types";
 import { mvs } from "@/utils/metrices";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useState } from "react";
 import {
     FlatList,
     ScrollView,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 const PromoCodeCard = ({ item }: { item: Offer }) => {
-  const [imageError, setImageError] = useState(false);
+  const { t } = useLocale();
   const fallbackImage = require("@/assets/images/offer.jpg");
 
   const handleClaimOffer = () => {
@@ -31,7 +31,6 @@ const PromoCodeCard = ({ item }: { item: Offer }) => {
     >
       <Image
         source={fallbackImage}
-        onError={() => setImageError(true)}
         style={styles.image}
         contentFit="cover"
       />
@@ -43,7 +42,7 @@ const PromoCodeCard = ({ item }: { item: Offer }) => {
           </Text>
         </View>
         <Button
-          title="Claim Offer"
+          title={t("claimOffer")}
           size="xs"
           style={styles.button}
           onPress={handleClaimOffer}
@@ -54,6 +53,7 @@ const PromoCodeCard = ({ item }: { item: Offer }) => {
 };
 
 export const PromoCode = () => {
+  const { t } = useLocale();
   const { data: offersData, isLoading, error } = useOffers();
   const offers = Array.isArray(offersData) ? offersData : [];
 
@@ -65,7 +65,7 @@ export const PromoCode = () => {
       subtitle: "Rate your delivery experience and get 20% off next month",
       description: "Rate your delivery experience and get 20% off next month",
       image_url: require("@/assets/images/offer.jpg"),
-      button_text: "Claim Offer",
+      button_text: t("claimOffer"),
       button_color: "#11A543",
     },
     {
@@ -74,7 +74,7 @@ export const PromoCode = () => {
       subtitle: "Rate your delivery experience and get 20% off next month",
       description: "Rate your delivery experience and get 20% off next month",
       image_url: require("@/assets/images/offer.jpg"),
-      button_text: "Claim Offer",
+      button_text: t("claimOffer"),
       button_color: "#11A543",
     },
     {
@@ -83,7 +83,7 @@ export const PromoCode = () => {
       subtitle: "Rate your delivery experience and get 20% off next month",
       description: "Rate your delivery experience and get 20% off next month",
       image_url: require("@/assets/images/offer.jpg"),
-      button_text: "Claim Offer",
+      button_text: t("claimOffer"),
       button_color: "#11A543",
     },
     {
@@ -92,7 +92,7 @@ export const PromoCode = () => {
       subtitle: "Rate your delivery experience and get 20% off next month",
       description: "Rate your delivery experience and get 20% off next month",
       image_url: require("@/assets/images/offer.jpg"),
-      button_text: "Claim Offer",
+      button_text: t("claimOffer"),
       button_color: "#11A543",
     },
     {
@@ -101,7 +101,7 @@ export const PromoCode = () => {
       subtitle: "Rate your delivery experience and get 20% off next month",
       description: "Rate your delivery experience and get 20% off next month",
       image_url: require("@/assets/images/offer.jpg"),
-      button_text: "Claim Offer",
+      button_text: t("claimOffer"),
       button_color: "#11A543",
     },
   ];
@@ -111,7 +111,7 @@ export const PromoCode = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
+        <Text>{t("loading")}</Text>
       </View>
     );
   }

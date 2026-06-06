@@ -150,7 +150,12 @@ export const useChangePassword = () => {
 
 export const useSendOtp = () => {
     return useMutation({
-        mutationFn: (data: { email?: string, phone_number?: string }) => Auth.sendOtp({ ...data, is_home_owner: true }),
+        mutationFn: (data: { email?: string; phone_number?: string; verification_type?: "email" | "phone_number"; is_forget_otp?: boolean }) =>
+            Auth.sendOtp({
+                ...data,
+                is_home_owner: true,
+                is_forget_otp: data.is_forget_otp ?? false,
+            }),
         onSuccess: (data) => {
             console.log("Send OTP Success Data:", JSON.stringify(data, null, 2));
             Toast.show({
@@ -180,9 +185,9 @@ export const useSendOtp = () => {
 
 export const useVerifyOtp = () => {
     return useMutation({
-        mutationFn: (data: { email?: string, phone_number?: string, otp: string }) => {
+        mutationFn: (data: { email?: string; phone_number?: string; otp: string; is_forget_otp?: boolean }) => {
             console.log("useVerifyOtp mutationFn called with payload:", data);
-            return Auth.verifyOtp({ ...data, is_home_owner: true });
+            return Auth.verifyOtp({ ...data, is_home_owner: true, is_forget_otp: data.is_forget_otp ?? false });
         },
         onSuccess: (data) => {
             console.log("Verify OTP Success Data:", JSON.stringify(data, null, 2));

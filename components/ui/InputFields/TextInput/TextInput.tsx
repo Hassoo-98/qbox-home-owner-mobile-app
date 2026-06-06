@@ -59,7 +59,13 @@ export const TextInput = ({
           fieldState: { error },
         }) => (
           <>
-            <View style={[styles.inputWrapper, error && styles.inputError]}>
+            <View
+              style={[
+                styles.inputWrapper,
+                restProps.editable === false && styles.readOnlyInputWrapper,
+                error && styles.inputError,
+              ]}
+            >
               {/* Support both icon components and image paths */}
               {(startIcon || startIconPath) && (
                 <TouchableOpacity
@@ -86,6 +92,7 @@ export const TextInput = ({
                 placeholderTextColor="#777E90"
                 style={[
                   styles.input,
+                  restProps.editable === false && styles.readOnlyInput,
                   (startIcon || startIconPath) && styles.inputWithStartIcon,
                   (endIcon || endIconPath || endButtonText) &&
                     styles.inputWithEndIcon,

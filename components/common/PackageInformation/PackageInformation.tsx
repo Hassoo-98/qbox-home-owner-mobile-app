@@ -1,6 +1,7 @@
 import { Text, TextInput } from "@/components/ui";
 import { CustomDropdown } from "@/components/ui/Dropdown";
 import { Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -8,22 +9,20 @@ import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { PackageInformationProps } from "./props";
 
-export const PackageInformation = ({
-  control,
-  packageImage,
-  pickImage,
-}: PackageInformationProps) => {
+export const PackageInformation = ({ control, packageImage, pickImage }: PackageInformationProps) => {
+  const { t } = useLocale();
+
   return (
     <View>
       <CustomDropdown
         name="packageType"
         control={control}
-        label="Package Type"
-        placeholder="Choose package type"
+        label={t("packageType")}
+        placeholder={t("packageType")}
         options={[
-          { label: "Electronic", value: "electronic" },
-          { label: "Medical", value: "medical" },
-          { label: "Other", value: "other" },
+          { label: t("electronic"), value: "electronic" },
+          { label: t("medical"), value: "medical" },
+          { label: t("other"), value: "other" },
         ]}
       />
       <TextInput
@@ -31,23 +30,16 @@ export const PackageInformation = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Package Weight (Kg)"
-        placeholder="Enter Weight"
+        label={`${t("packageWeight")} (Kg)`}
+        placeholder={t("enterWeight")}
       />
 
-      <View
-        style={{
-          flexDirection: "row",
-          gap: Spacing.sm,
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
+      <View style={{ flexDirection: "row", gap: Spacing.sm, alignItems: "center", width: "100%" }}>
         <CustomDropdown
           name="currency"
           control={control}
-          label="Currency"
-          placeholder="Select currency"
+          label={t("currency")}
+          placeholder={t("currency")}
           containerStyle={{ width: "50%" }}
           options={[
             { label: "SAR", value: "sar" },
@@ -61,7 +53,7 @@ export const PackageInformation = ({
           inputMode="numeric"
           control={control}
           autoCorrect={false}
-          label="Item Value"
+          label={t("itemValue")}
           width={"50%"}
           placeholder="XXX"
         />
@@ -71,13 +63,12 @@ export const PackageInformation = ({
         name="packageDescription"
         inputMode="text"
         control={control}
-        label="Description"
+        label={t("description")}
         placeholder="XXXXXXX"
         multiline
         numberOfLines={4}
       />
 
-      {/* Package Image Upload */}
       <View style={{ marginBottom: Spacing.lg }}>
         <View
           style={{
@@ -88,7 +79,7 @@ export const PackageInformation = ({
           }}
         >
           <Text size="sm" style={{ fontWeight: "500" }}>
-            Package Image
+            {t("packageImage")}
           </Text>
           <Ionicons name="information-circle-outline" size={18} color="#666" />
         </View>
@@ -118,33 +109,17 @@ export const PackageInformation = ({
                 }}
                 resizeMode="cover"
               />
-              <Text
-                size="xs"
-                variant="secondary"
-                style={{ textAlign: "center" }}
-              >
-                Tap to change image
+              <Text size="xs" variant="secondary" style={{ textAlign: "center" }}>
+                {t("tapToChangeImage")}
               </Text>
             </View>
           ) : (
             <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <Text
-                size="xs"
-                variant="secondary"
-                style={{
-                  lineHeight: 20,
-                }}
-              >
+              <Text size="xs" variant="secondary" style={{ lineHeight: 20 }}>
                 +
               </Text>
-              <Text
-                size="xs"
-                variant="secondary"
-                style={{
-                  lineHeight: 20,
-                }}
-              >
-                Upload image
+              <Text size="xs" variant="secondary" style={{ lineHeight: 20 }}>
+                {t("uploadImage")}
               </Text>
             </View>
           )}

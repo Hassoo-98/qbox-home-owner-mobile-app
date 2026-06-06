@@ -1,7 +1,8 @@
-import { DummyQRCodeIcon, PlaceholderQRIcon } from "@/assets/icons";
 import { Button, Card, SelectField, Text, TextInput } from "@/components";
 import { Colors, QR_VALIDITY_DURATION_TYPE, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { QRGenerationFormProps } from "./props";
 
@@ -14,10 +15,15 @@ export const QRGenerationForm = ({
   maxUsers,
   validityDuration,
   validityDurationType,
+  qrCodeImage,
+  qrCodeName,
+  onCopyQrCode,
 }: QRGenerationFormProps) => {
+  const { t } = useLocale();
+
   const getDisplayText = () => {
     if (isGenerating) {
-      return "Generating QR Code";
+      return t("generatingQrCode");
     }
 
     if (
@@ -25,40 +31,35 @@ export const QRGenerationForm = ({
       parseInt(maxUsers) === 0 ||
       parseInt(validityDuration) === 0
     ) {
-      return "Generate Access QR Code";
+      return t("generateAccessQRCode");
     }
 
-    return `Valid for ${maxUsers} user${
-      parseInt(maxUsers) > 1 ? "s" : ""
-    }, expires in ${validityDuration} ${
+    const unit =
       validityDurationType === QR_VALIDITY_DURATION_TYPE.MIN
-        ? "minute"
+        ? t("minute")
         : validityDurationType === QR_VALIDITY_DURATION_TYPE.HOUR
-        ? "hour"
-        : "day"
-    }${parseInt(validityDuration) > 1 ? "s" : ""}`;
+          ? t("hour")
+          : t("day");
+
+    return `${t("validFor")} ${maxUsers} ${t("users")}, ${t("expiresIn")} ${validityDuration} ${unit}${
+      parseInt(validityDuration) > 1 ? "s" : ""
+    }`;
   };
 
   return (
-    <Card
-      backgroundColor={Colors.white}
-      variant="filled"
-      borderRadius={Spacing.sm}
-    >
-      <Text style={{ paddingBottom: Spacing.md, fontWeight: "bold" }}>
-        QR Setting
-      </Text>
+    <Card backgroundColor={Colors.white} variant="filled" borderRadius={Spacing.sm}>
+      <Text style={{ paddingBottom: Spacing.md, fontWeight: "bold" }}>{t("qrSetting")}</Text>
       <TextInput
         control={control}
         name="qrName"
-        placeholder="Enter QR name"
-        label="QR Name (Optional)"
+        placeholder={t("qrNameOptional")}
+        label={t("qrNameOptional")}
         editable={!isGenerating}
       />
       <SelectField
         name="maxUsers"
-        label="Maximum Users"
-        placeholder="Enter max. number of users"
+        label={t("maximumUsers")}
+        placeholder={t("maximumUsers")}
         control={control}
         options={Array.from({ length: 10 }, (_, index) => ({
           value: (index + 1).toString(),
@@ -69,19 +70,12 @@ export const QRGenerationForm = ({
         disabled={isGenerating}
       />
       <View style={{ flexDirection: "column", gap: Spacing.sm }}>
-        <Text size="sm">Valid Duration</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            gap: Spacing.sm,
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
+        <Text size="sm">{t("validDuration")}</Text>
+        <View style={{ flexDirection: "row", gap: Spacing.sm, alignItems: "center", width: "100%" }}>
           <TextInput
             control={control}
             name="validityDuration"
-            placeholder="Enter validity time"
+            placeholder={t("validDuration")}
             required={true}
             keyboardType="number-pad"
             width={"70%"}
@@ -92,9 +86,9 @@ export const QRGenerationForm = ({
             control={control}
             style={{ width: "30%" }}
             options={[
-              { value: QR_VALIDITY_DURATION_TYPE.MIN, label: "min" },
-              { value: QR_VALIDITY_DURATION_TYPE.HOUR, label: "hour" },
-              { value: QR_VALIDITY_DURATION_TYPE.DAY, label: "days" },
+              { value: QR_VALIDITY_DURATION_TYPE.MIN, label: t("minute") },
+              { value: QR_VALIDITY_DURATION_TYPE.HOUR, label: t("hour") },
+              { value: QR_VALIDITY_DURATION_TYPE.DAY, label: t("day") },
             ]}
             testID="validity-unit"
             accessibilityLabel="Select validity unit"
@@ -124,7 +118,7 @@ export const QRGenerationForm = ({
             }}
           >
             <Text size="sm" style={{ fontWeight: "bold" }}>
-              SB-A1-002
+              {qrCodeName || t("qrCode")}
             </Text>
             <TouchableOpacity
               style={{
@@ -146,30 +140,28 @@ export const QRGenerationForm = ({
           }}
         >
           {isQrCodeGenerated ? (
-            <DummyQRCodeIcon height={75} width={75} />
+            qrCodeImage ? (
+              <Image source={{ uri: qrCodeImage }} style={{ width: 180, height: 180 }} contentFit="contain" />
+            ) : (
+              <ActivityIndicator size="large" color={Colors.primary} />
+            )
           ) : isGenerating ? (
             <ActivityIndicator size="large" color={Colors.primary} />
           ) : (
-            <PlaceholderQRIcon height={50} width={50} />
+            <Text size="sm" variant="secondary">
+              {t("qrPreviewWillAppearHere")}
+            </Text>
           )}
         </View>
         <Text style={{ textAlign: "center" }}>{getDisplayText()}</Text>
       </Card>
       <Button
         variant="primary"
-        icon={
-          isQrCodeGenerated && (
-            <Ionicons name="share-social-outline" size={24} color="white" />
-          )
-        }
+        icon={isQrCodeGenerated && <Ionicons name="share-social-outline" size={24} color="white" />}
         title={
-          isQrCodeGenerated
-            ? "Share"
-            : isGenerating
-            ? "Generating..."
-            : "Generate QR Code"
+          isQrCodeGenerated ? t("shareUrl") : isGenerating ? t("generatingQrCode") : t("generateAccessQRCode")
         }
-        onPress={onGenerateQR}
+        onPress={isQrCodeGenerated ? onCopyQrCode : onGenerateQR}
         disabled={isGenerating}
       />
     </Card>

@@ -4,11 +4,12 @@ import {
   ReturnPackageFooter,
   TextInput,
 } from "@/components";
-import { useReturnPackage } from "@/hooks";
+import { useLocale, useReturnPackage } from "@/hooks";
 import { View } from "react-native";
 import { styles } from "./form.styles";
 
 export const ReturnPackage = () => {
+  const { t } = useLocale();
   const {
     currentStep,
     setCurrentStep,
@@ -22,8 +23,8 @@ export const ReturnPackage = () => {
 
   return (
     <FormLayout
-      title={"Package Infromation"}
-      description={"Enter the infromation bellow."}
+      title={t("packageInformation")}
+      description={t("enterPinCode")}
       currentStep={currentStep}
       totalSteps={2}
       stepperStyle={styles.stepper}
@@ -43,10 +44,10 @@ export const ReturnPackage = () => {
             name="pinCode"
             inputMode="text"
             control={control}
-            endButtonText="Check"
+            endButtonText={t("check")}
             autoCorrect={false}
-            label="Pin Code"
-            placeholder="Enter pin Code"
+            label={t("pinCode")}
+            placeholder={t("enterPinCode")}
           />
         ) : (
           <PackageInformation

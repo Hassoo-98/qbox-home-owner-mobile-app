@@ -18,6 +18,9 @@ export const QRSetting = ({
   boxId,
   address,
   image,
+  qrCodeImage,
+  qrCodeName,
+  onCopyQrCode,
 }: QRSettingProps) => {
   const maxUsers = useWatch({ control, name: "maxUsers" });
   const validityDuration = useWatch({ control, name: "validityDuration" });
@@ -78,11 +81,14 @@ export const QRSetting = ({
         control={control}
         isGenerating={isGenerating}
         onGenerateQR={onGenerateQR}
+        onCopyQrCode={onCopyQrCode}
         isQrCodeGenerated={isQrCodeGenerated}
         resetForm={resetForm}
         maxUsers={maxUsers}
         validityDuration={validityDuration}
         validityDurationType={validityDurationType}
+        qrCodeImage={qrCodeImage}
+        qrCodeName={qrCodeName}
       />
       {isQrCodeGenerated && <QRGenerationSuccessCard />}
     </Card>

@@ -1,15 +1,17 @@
 import { Text } from "@/components/ui";
 import { mvs } from "@/utils/metrices";
+import { useLocale } from "@/hooks";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { ProfileCardProps } from "./props";
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
   imageUri,
-  name = "Unknown",
-  email = "Unknown",
-  phone = "Unknown",
+  name,
+  email,
+  phone,
 }) => {
+  const { t } = useLocale();
   const getInitial = () => {
     if (!name) return "";
 
@@ -26,11 +28,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         </Text>
       </View>
       <Text size="lg" style={{ fontWeight: "600" }}>
-        {name}
+        {name || t("unknown")}
       </Text>
-      <Text>{email}</Text>
+      <Text>{email || t("unknown")}</Text>
       <Text size="sm" variant="secondary">
-        {phone}
+        {phone || t("unknown")}
       </Text>
     </View>
   );

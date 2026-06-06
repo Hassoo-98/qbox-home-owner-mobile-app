@@ -41,21 +41,25 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     setOpen(false);
   };
 
-  const handlePrimaryAction = (data?: any) => {
+  const handlePrimaryAction = async (data?: any) => {
     setLoading(true);
-    modal.primaryButtonHandler(data);
+    try {
+      const result = await Promise.resolve(modal.primaryButtonHandler(data));
+      if (result !== false) {
+        handleClose();
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   const handleSecondaryAction = () => {
     if (modal.secondaryButtonHandler) {
       setLoading(true);
       modal.secondaryButtonHandler();
-    }
-  };
-
-  const handleOTPResend = () => {
-    if (modal.onOTPResend) {
-      modal.onOTPResend();
     }
   };
 

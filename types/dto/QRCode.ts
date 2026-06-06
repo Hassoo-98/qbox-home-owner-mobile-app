@@ -6,6 +6,9 @@ export type QRCode = {
   validforUsers: number;
   expiresIn: string;
   created_at: string;
+  createdAt?: Date;
+  usersLeft?: number;
+  qr_code_image?: string;
 };
 
 export type QRScan = {

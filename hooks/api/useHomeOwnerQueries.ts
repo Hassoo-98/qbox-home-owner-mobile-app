@@ -7,8 +7,24 @@ export const useUpdateHomeOwner = (id: string) => {
     return useMutation<UpdateHomeOwnerResponse, Error, UpdateHomeOwnerRequest>({
         mutationFn: (data: UpdateHomeOwnerRequest) => HomeOwner.updateHomeOwner(id, data),
         onSuccess: (data) => {
-            queryClient.setQueryData(['homeOwner', id], data);
-            queryClient.invalidateQueries({ queryKey: ['homeOwner', id] });
+            const nextHomeOwner = {
+                success: data.success,
+                statusCode: data.statusCode,
+                data: data.data,
+                message: data.message,
+            };
+
+            queryClient.setQueryData(['homeOwner', id], nextHomeOwner);
+            queryClient.setQueriesData({ queryKey: ['homeOwner'] }, (current) => {
+                if (!current || typeof current !== 'object') {
+                    return nextHomeOwner;
+                }
+
+                return {
+                    ...(current as Record<string, unknown>),
+                    ...nextHomeOwner,
+                };
+            });
         },
     });
 };

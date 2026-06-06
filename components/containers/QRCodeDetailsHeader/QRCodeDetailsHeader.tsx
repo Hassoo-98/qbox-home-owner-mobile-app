@@ -1,20 +1,37 @@
-import { DummyQRCodeIcon } from "@/assets/icons";
 import { ItemInfo, Text } from "@/components";
-import { Spacing } from "@/constants";
+import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
+import { Image } from "expo-image";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
 import React from "react";
 import { View } from "react-native";
 import { QRCodeDetailsHeaderProps } from "./props";
 
+const BACKEND_URL = "https://backend.qbox.sa";
+
+const resolveBackendUrl = (path?: string | null) => {
+  if (!path) {
+    return "";
+  }
+
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  return `${BACKEND_URL}${path}`;
+};
+
 export const QRCodeDetailsHeader = ({
   qrCodeData,
   qrCodeDescription,
 }: QRCodeDetailsHeaderProps) => {
+  const { t } = useLocale();
+
   return (
     <>
       <ItemInfo
-        title="QR Code Validity"
+        title={t("qrCodeValidity")}
         description={qrCodeDescription}
         style={{
           padding: 0,
@@ -26,11 +43,30 @@ export const QRCodeDetailsHeader = ({
           <View
             style={{
               alignItems: "center",
-              flexDirection: "row",
               justifyContent: "center",
             }}
           >
-            <DummyQRCodeIcon height={80} width={80} />
+            {qrCodeData?.qr_code_image ? (
+              <Image
+                source={{ uri: resolveBackendUrl(qrCodeData.qr_code_image) }}
+                style={{
+                  width: 92,
+                  height: 92,
+                  borderRadius: 8,
+                  backgroundColor: Colors.white,
+                }}
+                contentFit="contain"
+              />
+            ) : (
+              <View
+                style={{
+                  width: 92,
+                  height: 92,
+                  borderRadius: 8,
+                  backgroundColor: Colors.border,
+                }}
+              />
+            )}
           </View>
         }
         leftContent={
@@ -49,7 +85,7 @@ export const QRCodeDetailsHeader = ({
                 marginBottom: Spacing.sm,
               }}
             >
-              Left users: {" " + qrCodeData?.usersLeft}
+              {t("leftUsers")}: {" " + qrCodeData?.usersLeft}
             </Text>
           </View>
         }
@@ -63,7 +99,7 @@ export const QRCodeDetailsHeader = ({
         }}
       >
         <Text size="lg" style={{ fontWeight: "bold" }}>
-          Scan History
+          {t("scanHistory")}
         </Text>
       </View>
     </>

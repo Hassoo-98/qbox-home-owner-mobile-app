@@ -1,6 +1,7 @@
 import { PackageItemIcon } from "@/assets/icons";
 import { Card, Chip, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { PackageListItem } from "@/services/api/types";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
@@ -13,6 +14,9 @@ interface PackageListProps {
 }
 
 export const PackageList = ({ packages, type }: PackageListProps) => {
+  const { t } = useLocale();
+  const isOutgoingTab = type.toLowerCase() === "outgoing";
+
   const handleCardPress = (id: string) => {
     router.navigate({
       pathname: "/packageDetails/[id]",
@@ -21,7 +25,17 @@ export const PackageList = ({ packages, type }: PackageListProps) => {
   };
 
   const renderPackageCard = ({ item }: { item: PackageListItem }) => {
-    const isOutgoing = !!item.outgoing_status;
+    const isOutgoing = isOutgoingTab;
+    const trackingId = item.trackingId || item.tracking_id || "";
+    const formattedCreatedAt = item.created_at
+      ? format(new Date(item.created_at), "dd/MM/yyyy hh:mm a")
+      : t("dateTime");
+    const incomingTitle = item.service_provider_name || item.service_provider || t("serviceProvider");
+    const incomingSubtitle = item.driver_name || t("driverName");
+    const outgoingTitle = item.receiver_home_owner_name || t("receiverName");
+    const outgoingSubtitle = item.service_provider_name || item.service_provider || t("serviceProvider");
+    const incomingChipLabel = item.sender_home_owner_city || item.city || t("city");
+    const outgoingChipLabel = item.outgoing_status || item.shipment_status || "";
 
     return (
       <Card
@@ -39,49 +53,37 @@ export const PackageList = ({ packages, type }: PackageListProps) => {
             {/* Title + Chip */}
             <View style={styles.titleRow}>
               <Text style={styles.title} numberOfLines={1}>
-                {isOutgoing
-                  ? item.merchant_name || item.service_provider || "Recipient Name"
-                  : item.merchant_name ||
-                  item.service_provider ||
-                  "Courier Name"}
+                {isOutgoing ? outgoingTitle : incomingTitle}
               </Text>
 
               {isOutgoing ? (
                 <Chip
-                  label={item.outgoing_status || ""}
+                  label={outgoingChipLabel}
                   size="small"
                   variant={
                     item.outgoing_status?.toLowerCase().includes("sent") ||
-                      item.outgoing_status?.toLowerCase().includes("send")
+                    item.outgoing_status?.toLowerCase().includes("send")
                       ? "warning"
                       : "info"
                   }
                 />
               ) : (
-                <Chip
-                  label={item.city || "City"}
-                  size="small"
-                  variant="default"
-                />
+                <Chip label={incomingChipLabel} size="small" variant="default" />
               )}
             </View>
 
             {/* Subtitle */}
             <Text size="sm" variant="secondary" numberOfLines={1}>
-              {isOutgoing
-                ? item.details?.summary || "Delivery Speed"
-                : item.driver_name || "Driver Name / Sender Name"}
+              {isOutgoing ? outgoingSubtitle : incomingSubtitle}
             </Text>
 
             {/* Tracking ID */}
             <Text variant="secondary" size="sm" style={styles.trackingId}>
-              {item.trackingId}
+              {trackingId}
             </Text>
             {/* Created Date */}
             <Text variant="secondary" size="xs">
-              {item.created_at
-                ? format(new Date(item.created_at), "dd/MM/yyyy hh:mm a")
-                : "Date & Time"}
+              {formattedCreatedAt}
             </Text>
           </View>
         </View>

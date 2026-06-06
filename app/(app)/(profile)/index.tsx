@@ -1,5 +1,7 @@
 import { MenuList, ProfileCard, ProfileSkeleton, SubscriptionCard, Text } from "@/components";
 import { MENU_ITEM } from "@/constants";
+import { useLocale, useModal } from "@/hooks";
+import { useRelocationStatus } from "@/hooks/api/useRelocationQueries";
 import api from "@/services/api/config";
 import { ProfileItem } from "@/types";
 import { router } from "expo-router";
@@ -16,8 +18,12 @@ const hasAvailableNetworks = (data: any) => {
 };
 
 export const Profile = () => {
+  const { t, locale } = useLocale();
+  const { onTriggerModal, onCloseModal } = useModal();
   const { profile, isLoading } = useProfileLogic();
   const qboxId = profile?.qboxes?.[0]?.qbox_id;
+  const homeOwnerId = profile?.id || "";
+  const relocationStatusQuery = useRelocationStatus(homeOwnerId);
   const [checkingMenu, setCheckingMenu] = useState<"Bluetooth" | "Wifi" | null>(null);
   const [wifiStatus, setWifiStatus] = useState<"checking" | "connected" | "disconnected">("checking");
 
@@ -59,71 +65,116 @@ export const Profile = () => {
   const menuData = useMemo(
     () =>
       MENU_ITEM.map((item) => {
-        if (item.title === "Wifi") {
-          const isChecking = item.title === checkingMenu || wifiStatus === "checking";
+        const translatedTitle =
+          item.id === 1
+            ? t("basicInformation")
+            : item.id === 2
+              ? t("language")
+            : item.id === 3
+                ? t("myQBoxLocation")
+                : item.id === 4
+                  ? t("subscriptionHistory")
+                  : item.id === 5
+                    ? t("promoCode")
+                    : item.id === 6
+                      ? t("contactUs")
+                      : item.id === 7
+                        ? t("logout")
+                        : item.id === 8
+                          ? t("wifi")
+                          : item.id === 9
+                            ? t("bluetooth")
+                        : item.title;
+
+        if (item.id === 8) {
+          const isChecking = checkingMenu === "Wifi" || wifiStatus === "checking";
           return {
             ...item,
+            title: translatedTitle,
             rightText: isChecking
               ? undefined
               : wifiStatus === "connected"
-                ? "Connected"
-                : "Disconnected",
+                ? t("connected")
+                : t("disconnected"),
             isBadge: !isChecking,
             rightElement: isChecking ? <ActivityIndicator size="small" /> : undefined,
           };
         }
 
-        if (item.title !== checkingMenu) return item;
+        if (item.id === 9) {
+          return {
+            ...item,
+            title: translatedTitle,
+            rightText: undefined,
+            isBadge: false,
+            rightElement: checkingMenu === "Bluetooth" ? <ActivityIndicator size="small" /> : undefined,
+          };
+        }
 
         return {
           ...item,
-          rightText: undefined,
-          isBadge: false,
-          rightElement: <ActivityIndicator size="small" />,
+          title: translatedTitle,
+          rightText: item.id === 2 ? (locale === "ar" ? t("arabic") : t("english")) : item.rightText,
         };
       }),
-    [checkingMenu, wifiStatus]
+    [checkingMenu, locale, t, wifiStatus]
   );
 
   const handleMenuItemPress = useCallback(async (item: ProfileItem) => {
-    if (item.title !== "Bluetooth" && item.title !== "Wifi") return false;
+    if (item.id === 3) {
+      const { data } = await relocationStatusQuery.refetch();
+      const relocationStatus = data?.data;
+      const hasPendingRelocationRequest =
+        relocationStatus?.has_pending_request ||
+        String(relocationStatus?.latest_status || "").toLowerCase() === "pending" ||
+        String(relocationStatus?.pending_status || "").toLowerCase() === "pending";
+
+      if (hasPendingRelocationRequest) {
+        onTriggerModal({
+          title:
+            "You already have a pending relocation request. Please wait for approval before creating another one.",
+          primaryButtonText: "Close",
+          primaryButtonHandler: onCloseModal,
+        });
+        return true;
+      }
+
+      router.navigate("/(app)/(profile)/myQBoxLocation");
+      return true;
+    }
+
+    if (item.id !== 8 && item.id !== 9) return false;
 
     if (!qboxId) {
-      Alert.alert("QBox not found", "No QBox is linked with this account.");
+      Alert.alert(t("notFound"), t("qboxNotFound"));
       return true;
     }
 
     if (checkingMenu) return true;
 
-    setCheckingMenu(item.title);
+    setCheckingMenu(item.id === 9 ? "Bluetooth" : "Wifi");
     const isOnline = await checkQBoxOnline();
     setWifiStatus(isOnline ? "connected" : "disconnected");
     setCheckingMenu(null);
 
-    if (item.title === "Bluetooth") {
+    if (item.id === 9) {
       if (!isOnline) {
         router.navigate("/(app)/(profile)/bluetoothList");
         return true;
       }
 
-      Alert.alert(
-        "Device already connected",
-        "Your device is already connected with Wi-Fi. You are not able to use Bluetooth."
-      );
+      Alert.alert(t("error"), t("deviceAlreadyConnected"));
       return true;
     }
 
     if (!isOnline) {
-      Alert.alert(
-        "Device offline",
-        "Your QBox is offline. Wi-Fi settings are locked until the device is online."
-      );
+      Alert.alert(t("error"), t("deviceOffline"));
       return true;
     }
 
     router.navigate("/(app)/(profile)/wifiList");
     return true;
-  }, [checkQBoxOnline, checkingMenu, qboxId]);
+  }, [checkQBoxOnline, checkingMenu, onCloseModal, onTriggerModal, qboxId, relocationStatusQuery, t]);
 
   if (isLoading) {
     return (
@@ -149,7 +200,7 @@ export const Profile = () => {
       <MenuList menuData={menuData} onItemPress={handleMenuItemPress} />
 
       <Text variant="secondary" size="xs" style={styles.maintenanceText}>
-        Developed and Maintained by REPLA Technologies PVT Ltd
+        Developed and maintained by REPLA Technologies PVT Ltd
       </Text>
     </ScrollView>
   );

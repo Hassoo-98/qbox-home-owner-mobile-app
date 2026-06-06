@@ -1,8 +1,11 @@
 import { AppHeaderLeft, ProfileHeader } from "@/components";
 import { ProfileProvider } from "@/context";
+import { useLocale } from "@/hooks";
 import { Stack } from "expo-router";
 
 export default function ProfileStack() {
+  const { t } = useLocale();
+
   return (
     <ProfileProvider>
       <Stack
@@ -14,12 +17,12 @@ export default function ProfileStack() {
       >
         <Stack.Screen
           name="index"
-          options={{ title: "Profile", headerShown: false }}
+          options={{ title: t("profile"), headerShown: false }}
         />
         <Stack.Screen
           name="basicInformation"
           options={{
-            title: "Basic Information",
+            title: t("basicInformation"),
             headerRight: () => {
               return <ProfileHeader />;
             },
@@ -28,7 +31,7 @@ export default function ProfileStack() {
         <Stack.Screen
           name="passwordManager"
           options={{
-            title: "Password",
+            title: t("password"),
             headerRight: () => {
               return <ProfileHeader />;
             },
@@ -37,7 +40,7 @@ export default function ProfileStack() {
         <Stack.Screen
           name="appLanguage"
           options={{
-            title: "Language",
+            title: t("language"),
             headerRight: () => {
               return <ProfileHeader />;
             },
@@ -46,7 +49,7 @@ export default function ProfileStack() {
         <Stack.Screen
           name="myQBoxLocation"
           options={{
-            title: "My QBox Location",
+            title: t("myQBoxLocation"),
             headerRight: () => {
               return <ProfileHeader />;
             },
@@ -55,31 +58,31 @@ export default function ProfileStack() {
         <Stack.Screen
           name="subscriptionHistory"
           options={{
-            title: "Subscription History",
+            title: t("subscriptionHistory"),
           }}
         />
         <Stack.Screen
           name="wifiList"
           options={{
-            title: "Available Wi-Fi",
+            title: t("wifi"),
           }}
         />
         <Stack.Screen
           name="bluetoothList"
           options={{
-            title: "Bluetooth Devices",
+            title: t("bluetooth"),
           }}
         />
         <Stack.Screen
           name="promoCode"
           options={{
-            title: "Promo Codes",
+            title: t("promoCode"),
           }}
         />
         <Stack.Screen
           name="renewSubscription"
           options={{
-            title: "Renew Subscription",
+            title: t("renewSubscription"),
             headerRight: () => {
               return <ProfileHeader />;
             },
@@ -88,13 +91,13 @@ export default function ProfileStack() {
         <Stack.Screen
           name="bleWifiProvisioning"
           options={{
-            title: "WiFi Provisioning",
+            title: t("wifiProvisioning"),
           }}
         />
         <Stack.Screen
           name="telemetry"
           options={{
-            title: "Telemetry",
+            title: t("telemetry"),
           }}
         />
       </Stack>

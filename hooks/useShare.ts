@@ -22,5 +22,16 @@ export const useShare = () => {
     }
   };
 
-  return { onShare };
+  const copyToClipboard = async (value: string, successMessage = "Copied to clipboard") => {
+    try {
+      await Share.share({
+        title: successMessage,
+        message: value,
+      });
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return { onShare, copyToClipboard };
 };

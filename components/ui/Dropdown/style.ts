@@ -25,8 +25,9 @@ export const styles = StyleSheet.create({
     borderColor: "#FF3B30",
   },
   dropdownDisabled: {
-    backgroundColor: "#F5F5F5",
-    opacity: 0.6,
+    backgroundColor: "#E9EDF3",
+    borderColor: "#D5DCE8",
+    opacity: 1,
   },
   placeholderStyle: {
     fontSize: mvs(14),

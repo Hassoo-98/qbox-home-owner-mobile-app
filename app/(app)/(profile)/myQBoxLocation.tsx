@@ -1,36 +1,59 @@
 import { WarningIconOutline } from "@/assets/icons";
 import { QBoxLocation, Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
-import { useModal } from "@/hooks";
+import { useAuth, useLocale, useModal, useProfile } from "@/hooks";
+import {
+  useCreateRelocationRequest,
+  useRelocationStatus,
+} from "@/hooks/api/useRelocationQueries";
 import { useVerifyShortAddress } from "@/hooks/api/useShortAddressQueries";
-import { useProfile } from "@/hooks/useProfile";
+import { useHomeOwner } from "@/hooks/useHomeOwner";
 import { QBoxLocationFormFormValues } from "@/types";
 import { MyQBoxLocationResolver } from "@/utils";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { Toast } from "toastify-react-native";
 
-import { useUpdateHomeOwner } from "@/hooks/api/useHomeOwnerQueries";
-import { useHomeOwner } from "@/hooks/useHomeOwner";
+const extractErrorMessage = (error: unknown, fallback: string) => {
+  if (typeof error === "object" && error !== null) {
+    const maybeError = error as {
+      response?: { data?: { message?: string; detail?: string } };
+      message?: string;
+    };
+
+    return (
+      maybeError.response?.data?.message ||
+      maybeError.response?.data?.detail ||
+      maybeError.message ||
+      fallback
+    );
+  }
+
+  return fallback;
+};
 
 export const MyQBoxLocation = () => {
-  const { setOnSave } = useProfile();
+  const { t } = useLocale();
+  const { setOnSave, setIsSaving } = useProfile();
+  const { user } = useAuth();
   const { data: homeOwnerResponse } = useHomeOwner();
   const homeOwner = homeOwnerResponse?.data;
-  const { mutateAsync: updateHomeOwner } = useUpdateHomeOwner(homeOwner?.id || "");
+  const homeOwnerId = user?.id || homeOwner?.id || "";
+  const qboxId = user?.qboxes?.[0]?.qbox_id || homeOwner?.qboxes?.[0]?.qbox_id || "";
 
+  const relocationMutation = useCreateRelocationRequest();
+  const relocationStatusQuery = useRelocationStatus(homeOwnerId);
   const { onTriggerModal, onCloseModal } = useModal();
+
   const [isShortAddressVerified, setIsShortAddressVerified] = useState(false);
+  const originalShortAddressRef = useRef("");
+  const verifiedShortAddressRef = useRef("");
+  const pendingModalShownRef = useRef(false);
 
   const {
     control,
@@ -39,16 +62,29 @@ export const MyQBoxLocation = () => {
     watch,
     reset,
     getValues,
-    formState: { errors },
   } = useForm<QBoxLocationFormFormValues>({
-    defaultValues: {},
+    defaultValues: {
+      shortId: "",
+      city: "",
+      district: "",
+      street: "",
+      postalCode: "",
+      buildingNumber: "",
+      secondaryNumber: "",
+      installationLocation: "",
+      accessInstruction: "",
+      qboxImage: "",
+    },
     resolver: MyQBoxLocationResolver,
     mode: "onChange",
   });
 
   const verifyShortAddressMutation = useVerifyShortAddress({
-    onSuccess: (response: any) => {
+    onSuccess: (response) => {
+      const currentShortAddress = String(getValues("shortId") || "").trim();
+      verifiedShortAddressRef.current = currentShortAddress;
       setIsShortAddressVerified(true);
+
       const data = response?.data;
       if (data) {
         setValue("city", data.city || "", { shouldDirty: true, shouldValidate: true });
@@ -61,48 +97,114 @@ export const MyQBoxLocation = () => {
     },
   });
 
-  const handleCheckShortAddress = (short_address: string) => {
-    if (!short_address) return;
-    verifyShortAddressMutation.mutate({ short_address }, {
-      onError: () => setIsShortAddressVerified(false),
-    });
+  const hasPendingRelocationRequest = useMemo(() => {
+    const relocationStatus = relocationStatusQuery.data?.data;
+    if (!relocationStatus) return false;
+
+    const latestStatus = String(relocationStatus.latest_status || "").toLowerCase();
+    const pendingStatus = String(relocationStatus.pending_status || "").toLowerCase();
+
+    return (
+      relocationStatus.has_pending_request ||
+      latestStatus === "pending" ||
+      pendingStatus === "pending"
+    );
+  }, [relocationStatusQuery.data]);
+
+  const handleCheckShortAddress = (shortAddress: string) => {
+    const nextShortAddress = shortAddress.trim();
+    if (!nextShortAddress) {
+      Alert.alert(t("error"), "Please enter a short address.");
+      return;
+    }
+
+    verifyShortAddressMutation.mutate(
+      { short_address: nextShortAddress },
+      {
+        onError: () => {
+          verifiedShortAddressRef.current = "";
+          setIsShortAddressVerified(false);
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    if (homeOwner) {
-      console.log("Full HomeOwner Data on Location Screen:", JSON.stringify(homeOwner, null, 2));
-      reset({
-        shortId: homeOwner.address?.short_address || (homeOwner as any).short_address || "",
-        city: homeOwner.address?.city || (homeOwner as any).city || "",
-        district: homeOwner.address?.district || (homeOwner as any).district || "",
-        street: homeOwner.address?.street || (homeOwner as any).street || "",
-        postalCode: homeOwner.address?.postal_code || (homeOwner as any).postal_code || "",
-        buildingNumber: homeOwner.address?.building_number || (homeOwner as any).building_number || "",
-        secondaryNumber: (homeOwner.address as any)?.additional_number || (homeOwner.address as any)?.secondary_building_number || (homeOwner as any).secondary_building_number || "",
-        installationLocation: homeOwner.installation?.location_preference || (homeOwner as any).installation_location_preference || "",
-        accessInstruction: homeOwner.installation?.access_instruction || (homeOwner as any).installation_access_instruction || "",
-        qboxImage: homeOwner.installation?.qbox_image_url || (homeOwner as any).installation_qbox_image_url || "",
-      });
-    }
+    if (!homeOwner) return;
+
+    reset({
+      shortId: homeOwner.address?.short_address || "",
+      city: homeOwner.address?.city || "",
+      district: homeOwner.address?.district || "",
+      street: homeOwner.address?.street || "",
+      postalCode: homeOwner.address?.postal_code || "",
+      buildingNumber: homeOwner.address?.building_number || "",
+      secondaryNumber: homeOwner.address?.additional_number || "",
+      installationLocation: homeOwner.installation?.location_preference || "",
+      accessInstruction: homeOwner.installation?.access_instruction || "",
+      qboxImage: homeOwner.installation?.qbox_image_url || "",
+    });
+
+    originalShortAddressRef.current = homeOwner.address?.short_address || "";
+    verifiedShortAddressRef.current = homeOwner.address?.short_address || "";
+    setIsShortAddressVerified(Boolean(homeOwner.address?.short_address));
   }, [homeOwner, reset]);
 
+  useEffect(() => {
+    if (relocationStatusQuery.isLoading || !homeOwnerId) return;
+
+    if (hasPendingRelocationRequest && !pendingModalShownRef.current) {
+      pendingModalShownRef.current = true;
+      onTriggerModal({
+        title:
+          "You already have a pending relocation request. Please wait for approval before creating another one.",
+        primaryButtonText: "Close",
+        primaryButtonHandler: () => {
+          onCloseModal();
+          router.dismiss();
+        },
+      });
+      return;
+    }
+
+    if (!hasPendingRelocationRequest) {
+      pendingModalShownRef.current = false;
+    }
+  }, [
+    hasPendingRelocationRequest,
+    homeOwnerId,
+    onCloseModal,
+    onTriggerModal,
+    relocationStatusQuery.isLoading,
+  ]);
+
   const qboxImage = watch("qboxImage");
+  const shortId = watch("shortId");
+
+  useEffect(() => {
+    const currentShortAddress = String(shortId || "").trim();
+    if (!currentShortAddress) {
+      setIsShortAddressVerified(false);
+      return;
+    }
+
+    setIsShortAddressVerified(
+      currentShortAddress === verifiedShortAddressRef.current.trim()
+    );
+  }, [shortId]);
 
   const pickImage = async () => {
     try {
-      // Request permission
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (status !== "granted") {
         Alert.alert(
-          "Permission Required",
+          t("error"),
           "Sorry, we need camera roll permissions to upload images."
         );
         return;
       }
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -111,76 +213,143 @@ export const MyQBoxLocation = () => {
       });
 
       if (!result.canceled && result.assets[0]) {
-        // Set the image URI to form
         setValue("qboxImage", result.assets[0].uri, { shouldDirty: true });
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      Alert.alert("Error", "Failed to pick image. Please try again.");
+      Alert.alert(t("error"), t("failedToUpdateProfile"));
     }
   };
 
-  console.log("form errros: ", errors);
+  const submitHandler = useCallback(
+    async (data: QBoxLocationFormFormValues) => {
+      const nextShortAddress = String(data.shortId || "").trim();
+      const previousShortAddress = originalShortAddressRef.current.trim();
+      const verifiedShortAddress = verifiedShortAddressRef.current.trim();
 
-  const submitHandler = useCallback(async (data: QBoxLocationFormFormValues) => {
-    try {
-      await updateHomeOwner({
-        full_name: homeOwner?.full_name || "",
-        email: homeOwner?.email || "",
-        address: {
-          short_address: data.shortId,
-          city: data.city,
-          district: data.district,
-          street: data.street,
-          postal_code: data.postalCode,
-          building_number: data.buildingNumber,
-          additional_number: data.secondaryNumber,
-        },
-        installation: {
-          location_preference: data.installationLocation,
-          access_instruction: data.accessInstruction,
-        },
-      });
+      if (!homeOwnerId || !qboxId) {
+        Alert.alert(t("error"), t("qboxNotFound"));
+        return;
+      }
 
-      onTriggerModal({
-        icon: (
-          <View
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: BorderRadius.full,
-              backgroundColor: Colors.success,
-              justifyContent: "center",
-              alignItems: "center",
-              alignSelf: "center",
-            }}
-          >
-            <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
-          </View>
-        ),
-        title: "Your location change request has been submitted for approval.",
-        primaryButtonText: "Confirm",
-        primaryButtonHandler: () => {
-          onCloseModal();
-          router.dismiss();
-        },
-        subtitle: "Once approved, our team will contact you within 24 hours .",
-      });
-    } catch (error: any) {
-      console.error("Location update failed:", error);
-      Alert.alert("Error", error?.response?.data?.message || "Failed to update location.");
-    }
-  }, [updateHomeOwner, homeOwner, onTriggerModal, onCloseModal, router]);
+      if (!nextShortAddress) {
+        Alert.alert(t("error"), "Please enter a short address.");
+        return;
+      }
 
-  const onSaveLocation = useMemo(() => handleSubmit(submitHandler), [handleSubmit, submitHandler]);
+      if (nextShortAddress === previousShortAddress) {
+        Alert.alert(t("error"), "Please enter different shortadress");
+        return;
+      }
+
+      if (!isShortAddressVerified || nextShortAddress !== verifiedShortAddress) {
+        Alert.alert(
+          t("error"),
+          "Please verify the new short address before saving."
+        );
+        return;
+      }
+
+      const locationPreference = String(data.installationLocation || "").trim();
+      const accessInstruction = String(data.accessInstruction || "").trim();
+
+      if (!locationPreference) {
+        Alert.alert(t("error"), "Please select a preferred installation location.");
+        return;
+      }
+
+      if (!accessInstruction) {
+        Alert.alert(t("error"), "Please enter access instructions.");
+        return;
+      }
+
+      try {
+        setIsSaving(true);
+        await relocationMutation.mutateAsync({
+          home_owner_id: homeOwnerId,
+          qbox_id: qboxId,
+          new_short_address: nextShortAddress,
+          installation: {
+            location_preference: locationPreference,
+            access_instruction: accessInstruction,
+          },
+        });
+
+        originalShortAddressRef.current = nextShortAddress;
+        verifiedShortAddressRef.current = nextShortAddress;
+        setIsShortAddressVerified(true);
+
+        Toast.show({
+          type: "success",
+          text1: "Relocation request submitted successfully.",
+          position: "top",
+          backgroundColor: Colors.white,
+          textColor: Colors.text,
+          progressBarColor: Colors.success,
+          visibilityTime: 3000,
+        });
+
+        onTriggerModal({
+          icon: (
+            <View
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: BorderRadius.full,
+                backgroundColor: Colors.success,
+                justifyContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
+            </View>
+          ),
+          title: "Your relocation request has been submitted for approval.",
+          primaryButtonText: "Confirm",
+          primaryButtonHandler: () => {
+            onCloseModal();
+            router.dismiss();
+          },
+          subtitle: "Once approved, our team will contact you within 24 hours.",
+        });
+      } catch (error: unknown) {
+        console.error("Relocation request failed:", error);
+        Alert.alert(
+          t("error"),
+          extractErrorMessage(error, "Failed to submit relocation request.")
+        );
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [
+      homeOwnerId,
+      isShortAddressVerified,
+      onCloseModal,
+      onTriggerModal,
+      qboxId,
+      relocationMutation,
+      setIsSaving,
+      t,
+    ]
+  );
+
+  const onSaveLocation = useMemo(
+    () => handleSubmit(submitHandler),
+    [handleSubmit, submitHandler]
+  );
+  const shouldBlockForm =
+    relocationStatusQuery.isLoading || !homeOwner || hasPendingRelocationRequest;
 
   useEffect(() => {
     setOnSave(() => onSaveLocation);
-
     return () => setOnSave(null);
-  }, [setOnSave, onSaveLocation]);
+  }, [onSaveLocation, setOnSave]);
 
-  return (
+  return shouldBlockForm ? (
+    <View style={{ flex: 1, backgroundColor: Colors.white }} />
+  ) : (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
@@ -199,6 +368,9 @@ export const MyQBoxLocation = () => {
             handleCheckShortAddress={handleCheckShortAddress}
             isShortAddressVerified={isShortAddressVerified}
             isShortAddressChecking={verifyShortAddressMutation.isPending}
+            readonlyFields
+            installationEditable
+            accessInstructionEditable
           />
 
           <View
@@ -224,8 +396,7 @@ export const MyQBoxLocation = () => {
                 Note
               </Text>
               <Text size="sm" variant="warning" numberOfLines={undefined}>
-                Short Address change requests require admin approval. Your
-                account will stay offline until approved.
+                Relocation requests require approval. Your profile will stay unchanged until the request is approved.
               </Text>
             </View>
           </View>

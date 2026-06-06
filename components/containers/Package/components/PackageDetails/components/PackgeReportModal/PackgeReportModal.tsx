@@ -1,9 +1,10 @@
 import { Button, Text, TextInput } from "@/components/ui";
 import { CustomDropdown } from "@/components/ui/Dropdown";
+import { useLocale } from "@/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React from "react";
-import { Modal, Platform, TouchableWithoutFeedback, View } from "react-native";
+import { Modal, Platform, Pressable, ScrollView, TouchableWithoutFeedback, View } from "react-native";
 import { PackageReportModalProps } from "./props";
 import { styles } from "./styles";
 
@@ -13,6 +14,8 @@ export const PackageReportModal = ({
   control,
   onSubmitReport,
 }: PackageReportModalProps) => {
+  const { t } = useLocale();
+
   return (
     <Modal
       visible={isReportModalOpen}
@@ -20,63 +23,85 @@ export const PackageReportModal = ({
       animationType="fade"
       onRequestClose={onCloseReportModal}
     >
-      <TouchableWithoutFeedback onPress={onCloseReportModal}>
+      <View style={styles.backdrop}>
         <BlurView
-          intensity={Platform.OS === "ios" ? 30 : 80}
+          intensity={Platform.OS === "ios" ? 35 : 85}
           tint="dark"
           style={styles.blurContainer}
-        >
+        />
+
+        <TouchableWithoutFeedback onPress={onCloseReportModal}>
+          <View style={styles.scrim} />
+        </TouchableWithoutFeedback>
+
+        <View style={styles.sheetWrapper} pointerEvents="box-none">
           <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
             <View style={styles.reportModalContainer}>
-              {/* HEADER */}
               <View style={styles.headerRow}>
-                <View style={styles.headerLeft}>
-                  <Ionicons name="arrow-back-outline" size={20} />
-                  <Text>Report an issue</Text>
-                </View>
+                <Pressable onPress={onCloseReportModal} hitSlop={12} style={styles.headerIconButton}>
+                  <Ionicons name="arrow-back-outline" size={22} color="#111827" />
+                </Pressable>
 
-                <TouchableWithoutFeedback onPress={onCloseReportModal}>
-                  <Ionicons name="close" size={20} />
-                </TouchableWithoutFeedback>
+                <Text bold style={styles.headerTitle}>{t("reportAnIssue")}</Text>
+
+                <Pressable onPress={onCloseReportModal} hitSlop={12} style={styles.headerIconButton}>
+                  <Ionicons name="close" size={22} color="#111827" />
+                </Pressable>
               </View>
 
-              {/* FORM FIELDS */}
-              <TextInput
-                name="trackingId"
-                inputMode="numeric"
-                control={control}
-                autoCorrect={false}
-                label="Tracking ID"
-                placeholder="XXXXXXXXXXXXXXX"
-              />
+              <View style={styles.divider} />
 
-              <CustomDropdown
-                name="reportType"
-                control={control}
-                label="Issue related to"
-                placeholder="Select issue type"
-                options={[
-                  { label: "Driver", value: "driver" },
-                  { label: "Package", value: "Sender" },
-                  { label: "Couier", value: "courier" },
-                ]}
-              />
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.formContent}
+              >
+                <TextInput
+                  name="trackingId"
+                  inputMode="text"
+                  control={control as any}
+                  autoCorrect={false}
+                  label={t("trackingId")}
+                  placeholder="XXXXXXXXXXXXXXX"
+                  editable={false}
+                  style={styles.readOnlyInput}
+                />
 
-              <TextInput
-                name="reportDescription"
-                inputMode="text"
-                control={control}
-                label="Issue Description"
-                placeholder="Write issue description"
-                multiline
-                numberOfLines={4}
-              />
+                <CustomDropdown
+                  name="issueRelatedTo"
+                  control={control as any}
+                  label={t("issueRelatedTo")}
+                  placeholder={t("selectIssueType")}
+                  options={[
+                    { label: t("driver"), value: "Driver" },
+                    { label: t("courier"), value: "Courier" },
+                    { label: t("package"), value: "Package" },
+                  ]}
+                  dropdownStyle={styles.dropdown}
+                />
 
-              <Button title="Send" onPress={onSubmitReport} />
+                <TextInput
+                  name="reportDescription"
+                  inputMode="text"
+                  control={control as any}
+                  label={t("issueDescription")}
+                  placeholder={t("describeIssueClearly")}
+                  multiline
+                  numberOfLines={5}
+                  style={styles.descriptionInput}
+                />
+
+                <Button
+                  title={t("send")}
+                  onPress={onSubmitReport}
+                  variant="primary"
+                  fullWidth
+                  style={styles.sendButton}
+                />
+              </ScrollView>
             </View>
           </TouchableWithoutFeedback>
-        </BlurView>
-      </TouchableWithoutFeedback>
+        </View>
+      </View>
     </Modal>
   );
 };

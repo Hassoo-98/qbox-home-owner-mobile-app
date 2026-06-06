@@ -35,7 +35,8 @@ export const useQRCodeDetails = (id: string) => {
         queryKey: ['qr-details', id],
         queryFn: () => QR.getQRCodeDetails(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 0,
+        refetchOnMount: 'always',
         initialData: () => {
             const history = queryClient.getQueryData<QRHistoryResponse>(['qr-history']);
             const item = history?.results.find(res => res.id === id);

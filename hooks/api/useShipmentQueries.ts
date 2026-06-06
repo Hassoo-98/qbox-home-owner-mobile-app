@@ -1,6 +1,7 @@
 import * as Shipment from '@/services/api/modules/shipment';
 import * as PaymentMethod from '@/services/api/modules/paymentMethod';
 import * as ServiceProvider from '@/services/api/modules/serviceProvider';
+import { useAuth } from '@/hooks/useAuth';
 import {
     CreateShipmentRequest,
     GetPackageDetailsResponse,
@@ -10,37 +11,46 @@ import {
     ReturnPackageRequest,
     ReturnPackageResponse,
     CreateShipmentResponse,
+    ShipmentDetailResponse,
     ServiceProviderLookupResponse,
 } from '@/services/api/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 
 export const useIncomingPackages = () => {
+    const { user } = useAuth();
+    const homeOwnerId = user?.id;
+
     return useQuery<PackageListResponse>({
-        queryKey: ['incoming-packages'],
-        queryFn: Shipment.getIncomingPackages,
+        queryKey: ['home-owner-incoming-packages', homeOwnerId],
+        queryFn: () => Shipment.getIncomingPackages(homeOwnerId as string),
+        enabled: !!homeOwnerId,
     });
 };
 
 export const useIncomingPackagesDetails = (id: string | number) => {
-    return useQuery<any>({
-        queryKey: ['incoming-packages-details', id],
-        queryFn: () => Shipment.getIncomingPackagesDetails(id),
+    return useQuery<ShipmentDetailResponse>({
+        queryKey: ['shipment-details', id],
+        queryFn: () => Shipment.getShipmentDetails(String(id)),
         enabled: !!id,
     });
 };
 
 export const useOutgoingPackages = () => {
+    const { user } = useAuth();
+    const homeOwnerId = user?.id;
+
     return useQuery<PackageListResponse>({
-        queryKey: ['outgoing-packages'],
-        queryFn: Shipment.getOutgoingPackages,
+        queryKey: ['home-owner-outgoing-packages', homeOwnerId],
+        queryFn: () => Shipment.getOutgoingPackages(homeOwnerId as string),
+        enabled: !!homeOwnerId,
     });
 };
 
 export const useOutgoingPackagesDetails = (id: string | number) => {
-    return useQuery<any>({
-        queryKey: ['outgoing-packages-details', id],
-        queryFn: () => Shipment.getOutgoingPackagesDetails(id),
+    return useQuery<ShipmentDetailResponse | null>({
+        queryKey: ['shipment-details-outgoing', id],
+        queryFn: () => Shipment.getShipmentDetails(String(id)),
         enabled: !!id,
     });
 };
@@ -65,7 +75,7 @@ export const useSendPackageMutation = () => {
     return useMutation<CreateShipmentResponse, Error, CreateShipmentRequest>({
         mutationFn: Shipment.createShipment,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['outgoing-packages'] });
+            queryClient.invalidateQueries({ queryKey: ['home-owner-outgoing-packages'] });
             queryClient.invalidateQueries({ queryKey: ['packages'] });
         },
     });
@@ -90,7 +100,7 @@ export const useReturnPackageMutation = () => {
     return useMutation<ReturnPackageResponse, Error, ReturnPackageRequest>({
         mutationFn: Shipment.returnPackage,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['outgoing-packages'] });
+            queryClient.invalidateQueries({ queryKey: ['home-owner-outgoing-packages'] });
             queryClient.invalidateQueries({ queryKey: ['packages'] });
         },
     });
@@ -98,13 +108,38 @@ export const useReturnPackageMutation = () => {
 
 export const usePackageDetails = (id: string | number) => {
     const queryClient = useQueryClient();
-    return useQuery<GetPackageDetailsResponse>({
+    return useQuery<GetPackageDetailsResponse | null>({
         queryKey: ['package-details', id],
-        queryFn: () => Shipment.getPackageDetails(id),
+        queryFn: async () => {
+            const queryKeys = [
+                ['home-owner-incoming-packages'],
+                ['home-owner-outgoing-packages'],
+                ['delivered-packages'],
+                ['packages']
+            ];
+            for (const key of queryKeys) {
+                const listData = queryClient.getQueryData<PackageListResponse>(key);
+                const item = listData?.data.items.find(pkg => pkg.id === id);
+                if (item) {
+                    return {
+                        success: true,
+                        statusCode: 200,
+                        data: item,
+                        message: "Initial data from cache",
+                    } as GetPackageDetailsResponse;
+                }
+            }
+            return null;
+        },
         enabled: !!id,
         staleTime: 5 * 60 * 1000, // 5 minutes
         initialData: () => {
-            const queryKeys = [['incoming-packages'], ['outgoing-packages'], ['delivered-packages'], ['packages']];
+            const queryKeys = [
+                ['home-owner-incoming-packages'],
+                ['home-owner-outgoing-packages'],
+                ['delivered-packages'],
+                ['packages']
+            ];
             for (const key of queryKeys) {
                 const listData = queryClient.getQueryData<PackageListResponse>(key);
                 const item = listData?.data.items.find(pkg => pkg.id === id);

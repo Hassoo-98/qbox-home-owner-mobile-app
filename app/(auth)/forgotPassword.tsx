@@ -7,9 +7,12 @@ import {
   Text,
   TextInput,
 } from "@/components";
-import { AUTH_PROVIDER_OPTIONS, AUTH_PROVIDERS, Spacing } from "@/constants";
-import { useModal } from "@/hooks";
-import { useSendOtpForResetPassword, useVerifyOtpForResetPassword } from "@/hooks/api/useAuthQueries";
+import { AUTH_PROVIDERS, Spacing } from "@/constants";
+import { useLocale, useModal } from "@/hooks";
+import {
+  useSendOtpForResetPassword,
+  useVerifyOtpForResetPassword,
+} from "@/hooks/api/useAuthQueries";
 import { ForgotPasswordFormValues } from "@/types";
 import { ForgotPasswordFormResolver } from "@/utils";
 import { router } from "expo-router";
@@ -18,11 +21,11 @@ import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
 
 export const ForgotPassword = () => {
+  const { t } = useLocale();
   const [selectedAuthProvider, setSelectedAuthProvider] = useState<string>(
     AUTH_PROVIDERS.PHONE
   );
 
-  // Store temp_uid and contact for later steps
   const tempUidRef = useRef<string>("");
   const contactRef = useRef<string>("");
 
@@ -30,6 +33,7 @@ export const ForgotPassword = () => {
     email: "",
     phone: "",
   };
+
   const {
     control,
     formState: { isDirty },
@@ -43,13 +47,13 @@ export const ForgotPassword = () => {
   });
 
   const isFormValid = isDirty;
-
   const { onTriggerModal } = useModal();
   const sendOtpMutation = useSendOtpForResetPassword();
   const verifyOtpMutation = useVerifyOtpForResetPassword();
 
   const handleVerifyOtp = (otp: string) => {
-    const contact = selectedAuthProvider === "phone" ? (getValues("phone") || "") : (getValues("email") || "");
+    const contact =
+      selectedAuthProvider === "phone" ? getValues("phone") || "" : getValues("email") || "";
     const method = selectedAuthProvider === "phone" ? "phone" : "email";
 
     verifyOtpMutation.mutate(
@@ -59,16 +63,14 @@ export const ForgotPassword = () => {
       },
       {
         onSuccess: (response) => {
-          console.log("Forgot password OTP verify success:", response);
-          // Navigate to reset password screen with the uid
           const uid = response?.temp_uid || response?.data?.temp_uid || tempUidRef.current;
           router.push({
             pathname: "/resetPassword",
             params: {
               uid,
               contact,
-              method
-            }
+              method,
+            },
           });
         },
       }
@@ -78,15 +80,15 @@ export const ForgotPassword = () => {
   const handleSendOtp = (type: string, contact: string) => {
     const subtitle =
       type === "phone"
-        ? `Enter the 6-digit code sent to your phone number ${contact}`
-        : `Enter the 6-digit code sent to your ${contact} email.`;
+        ? `${t("enterSixDigitCodePhone")} ${contact}`
+        : `${t("enterSixDigitCodeEmail")} ${contact}`;
 
     onTriggerModal({
       modalType: "otp",
-      title: "OTP Verification",
-      subtitle: subtitle,
-      footerText: "Remember Password ? Back to",
-      footerAction: "Login",
+      title: t("otpVerification"),
+      subtitle,
+      footerText: t("rememberPasswordBackTo"),
+      footerAction: t("signIn"),
       isForgotPassowrd: true,
       secondaryButtonHandler: () => {
         router.dismissTo("/login");
@@ -96,11 +98,12 @@ export const ForgotPassword = () => {
   };
 
   const onSubmit = (data: ForgotPasswordFormValues) => {
-    const contact = selectedAuthProvider === "phone" ? (data.phone || "") : (data.email || "");
+    const contact =
+      selectedAuthProvider === "phone" ? data.phone || "" : data.email || "";
     const method = selectedAuthProvider === "phone" ? "phone" : "email";
 
     if (!contact) {
-      Alert.alert("Error", `Please enter your ${method === "phone" ? "phone number" : "email address"}.`);
+      Alert.alert(t("error"), t("emailOrPhoneRequired"));
       return;
     }
 
@@ -112,22 +115,15 @@ export const ForgotPassword = () => {
       is_home_owner: true,
     };
 
-    console.log("Forgot password OTP request payload:", JSON.stringify(payload, null, 2));
-
-    sendOtpMutation.mutate(
-      payload,
-      {
-        onSuccess: (response) => {
-          console.log("Forgot password OTP send success:", response);
-          // Store temp_uid for later use (if provided by server)
-          const uid = response?.temp_uid || response?.data?.temp_uid;
-          if (uid) {
-            tempUidRef.current = uid;
-          }
-          handleSendOtp(method, contact);
-        },
-      }
-    );
+    sendOtpMutation.mutate(payload, {
+      onSuccess: (response) => {
+        const uid = response?.temp_uid || response?.data?.temp_uid;
+        if (uid) {
+          tempUidRef.current = uid;
+        }
+        handleSendOtp(method, contact);
+      },
+    });
   };
 
   const handleAuthProviderChange = (option: string) => {
@@ -137,12 +133,18 @@ export const ForgotPassword = () => {
 
   return (
     <FormLayout
-      title="Forgot Password?"
-      description={`Enter your ${selectedAuthProvider === "phone" ? "phone number" : "email address"
-        } and we'll send you instructions to reset your password.`}
+      title={t("forgotPasswordQuestion")}
+      description={
+        selectedAuthProvider === "phone"
+          ? `${t("enterPhoneNumber")} ${t("otpVerification")}`
+          : `${t("enterEmailAddress")} ${t("otpVerification")}`
+      }
       headerContent={
         <SegmentedControl
-          options={AUTH_PROVIDER_OPTIONS}
+          options={[
+            { label: t("phoneNumber"), value: AUTH_PROVIDERS.PHONE },
+            { label: t("emailAddress"), value: AUTH_PROVIDERS.EMAIL },
+          ]}
           style={{ marginVertical: Spacing.md }}
           onChange={handleAuthProviderChange}
           value={selectedAuthProvider}
@@ -155,15 +157,15 @@ export const ForgotPassword = () => {
             name="email"
             inputMode="email"
             control={control}
-            label="Email Address"
+            label={t("emailAddress")}
             keyboardType="email-address"
-            placeholder="Enter email address"
+            placeholder={t("enterEmailAddress")}
           />
         ) : (
           <PhoneNumberInput
             name="phone"
             control={control}
-            label="Phone Number"
+            label={t("phoneNumber")}
             placeholder="+966 XX XXX XXXX"
             defaultCode="PK"
           />
@@ -171,25 +173,20 @@ export const ForgotPassword = () => {
 
         <Button
           style={{ marginTop: Spacing.xl }}
-          title="Reset Password"
+          title={t("forgotPasswordQuestion")}
           disabled={!isFormValid}
           loading={sendOtpMutation.isPending}
           onPress={handleSubmit(onSubmit)}
         />
 
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: Spacing.md,
-          }}
-        >
-          Remember Password? Back to{" "}
+        <Text style={{ textAlign: "center", marginTop: Spacing.md }}>
+          {t("rememberPasswordBackTo")}{" "}
           <Text
             variant="primary"
             style={{ fontWeight: "bold" }}
             onPress={() => router.dismissTo("/login")}
           >
-            Login
+            {t("signIn")}
           </Text>
         </Text>
       </Form>

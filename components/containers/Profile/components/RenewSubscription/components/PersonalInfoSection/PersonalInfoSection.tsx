@@ -1,5 +1,6 @@
 import { PhoneNumberInput, TextInput } from "@/components/ui";
 import { Colors } from "@/constants";
+import { useLocale } from "@/hooks";
 import React from "react";
 import { View } from "react-native";
 import { PersonalInfoSectionProps } from "./props";
@@ -7,6 +8,8 @@ import { PersonalInfoSectionProps } from "./props";
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   control,
 }) => {
+  const { t } = useLocale();
+
   return (
     <View>
       <TextInput
@@ -14,14 +17,14 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="Name"
-        placeholder="Enter Your Name"
+        label={t("fullName")}
+        placeholder={t("enterFullName")}
       />
 
       <PhoneNumberInput
         name="phone"
         control={control}
-        label="Phone Number"
+        label={t("phoneNumber")}
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
       />
@@ -31,16 +34,15 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Price"
+        label={t("itemValue")}
         placeholder="XXXX"
-        endButtonText="Yearly"
+        endButtonText={t("renewSubscription")}
         endButtonProps={{
-          variant: "danger", // change background
+          variant: "danger",
           style: {
             backgroundColor: Colors.background,
           },
           textStyle: {
-            // control the text inside the button
             color: Colors.text,
             fontWeight: "bold",
             borderLeftColor: Colors.text,
@@ -55,7 +57,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Start Date"
+        label={t("selectDate")}
         placeholder="DD/MM/YY"
       />
 
@@ -64,7 +66,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="End Date"
+        label={t("selectDate")}
         placeholder="DD/MM/YY"
       />
     </View>

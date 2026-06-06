@@ -1,9 +1,12 @@
 import { PasswordInput, PhoneNumberInput, TextInput } from "@/components/ui";
+import { useLocale } from "@/hooks";
 import React from "react";
 import { View } from "react-native";
 import { BasicInformationProps } from "./props";
 
 export const BasicInformation = ({ control }: BasicInformationProps) => {
+  const { t } = useLocale();
+
   return (
     <View>
       <TextInput
@@ -12,9 +15,9 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
         control={control}
         autoCapitalize="words"
         autoCorrect={false}
-        label="Full Name"
+        label={t("fullName")}
         autoComplete="name"
-        placeholder="Enter your full name"
+        placeholder={t("enterFullName")}
       />
       <TextInput
         name="email"
@@ -22,14 +25,14 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
         control={control}
         autoCapitalize="none"
         autoComplete="email"
-        label="Email Address"
+        label={t("emailAddress")}
         keyboardType="email-address"
-        placeholder="Enter email address"
+        placeholder={t("enterEmailAddress")}
       />
       <PhoneNumberInput
         name="phone"
         control={control}
-        label="Phone Number"
+        label={t("phoneNumber")}
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
       />
@@ -37,7 +40,7 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
       <PhoneNumberInput
         name="secondaryPhone"
         control={control}
-        label="Secondary Number (Optional)"
+        label={t("secondaryNumber")}
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
       />
@@ -45,15 +48,15 @@ export const BasicInformation = ({ control }: BasicInformationProps) => {
       <PasswordInput
         name="password"
         control={control}
-        label="Password"
-        placeholder="Enter password"
+        label={t("password")}
+        placeholder={t("enterNewPassword")}
       />
 
       <PasswordInput
         name="confirmPassword"
         control={control}
-        label="Confirm Password"
-        placeholder="Enter password"
+        label={t("retypePassword")}
+        placeholder={t("enterConfirmPassword")}
       />
     </View>
   );

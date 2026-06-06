@@ -5,6 +5,7 @@ import {
   QR_VALIDITY_DURATION_TYPE,
 } from "@/constants";
 import {
+  BasicInformationFormValues,
   ForgotPasswordFormValues,
   LoginFormValues,
   PasswordFormVales,
@@ -139,6 +140,50 @@ export const ForgotPasswordFormResolver = yupResolver(
   ) as yup.ObjectSchema<ForgotPasswordFormValues>
 );
 
+export const BasicInformationFormResolver = yupResolver(
+  yup.object().shape(
+    {
+      fullName: yup
+        .string()
+        .required(ERROR_MESSAGES.REQUIRED_FIELD)
+        .min(3, "Full name must be at least 3 characters")
+        .max(50, "Full name must not exceed 50 characters"),
+      email: yup
+        .string()
+        .required(ERROR_MESSAGES.REQUIRED_FIELD)
+        .matches(emailPattern, ERROR_MESSAGES.INVALID_EMAIL),
+      phone: yup
+        .string()
+        .required(ERROR_MESSAGES.REQUIRED_FIELD)
+        .max(15, "Phone number must not exceed 15 characters")
+        .test("valid-phone", "Please enter a valid phone number", function (value) {
+          if (!value) return false;
+          const candidate = value.startsWith("+") ? value : `+${value}`;
+          try {
+            parsePhoneNumberWithError(candidate);
+            return isValidPhoneNumber(candidate);
+          } catch {
+            return false;
+          }
+        }),
+      secondaryPhone: yup
+        .string()
+        .optional()
+        .max(15, "Secondary phone number must not exceed 15 characters")
+        .test("valid-phone", "Please enter a valid phone number", function (value) {
+          if (!value) return true;
+          const candidate = value.startsWith("+") ? value : `+${value}`;
+          try {
+            parsePhoneNumberWithError(candidate);
+            return isValidPhoneNumber(candidate);
+          } catch {
+            return false;
+          }
+        }),
+    }
+  ) as yup.ObjectSchema<BasicInformationFormValues>
+);
+
 export const QRGenerationFormResolver = yupResolver(
   yup.object().shape({
     qrName: yup.string().optional().max(20, ERROR_MESSAGES.MAX_LENGTH),
@@ -183,6 +228,7 @@ export const SignUpFormResolver = yupResolver(
     phone: yup
       .string()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .max(15, "Phone number must not exceed 15 characters")
       .test(
         "valid-phone",
         "Please enter a valid phone number",
@@ -207,6 +253,8 @@ export const SignUpFormResolver = yupResolver(
     secondaryPhone: yup
       .string()
       .nullable()
+      .optional()
+      .max(15, "Secondary phone number must not exceed 15 characters")
       .test(
         "valid-phone",
         "Please enter a valid phone number",
@@ -234,13 +282,13 @@ export const SignUpFormResolver = yupResolver(
 
     password: yup
       .string()
-      .matches(passwordPattern, ERROR_MESSAGES.INVALID_PASSWORD)
-      .required(ERROR_MESSAGES.REQUIRED_FIELD),
+      .required(ERROR_MESSAGES.REQUIRED_FIELD)
+      .matches(passwordPattern, ERROR_MESSAGES.INVALID_PASSWORD),
 
     confirmPassword: yup
       .string()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .oneOf([yup.ref("password")], "Passwords must match"),
+      .oneOf([yup.ref("password")], ERROR_MESSAGES.INVALID_CONFIRM_PASSWORD),
 
     // Step 2 - QBox Verification
     qBoxId: yup
@@ -317,54 +365,29 @@ export const MyQBoxLocationResolver = yupResolver(
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
       .min(5, "Short ID must be at least 5 characters"),
 
-    city: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .min(2, "City must be at least 2 characters"),
+    city: yup.string().nullable().optional(),
 
-    district: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .min(2, "District must be at least 2 characters"),
+    district: yup.string().nullable().optional(),
 
-    street: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .min(2, "Street must be at least 2 characters"),
+    street: yup.string().nullable().optional(),
 
-    postalCode: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .matches(/^[0-9]{5}$/, "Postal code must be 5 digits"),
+    postalCode: yup.string().nullable().optional(),
 
-    buildingNumber: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .matches(/^[0-9]+$/, "Building number must be numeric"),
+    buildingNumber: yup.string().nullable().optional(),
 
-    secondaryNumber: yup
-      .string()
-      .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .matches(/^[0-9]+$/, "Secondary number must be numeric"),
+    secondaryNumber: yup.string().nullable().optional(),
 
     installationLocation: yup
       .string()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .oneOf(
-        ["mainDoor", "gate", "entrance"],
-        "Please select a valid installation location"
-      ),
+      .min(2, "Please select an installation location"),
 
     accessInstruction: yup
       .string()
       .required(ERROR_MESSAGES.REQUIRED_FIELD)
-      .min(
-        10,
-        "Please provide detailed access instructions (at least 10 characters)"
-      )
-      .max(500, "Access instructions must not exceed 500 characters"),
+      .min(2, "Please enter access instructions"),
 
-    qboxImage: yup.string().required("Please upload a QBox image"),
+    qboxImage: yup.string().nullable().optional(),
   }) as yup.ObjectSchema<QBoxLocationFormFormValues>
 );
 export const RenewSubscriptionResolver = yupResolver(

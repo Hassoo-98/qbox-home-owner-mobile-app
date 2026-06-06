@@ -25,9 +25,9 @@ export const MenuList = ({ menuData, onItemPress }: MenuListProps) => {
       if (handled) return;
     }
 
-    if (item.title === "Logout") {
+    if (item.id === 7) {
       await logout();
-    } else if (item.title === "Contact Us") {
+    } else if (item.id === 6) {
       await handleContactUs();
     } else if (item.path) {
       router.navigate(item.path);

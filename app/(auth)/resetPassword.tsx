@@ -1,7 +1,7 @@
 import { Button, Form, FormLayout, PasswordInput } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
+import { useLocale, useModal } from "@/hooks";
 import { useResetPassword } from "@/hooks/api/useAuthQueries";
-import { useModal } from "@/hooks/useModal";
 import { ResetPasswordFormResolver } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,7 +9,8 @@ import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export const ResetPassword = () => {
-  const { uid, contact, method } = useLocalSearchParams<{ uid: string, contact: string, method: string }>();
+  const { t } = useLocale();
+  const { contact, method } = useLocalSearchParams<{ uid: string; contact: string; method: string }>();
   const { control, handleSubmit, reset, formState: { isValid } } = useForm({
     defaultValues: {
       password: "",
@@ -27,12 +28,10 @@ export const ResetPassword = () => {
   };
 
   const onSubmit = handleSubmit((data: any) => {
-
-
     resetPasswordMutation.mutate(
       {
         [method === "phone" ? "phone_number" : "email"]: contact,
-        new_password: data.password
+        new_password: data.password,
       },
       {
         onSuccess: () => {
@@ -52,11 +51,11 @@ export const ResetPassword = () => {
                 <Ionicons size={22} name="checkmark-sharp" color={Colors.white} />
               </View>
             ),
-            title: "Password Reset Successful!",
-            primaryButtonText: "Go to Login",
+            title: t("passwordResetSuccessful"),
+            primaryButtonText: t("goToLogin"),
             primaryButtonHandler: handleConfirm,
             secondaryButtonHandler: onCloseModal,
-            subtitle: "Your password has been successfully reset. You can now login with your new password.",
+            subtitle: t("passwordResetSubtitle"),
           });
           reset();
         },
@@ -66,26 +65,26 @@ export const ResetPassword = () => {
 
   return (
     <FormLayout
-      title="Create a Secure Password"
-      description={`Enter a strong password to secure your account.`}
+      title={t("createSecurePassword")}
+      description={t("enterStrongPassword")}
     >
       <Form style={{ paddingVertical: Spacing.lg }}>
         <PasswordInput
           name="password"
           control={control}
-          label="New Password"
-          placeholder="Enter new password"
+          label={t("newPassword")}
+          placeholder={t("enterNewPassword")}
         />
         <PasswordInput
           name="confirmPassword"
           control={control}
-          label="Re-type Password"
-          placeholder="Re-type password"
+          label={t("retypePassword")}
+          placeholder={t("enterConfirmPassword")}
         />
 
         <Button
           style={{ marginTop: Spacing.xl }}
-          title="Update"
+          title={t("update")}
           disabled={!isValid}
           loading={resetPasswordMutation.isPending}
           onPress={onSubmit}

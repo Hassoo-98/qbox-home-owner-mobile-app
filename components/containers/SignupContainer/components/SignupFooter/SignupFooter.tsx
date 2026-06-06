@@ -1,7 +1,7 @@
 import { WarningIconOutline } from "@/assets/icons";
 import { Button, Text } from "@/components/ui";
 import { Colors, Spacing } from "@/constants";
-import { useModal } from "@/hooks";
+import { useLocale, useModal } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import React from "react";
 import { View } from "react-native";
@@ -17,22 +17,20 @@ export const SignupFooter = ({
   handleVerifyOtp,
   isQBoxVerified,
 }: SignupFooterProps) => {
+  const { t } = useLocale();
   const { onTriggerModal, onCloseModal } = useModal();
 
   const handleVerify = () => {
-    // Send OTP when modal triggers
     handleSendOtp(contactInfo, () => {
       onTriggerModal({
         modalType: "otp",
-        title: "OTP Verification",
-        subtitle: `Enter the 6-digit code sent to your email. ${contactInfo}`,
-        footerText: "Didn’t receive the code?",
-        footerAction: "Resend OTP",
-        primaryButtonText: "Verify",
+        title: t("otpVerification"),
+        subtitle: `${t("enterSixDigitCodeEmail")} ${contactInfo}`,
+        footerText: t("didntReceiveTheCode"),
+        footerAction: t("resendOtp"),
+        primaryButtonText: t("verify"),
         secondaryButtonHandler: () => handleSendOtp(contactInfo),
         primaryButtonHandler: (otpValue?: any) => {
-          console.log("otp verification triggered: ", otpValue);
-          // The modal should pass the OTP value here
           handleVerifyOtp(contactInfo, otpValue as string, () => {
             setCurrentStep((prev) => prev + 1);
             onCloseModal?.();
@@ -79,15 +77,13 @@ export const SignupFooter = ({
         }}
       >
         <Button
-          title="Previous"
+          title={t("previous")}
           disabled={currentStep === 1}
           variant="default"
-          onPress={() => {
-            setCurrentStep((prev) => prev - 1);
-          }}
+          onPress={() => setCurrentStep((prev) => prev - 1)}
         />
         <Button
-          title={currentStep === 3 ? "Complete" : "Next"}
+          title={currentStep === 3 ? t("complete") : t("next")}
           onPress={handleNext}
         />
       </View>
@@ -106,17 +102,11 @@ export const SignupFooter = ({
         <WarningIconOutline width={20} height={20} />
 
         <View style={{ flex: 1, flexShrink: 1 }}>
-          <Text
-            size="sm"
-            variant="warning"
-            style={{ fontWeight: "bold" }}
-            numberOfLines={undefined}
-          >
-            Your data is secure
+          <Text size="sm" variant="warning" style={{ fontWeight: "bold" }}>
+            {t("dataSecureTitle")}
           </Text>
-          <Text size="sm" variant="warning" numberOfLines={undefined}>
-            All information is encrypted and stored securely. We comply with all
-            data protection regulations.
+          <Text size="sm" variant="warning">
+            {t("dataSecureDescription")}
           </Text>
         </View>
       </View>

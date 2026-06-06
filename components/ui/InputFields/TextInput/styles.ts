@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: Spacing.xs,
     marginBottom: Spacing.xs + 2, // 6px (matches mb={0.9} in MUI)
   },
 
@@ -28,10 +29,15 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FCFCFD",
     borderWidth: 1.5,
-    paddingRight: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
     borderColor: "#E6E8EC",
     borderRadius: BorderRadius.md,
     minHeight: 46,
+  },
+
+  readOnlyInputWrapper: {
+    backgroundColor: "#E9EDF3",
+    borderColor: "#D5DCE8",
   },
 
   inputError: {
@@ -43,6 +49,10 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
     paddingHorizontal: Spacing.md,
+  },
+
+  readOnlyInput: {
+    color: "#3F4654",
   },
 
   inputWithStartIcon: {
@@ -81,6 +91,6 @@ export const styles = StyleSheet.create({
 
   errorText: {
     marginTop: Spacing.xs,
-    marginLeft: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
   },
 });

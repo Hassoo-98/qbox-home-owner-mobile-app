@@ -1,5 +1,6 @@
 import { Button, OTPInput, Text } from "@/components";
 import { Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { BlurView } from "expo-blur";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -25,16 +26,15 @@ export const OTPModal = ({
   primaryButtonText,
   footerText,
 }: OTPModalProps) => {
+  const { t } = useLocale();
   const { control, handleSubmit } = useForm({
     defaultValues: {
       otp: "",
     },
   });
 
-  const handleOTPSubmit = (data: any) => {
-    console.log("OTPModal handlesubmit data:", data);
-    onSubmit(data.otp);
-    onClose();
+  const handleOTPSubmit = async (data: any) => {
+    await Promise.resolve(onSubmit(data.otp));
   };
 
   const resendOtp = () => {
@@ -66,7 +66,15 @@ export const OTPModal = ({
                 control={control}
                 numberOfDigits={6}
                 rules={{
-                  required: "OTP is required",
+                  required: t("otpRequired"),
+                  minLength: {
+                    value: 6,
+                    message: t("otpMustBe6Digits"),
+                  },
+                  maxLength: {
+                    value: 6,
+                    message: t("otpMustBe6Digits"),
+                  },
                 }}
               />
 
@@ -77,20 +85,20 @@ export const OTPModal = ({
                     marginTop: Spacing.md,
                   }}
                 >
-                  Didn't receive code?{" "}
+                  {t("didntReceiveTheCode")}{" "}
                   <Text
                     variant="primary"
                     style={{ fontWeight: "bold" }}
                     onPress={resendOtp}
                   >
-                    Resend again
+                    {t("resendAgain")}
                   </Text>
                 </Text>
               )}
 
               <View style={styles.actions}>
                 <Button
-                  title={primaryButtonText || "Verify"}
+                  title={primaryButtonText || t("verify")}
                   loading={isLoading}
                   onPress={handleSubmit(handleOTPSubmit)}
                 />
@@ -105,13 +113,16 @@ export const OTPModal = ({
                   <Text
                     variant="primary"
                     style={{ fontWeight: "bold" }}
-                    onPress={() => {
+                    onPress={async () => {
                       if (secondaryButtonHandler) {
-                        secondaryButtonHandler();
-                        onClose();
-                      } else {
-                        resendOtp();
+                        const result = await Promise.resolve(secondaryButtonHandler());
+                        if (result !== false) {
+                          onClose();
+                        }
+                        return;
                       }
+
+                      resendOtp();
                     }}
                   >
                     {footerAction}

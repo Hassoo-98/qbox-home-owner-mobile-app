@@ -72,7 +72,9 @@ export interface AuthResponse {
 export interface SendOtpPayload {
     email?: string;
     phone_number?: string;
+    verification_type?: "email" | "phone_number";
     is_home_owner: boolean;
+    is_forget_otp?: boolean;
 }
 
 export interface VerifyOtpPayload {
@@ -252,13 +254,18 @@ export interface PackageListItem {
     id: string;
     qbox: string | null;
     trackingId: string;
+    tracking_id?: string;
     merchant_name: string;
     service_provider: string;
+    service_provider_name?: string;
     driver_name: string;
     qr_code: string;
     package_type: string;
     outgoing_status: string | null;
     city: string;
+    sender_home_owner_city?: string;
+    sender_home_owner_name?: string;
+    receiver_home_owner_name?: string;
     shipment_status: string;
     last_update: string;
     created_at: string;
@@ -276,6 +283,149 @@ export interface PackageListResponse {
         hasMore: boolean;
     };
     message: string;
+}
+
+export interface ShipmentOwner {
+    id: string;
+    name: string;
+    phone_number: string;
+    qbox_id?: string;
+    home_owner_city?: string;
+}
+
+export interface ShipmentDriverDetails {
+    id: string;
+    name: string;
+    phone_number: string;
+}
+
+export interface ShipmentAssignedQrCode {
+    id: string;
+    tracking_id: string;
+    qr_type: string;
+    unique_token: string;
+    qr_code_id: string;
+    qr_code_image: string;
+    issued_at: string;
+    expires_at: string;
+}
+
+export interface ShipmentAttributes {
+    package_id: string;
+    package_weight: string;
+    package_category: string;
+    shipment_category: string;
+    item_value: number;
+    city: string;
+    description: string;
+}
+
+export interface ShipmentItem {
+    id: string;
+    tracking_id: string;
+    package_id: string;
+    merchant_name: string;
+    service_provider: string;
+    service_provider_name: string;
+    driver: string | null;
+    driver_details: ShipmentDriverDetails | null;
+    sender_home_owner: ShipmentOwner;
+    receiver_home_owner: ShipmentOwner;
+    sender_merchant: unknown | null;
+    pickup_address: unknown | null;
+    delivery_address: unknown | null;
+    description: string;
+    order_id: string;
+    package_type: string;
+    shipment_type: string;
+    outgoing_status: string;
+    shipment_status: string;
+    is_approved: boolean;
+    created_at: string;
+    last_update: string;
+    package_image: string;
+    attributes: ShipmentAttributes;
+    payment_summary: unknown | null;
+    assigned_qr_code: ShipmentAssignedQrCode[];
+}
+
+export interface ShipmentListResponse {
+    success: boolean;
+    statusCode: number;
+    data: {
+        items: ShipmentItem[];
+        total: number;
+        page: number;
+        limit: number;
+        hasMore: boolean;
+    };
+    message: string;
+}
+
+export interface ShipmentDetailHomeOwner {
+    type?: string;
+    home_owner_id?: string;
+    home_owner_name?: string;
+    home_owner_email?: string;
+    home_owner_phone?: string;
+    qbox_id?: string;
+    short_address?: string;
+    city?: string;
+    district?: string;
+    street?: string;
+    postal_code?: string;
+    building_number?: string;
+    additional_number?: string;
+    id?: string | null;
+    name?: string;
+    email?: string;
+    phone_number?: string;
+}
+
+export interface ShipmentDetailAssignedDriver {
+    id?: string;
+    full_name?: string;
+    email?: string;
+    phone_number?: string;
+}
+
+export interface ShipmentServiceProvider {
+    id?: string;
+    name?: string;
+    phone_number?: string;
+}
+
+export interface ShipmentDetailResponse {
+    tracking_id: string;
+    shipment_type?: string;
+    sender?: ShipmentDetailHomeOwner;
+    pickup_address?: Record<string, unknown> | null;
+    receiver_home_owner?: ShipmentDetailHomeOwner;
+    delivery_address?: Record<string, unknown> | null;
+    assign_driver?: ShipmentDetailAssignedDriver | null;
+    driver?: ShipmentDetailAssignedDriver | null;
+    assigned_qr_code?: ShipmentAssignedQrCode[];
+    qr_code?: string;
+    shipment_status?: string;
+    is_approved?: boolean;
+    last_update?: string;
+    created_at?: string;
+    package_id?: string;
+    package_weight?: string;
+    item_value?: string;
+    description?: string;
+    package_image?: string;
+    package_category?: string;
+    service_provider_name?: string;
+    service_provider?: ShipmentServiceProvider | null;
+    outgoing_status?: string;
+    return_pin_code?: string;
+    attributes?: Array<{ type: string; value: string }>;
+    payment_summary?: {
+        payment_method?: string;
+        charges?: Array<{ key: string; value: number }>;
+        currency?: string;
+    } | null;
 }
 
 export interface GetPackageDetailsResponse {
@@ -711,6 +861,42 @@ export interface AlertPayload {
 
 export interface VerifyShortAddressPayload {
     short_address: string;
+}
+
+export interface CreateRelocationRequestPayload {
+    home_owner_id: string;
+    qbox_id: string;
+    new_short_address: string;
+    installation: {
+        location_preference: string;
+        access_instruction: string;
+    };
+}
+
+export interface CreateRelocationRequestResponse {
+    success: boolean;
+    statusCode: number;
+    message: string;
+    data?: unknown;
+}
+
+export interface RelocationStatusData {
+    home_owner_id: string;
+    owner_id: string;
+    full_name: string;
+    has_relocation_request: boolean;
+    has_pending_request: boolean;
+    latest_status: string | null;
+    pending_status: string | null;
+    latest_request?: unknown;
+    pending_request?: unknown;
+}
+
+export interface RelocationStatusResponse {
+    success: boolean;
+    statusCode: number;
+    data: RelocationStatusData;
+    message: string;
 }
 
 export interface QBoxStreamsResponse {

@@ -6,10 +6,11 @@ import {
   TextInput,
 } from "@/components";
 import { Spacing } from "@/constants";
-import { useSignup } from "@/hooks";
+import { useLocale, useSignup } from "@/hooks";
 import { View } from "react-native";
 
 export const SignUp = () => {
+  const { t } = useLocale();
   const {
     currentStep,
     setCurrentStep,
@@ -34,17 +35,17 @@ export const SignUp = () => {
     <FormLayout
       title={
         currentStep === 1
-          ? "Basic Information"
+          ? t("basicInformation")
           : currentStep === 2
-            ? "Verify QBox"
-            : "Address"
+            ? t("verifyQBox")
+            : t("address")
       }
       description={
         currentStep === 1
-          ? "Let's begin with basic information."
+          ? t("basicInformation")
           : currentStep === 2
-            ? "Add serial number mentioned on the QBox."
-            : "Where should we install your QBox?"
+            ? t("verifyQBox")
+            : t("address")
       }
       currentStep={currentStep}
       totalSteps={3}
@@ -75,17 +76,16 @@ export const SignUp = () => {
             name="qBoxId"
             inputMode="text"
             control={control}
-            endButtonText={isQBoxVerified ? "Verified" : "Check"}
+            endButtonText={isQBoxVerified ? t("verified") : t("check")}
             onEndButtonClick={handleCheckQBox}
             endButtonProps={{
               disabled: isQBoxVerified || isQBoxChecking,
               loading: isQBoxChecking,
-              variant: isQBoxVerified ? "success" : "primary"
+              variant: isQBoxVerified ? "success" : "primary",
             }}
             autoCorrect={false}
             label="QBox ID"
             placeholder="Enter QBox ID"
-
           />
         ) : (
           <QBoxLocation

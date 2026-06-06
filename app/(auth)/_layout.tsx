@@ -1,19 +1,22 @@
 import { Stack } from "expo-router";
+import { useLocale } from "@/hooks";
 
 export const AuthLayout = () => {
+  const { t } = useLocale();
+
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
-          headerTitle: "Welcome",
+          headerTitle: t("welcome"),
           headerShown: false,
         }}
       />
       <Stack.Screen
         name="login"
         options={{
-          title: "Sign In",
+          title: t("signIn"),
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
@@ -22,7 +25,7 @@ export const AuthLayout = () => {
       <Stack.Screen
         name="signup"
         options={{
-          title: "Sign Up",
+          title: t("signUp"),
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
@@ -31,7 +34,7 @@ export const AuthLayout = () => {
       <Stack.Screen
         name="forgotPassword"
         options={{
-          title: "Forgot Password",
+          title: t("forgotPassword"),
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",
@@ -40,7 +43,7 @@ export const AuthLayout = () => {
       <Stack.Screen
         name="resetPassword"
         options={{
-          title: "Reset Password",
+          title: t("createSecurePassword"),
           headerShadowVisible: false,
           headerBackButtonDisplayMode: "minimal",
           headerTitleAlign: "left",

@@ -1,65 +1,35 @@
 import { Text } from "@/components";
+import { useLocale } from "@/hooks";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import {
-  Modal,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { DatePickerModalProps } from "./props";
 
-export const DatePickerModal = ({
-  visible,
-  date,
-  onClose,
-  onChange,
-}: DatePickerModalProps) => {
+export const DatePickerModal = ({ visible, date, onClose, onChange }: DatePickerModalProps) => {
+  const { t } = useLocale();
+
   if (Platform.OS === "ios") {
     return (
-      <Modal
-        transparent={true}
-        animationType="slide"
-        visible={visible}
-        onRequestClose={onClose}
-      >
+      <Modal transparent animationType="slide" visible={visible} onRequestClose={onClose}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={onClose}>
-                <Text style={styles.modalButton}>Cancel</Text>
+                <Text style={styles.modalButton}>{t("cancel")}</Text>
               </TouchableOpacity>
-              <Text style={styles.modalTitle}>Select Date</Text>
+              <Text style={styles.modalTitle}>{t("selectDate")}</Text>
               <TouchableOpacity onPress={onClose}>
-                <Text style={[styles.modalButton, styles.doneButton]}>
-                  Done
-                </Text>
+                <Text style={[styles.modalButton, styles.doneButton]}>{t("done")}</Text>
               </TouchableOpacity>
             </View>
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="spinner"
-              onChange={onChange}
-              maximumDate={new Date()}
-            />
+            <DateTimePicker value={date} mode="date" display="spinner" onChange={onChange} maximumDate={new Date()} />
           </View>
         </View>
       </Modal>
     );
   }
 
-  // Android
   if (visible) {
-    return (
-      <DateTimePicker
-        value={date}
-        mode="date"
-        display="default"
-        onChange={onChange}
-        maximumDate={new Date()}
-      />
-    );
+    return <DateTimePicker value={date} mode="date" display="default" onChange={onChange} maximumDate={new Date()} />;
   }
 
   return null;

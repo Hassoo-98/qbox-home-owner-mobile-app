@@ -1,13 +1,13 @@
 import { Text, TextInput } from "@/components/ui";
 import { CustomDropdown } from "@/components/ui/Dropdown";
 import { Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { QBoxLocationProps } from "./props";
-
 
 export const QBoxLocation = ({
   control,
@@ -17,14 +17,19 @@ export const QBoxLocation = ({
   handleCheckShortAddress,
   isShortAddressVerified,
   isShortAddressChecking,
+  readonlyFields = false,
+  installationEditable = true,
+  accessInstructionEditable = true,
 }: QBoxLocationProps) => {
+  const { t } = useLocale();
+
   return (
     <View>
       <TextInput
         name="shortId"
         inputMode="text"
         control={control}
-        endButtonText={isShortAddressVerified ? "Verified" : "Verify"}
+        endButtonText={isShortAddressVerified ? t("verified") : t("verify")}
         onEndButtonClick={() => handleCheckShortAddress(getValues("shortId"))}
         endButtonProps={{
           disabled: isShortAddressVerified || isShortAddressChecking,
@@ -32,94 +37,94 @@ export const QBoxLocation = ({
           variant: isShortAddressVerified ? "success" : "primary",
         }}
         autoCorrect={false}
-        label="Short Address"
+        label={t("shortAddress")}
         placeholder="XXXXXXXXX"
       />
 
-      {/* City */}
       <TextInput
         name="city"
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="City (Optional)"
-        placeholder="Enter city"
+        label={t("cityOptional")}
+        placeholder={t("cityOptional")}
+        editable={!readonlyFields}
       />
 
-      {/* District */}
       <TextInput
         name="district"
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="District (Optional)"
-        placeholder="Enter District"
+        label={t("districtOptional")}
+        placeholder={t("districtOptional")}
+        editable={!readonlyFields}
       />
 
-      {/* Street */}
       <TextInput
         name="street"
         inputMode="text"
         control={control}
         autoCorrect={false}
-        label="Street (Optional)"
-        placeholder="Enter Street Address"
+        label={t("streetOptional")}
+        placeholder={t("streetOptional")}
+        editable={!readonlyFields}
       />
 
-      {/* Postal Code */}
       <TextInput
         name="postalCode"
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Postal Code (Optional)"
+        label={t("postalCodeOptional")}
         placeholder="XXXXX"
+        editable={!readonlyFields}
       />
 
-      {/* Building Number */}
       <TextInput
         name="buildingNumber"
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Building Number (Optional)"
+        label={t("buildingNumberOptional")}
         placeholder="XXXX"
+        editable={!readonlyFields}
       />
 
-      {/* Secondary Number */}
       <TextInput
         name="secondaryNumber"
         inputMode="numeric"
         control={control}
         autoCorrect={false}
-        label="Secondary Number (Optional)"
+        label={t("secondaryNumberOptional")}
         placeholder="XXXX"
+        editable={!readonlyFields}
       />
 
       <CustomDropdown
         name="installationLocation"
         control={control}
-        label="Preferred Installation Location"
-        placeholder="Select location"
+        label={t("preferredInstallationLocation")}
+        placeholder={t("selectLocation")}
+        disabled={!installationEditable}
         options={[
-          { label: "Main Door", value: "mainDoor" },
-          { label: "Gate", value: "gate" },
-          { label: "Building Entrance", value: "entrance" },
+          { label: t("mainDoor"), value: "mainDoor" },
+          { label: t("gate"), value: "gate" },
+          { label: t("buildingEntrance"), value: "entrance" },
         ]}
       />
 
-      {/* Access Instruction */}
       <TextInput
         name="accessInstruction"
         inputMode="text"
         control={control}
-        label="Access Instruction"
-        placeholder="Explain where you want us to install your QBox."
+        label={t("accessInstruction")}
+        placeholder={t("placeQBoxInFront")}
         multiline
         numberOfLines={4}
+        editable={accessInstructionEditable}
       />
 
-      {/* QBox Image Upload */}
       <View style={{ marginBottom: Spacing.lg }}>
         <View
           style={{
@@ -130,13 +135,13 @@ export const QBoxLocation = ({
           }}
         >
           <Text size="sm" style={{ fontWeight: "500" }}>
-            QBox Image
+            {t("qboxImage")}
           </Text>
           <Ionicons name="information-circle-outline" size={18} color="#666" />
         </View>
 
         <TouchableOpacity
-          onPress={pickImage}
+          onPress={readonlyFields ? undefined : pickImage}
           activeOpacity={0.7}
           style={{
             borderWidth: 1,
@@ -146,6 +151,7 @@ export const QBoxLocation = ({
             padding: Spacing.md,
             backgroundColor: "#FFFFFF",
             minHeight: qboxImage ? 150 : 80,
+            opacity: readonlyFields ? 0.75 : 1,
           }}
         >
           {qboxImage ? (
@@ -160,24 +166,13 @@ export const QBoxLocation = ({
                 }}
                 resizeMode="cover"
               />
-              <Text
-                size="xs"
-                variant="secondary"
-                style={{ textAlign: "center" }}
-              >
-                Tap to change image
+              <Text size="xs" variant="secondary" style={{ textAlign: "center" }}>
+                {t("tapToChangeImage")}
               </Text>
             </View>
           ) : (
-            <Text
-              size="xs"
-              variant="secondary"
-              style={{
-                lineHeight: 20,
-              }}
-            >
-              Place QBox Infront of your main door. Take the picture & upload it
-              over here.
+            <Text size="xs" variant="secondary" style={{ lineHeight: 20 }}>
+              {t("placeQBoxInFront")}
             </Text>
           )}
         </TouchableOpacity>

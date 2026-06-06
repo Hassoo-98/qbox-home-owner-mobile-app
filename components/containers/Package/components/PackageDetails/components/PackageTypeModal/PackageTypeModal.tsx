@@ -1,6 +1,7 @@
 import { ReturnPackageIcon, SendPackageIcon } from "@/assets/icons";
 import { Button, Card, Text } from "@/components";
 import { Colors } from "@/constants";
+import { useLocale } from "@/hooks";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { BlurView } from "expo-blur";
 import { useState } from "react";
@@ -19,6 +20,7 @@ export const PackageTypeModal = ({
   onClose,
   onConfirm,
 }: PackageTypeModalProps) => {
+  const { t } = useLocale();
   const [selectedType, setSelectedType] = useState<"send" | "return" | null>(
     null
   );
@@ -59,7 +61,7 @@ export const PackageTypeModal = ({
             {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle} variant="default">
-                Choose Package Type
+                {t("choosePackageType")}
               </Text>
               <TouchableOpacity
                 onPress={handleClose}
@@ -71,7 +73,7 @@ export const PackageTypeModal = ({
 
             {/* Description */}
             <Text variant="secondary" size="sm" style={styles.description}>
-              Select one of the options below to proceed further.
+              {t("selectOneOfOptionsBelowToProceedFurther")}
             </Text>
 
             {/* Options */}
@@ -82,7 +84,7 @@ export const PackageTypeModal = ({
                     color={selectedType === "send" ? Colors.white : Colors.dark}
                   />
                 }
-                label="Send Package"
+                label={t("sendPackage")}
                 isSelected={selectedType === "send"}
                 onPress={() => handlePackageTypeSelect("send")}
               />
@@ -95,7 +97,7 @@ export const PackageTypeModal = ({
                     }
                   />
                 }
-                label="Return Package"
+                label={t("returnPackage")}
                 isSelected={selectedType === "return"}
                 onPress={() => handlePackageTypeSelect("return")}
               />
@@ -103,7 +105,7 @@ export const PackageTypeModal = ({
 
             {/* Confirm Button */}
             <Button
-              title="Confirm"
+              title={t("confirm")}
               disabled={!selectedType}
               onPress={handleConfirm}
             />

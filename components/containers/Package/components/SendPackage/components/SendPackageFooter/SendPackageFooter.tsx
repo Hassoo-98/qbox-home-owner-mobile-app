@@ -1,6 +1,7 @@
 import { WarningIconOutline } from "@/assets/icons";
 import { Button, Text } from "@/components/ui";
 import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import React from "react";
 import { View } from "react-native";
@@ -14,11 +15,12 @@ export const SendPackageFooter = ({
   isQBoxVerified,
   validateStep,
 }: SendPackageFooterProps) => {
+  const { t } = useLocale();
   const packageGuidelines = [
-    "Maximum weight: 5kg",
-    "Fragile items must be properly packaged",
-    "Upload image for the prepared package.",
-    "No perishable food items for long-distance delivery",
+    t("packageGuidelineMaxWeight"),
+    t("packageGuidelineFragile"),
+    t("packageGuidelineImage"),
+    t("packageGuidelinePerishable"),
   ];
 
   return (
@@ -39,7 +41,7 @@ export const SendPackageFooter = ({
         }}
       >
         <Button
-          title="Previous"
+          title={t("previous")}
           disabled={currentStep === 1}
           variant="default"
           onPress={() => {
@@ -47,15 +49,11 @@ export const SendPackageFooter = ({
           }}
         />
         <Button
-          title={currentStep === 3 ? "Submit" : "Next"}
+          title={currentStep === 3 ? t("submit") : t("next")}
           disabled={currentStep === 1 && !isQBoxVerified}
           onPress={async () => {
-            console.log("current step: ", currentStep);
-
             const canProceed = await validateStep(currentStep);
-            if (!canProceed) {
-              return;
-            }
+            if (!canProceed) return;
 
             switch (currentStep) {
               case 1:
@@ -88,23 +86,16 @@ export const SendPackageFooter = ({
           <WarningIconOutline width={20} height={20} />
 
           <View style={{ flex: 1, flexShrink: 1 }}>
-            <Text
-              size="sm"
-              variant="warning"
-              style={{ fontWeight: "bold" }}
-              numberOfLines={undefined}
-            >
-              Package Guidelines
+            <Text size="sm" variant="warning" style={{ fontWeight: "bold" }}>
+              {t("packageGuidelines")}
             </Text>
-            {packageGuidelines.map((item, index) => {
-              return (
-                <View key={index}>
-                  <Text size="sm" variant="warning" numberOfLines={undefined}>
-                    {item}
-                  </Text>
-                </View>
-              );
-            })}
+            {packageGuidelines.map((item, index) => (
+              <View key={index}>
+                <Text size="sm" variant="warning">
+                  {item}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
       )}

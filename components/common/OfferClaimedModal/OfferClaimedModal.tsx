@@ -1,5 +1,6 @@
 import { Text } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -20,6 +21,8 @@ export const OfferClaimedModal = ({
   serviceProvider,
   expiryDate,
 }: OfferClaimedModalProps) => {
+  const { t } = useLocale();
+
   return (
     <RNModal
       visible={isOpen}
@@ -39,10 +42,10 @@ export const OfferClaimedModal = ({
 
           {/* Title */}
           <Text variant="primary" bold size="lg" style={styles.title}>
-            Offer Claimed Successfully!
+            {t("offerClaimedSuccessfully")}
           </Text>
           <Text variant="secondary" size="sm" style={styles.subtitle}>
-            Your promotion code has been activated.
+            {t("promotionActivated")}
           </Text>
 
           {/* Gift Icon */}
@@ -52,12 +55,12 @@ export const OfferClaimedModal = ({
 
           {/* Promotion Summary */}
           <Text variant="primary" bold size="md" style={styles.summaryTitle}>
-            Promotion Summary
+            {t("promotionSummary")}
           </Text>
           <View style={styles.summaryContainer}>
             <View style={styles.summaryRow}>
               <Text variant="secondary" size="sm">
-                Promotion Code
+                {t("promoCode")}
               </Text>
               <Text variant="primary" size="sm" bold>
                 {promotionCode}
@@ -65,7 +68,7 @@ export const OfferClaimedModal = ({
             </View>
             <View style={styles.summaryRow}>
               <Text variant="secondary" size="sm">
-                Discount
+                {t("discount")}
               </Text>
               <Text variant="primary" size="sm" bold>
                 {discount}
@@ -73,7 +76,7 @@ export const OfferClaimedModal = ({
             </View>
             <View style={styles.summaryRow}>
               <Text variant="secondary" size="sm">
-                Service Provider
+                {t("serviceProvider")}
               </Text>
               <Text variant="primary" size="sm" bold>
                 {serviceProvider}
@@ -81,7 +84,7 @@ export const OfferClaimedModal = ({
             </View>
             <View style={styles.summaryRow}>
               <Text variant="secondary" size="sm">
-                Expiry Date
+                {t("expiryDate")}
               </Text>
               <Text variant="primary" size="sm" bold>
                 {expiryDate}
@@ -97,7 +100,7 @@ export const OfferClaimedModal = ({
               color={Colors.secondary}
             />
             <Text variant="secondary" size="xs" style={styles.infoText}>
-              The discount will be applied automatically at checkout.
+              {t("theDiscountWillBeAppliedAutomaticallyAtCheckout")}
             </Text>
           </View>
         </Pressable>

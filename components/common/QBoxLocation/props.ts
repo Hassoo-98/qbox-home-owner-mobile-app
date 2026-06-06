@@ -8,4 +8,7 @@ export interface QBoxLocationProps {
   handleCheckShortAddress: (short_address: string) => void;
   isShortAddressVerified: boolean;
   isShortAddressChecking: boolean;
+  readonlyFields?: boolean;
+  installationEditable?: boolean;
+  accessInstructionEditable?: boolean;
 }

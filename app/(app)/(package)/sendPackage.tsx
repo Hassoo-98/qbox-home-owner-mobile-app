@@ -5,11 +5,12 @@ import {
   RecipientInformation,
   SendPackageFooter,
 } from "@/components";
-import { useSendPackage } from "@/hooks";
+import { useLocale, useSendPackage } from "@/hooks";
 import { View } from "react-native";
 import { styles } from "./form.styles";
 
 export const SendPackage = () => {
+  const { t } = useLocale();
   const {
     currentStep,
     setCurrentStep,
@@ -32,12 +33,12 @@ export const SendPackage = () => {
     <FormLayout
       title={
         currentStep === 1
-          ? "Recipient Information"
+          ? t("recipientInformation")
           : currentStep === 2
-            ? "Package Information "
-            : "Delivery Information "
+            ? t("packageInformation")
+            : t("deliveryInformation")
       }
-      description={"Let’s begin with basic information. "}
+      description={t("basicInformation")}
       currentStep={currentStep}
       totalSteps={3}
       stepperStyle={styles.stepper}

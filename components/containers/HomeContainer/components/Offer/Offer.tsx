@@ -1,13 +1,13 @@
 import { Button, Card, OfferProps, Text } from "@/components";
+import { useLocale } from "@/hooks";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useState } from "react";
 import { Dimensions, View } from "react-native";
 import { styles } from "./styles";
 
 export const Offer = ({ item }: OfferProps) => {
+  const { t } = useLocale();
   const { width: screenWidth } = Dimensions.get("window");
-  const [imageError, setImageError] = useState(false);
   const fallbackImage = require("@/assets/images/offer.jpg");
 
   const handleClaimOffer = () => {
@@ -24,7 +24,6 @@ export const Offer = ({ item }: OfferProps) => {
     >
       <Image
         source={fallbackImage}
-        onError={() => setImageError(true)}
         style={[styles.image, { width: screenWidth - 32 }]}
         contentFit="cover"
       />
@@ -38,7 +37,7 @@ export const Offer = ({ item }: OfferProps) => {
           </Text>
         </View>
         <Button
-          title="Claim Offer"
+          title={t("claimOffer")}
           size="xs"
           style={styles.button}
           onPress={handleClaimOffer}

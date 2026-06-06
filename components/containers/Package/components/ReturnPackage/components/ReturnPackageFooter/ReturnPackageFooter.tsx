@@ -1,6 +1,7 @@
 import { WarningIconOutline } from "@/assets/icons";
 import { Button, Text } from "@/components/ui";
 import { Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -14,16 +15,16 @@ export const ReturnPackageFooter = ({
   onSubmit,
   isPending,
 }: ReturnPackageFooterProps) => {
+  const { t } = useLocale();
+
   const packageGuidelines = [
-    "Maximum weight: 5kg",
-    "Fragile items must be properly packaged",
-    "Upload image for the prepared package.",
-    "No perishable food items for long-distance delivery",
+    t("packageGuidelineMaxWeight"),
+    t("packageGuidelineFragile"),
+    t("packageGuidelineImage"),
+    t("packageGuidelinePerishable"),
   ];
 
-  const pinCodeInstruction = [
-    "For pin code, open the delivered package which you want to return, and enter the pin code added by the owner.",
-  ];
+  const pinCodeInstruction = [t("pinCodeInstruction")];
 
   return (
     <View>
@@ -43,7 +44,7 @@ export const ReturnPackageFooter = ({
         }}
       >
         <Button
-          title="Previous"
+          title={t("previous")}
           disabled={currentStep === 1}
           variant="default"
           onPress={() => {
@@ -51,11 +52,10 @@ export const ReturnPackageFooter = ({
           }}
         />
         <Button
-          title={currentStep === 2 ? (isPending ? "Loading..." : "Confirm") : "Next"}
+          title={currentStep === 2 ? (isPending ? t("loading") : t("confirm")) : t("next")}
           disabled={!isFormValid || isPending}
-          loading={isPending} // assuming Button supports loading
+          loading={isPending}
           onPress={() => {
-            console.log("current step: ", currentStep);
             switch (currentStep) {
               case 1:
                 setCurrentStep((prev) => ++prev);
@@ -77,38 +77,22 @@ export const ReturnPackageFooter = ({
             borderRadius: Spacing.sm,
             flexDirection: "row",
             gap: Spacing.sm,
-            alignItems: "flex-start", // Important: align to top, not center
+            alignItems: "flex-start",
           }}
         >
-          <Ionicons
-            name="information-circle-outline"
-            size={24}
-            color={Colors.successDark}
-          />
+          <Ionicons name="information-circle-outline" size={24} color={Colors.successDark} />
 
-          {/* Wrap text content in a flexible container */}
           <View style={{ flex: 1, flexShrink: 1 }}>
-            <Text
-              size="sm"
-              color={Colors.successDark}
-              style={{ fontWeight: "bold" }}
-              numberOfLines={undefined} // Allow unlimited lines
-            >
-              PIN Code
+            <Text size="sm" color={Colors.successDark} style={{ fontWeight: "bold" }}>
+              {t("pinCode")}
             </Text>
-            {pinCodeInstruction.map((item, index) => {
-              return (
-                <View key={index}>
-                  <Text
-                    size="sm"
-                    color={Colors.successDark}
-                    numberOfLines={undefined}
-                  >
-                    {item}
-                  </Text>
-                </View>
-              );
-            })}
+            {pinCodeInstruction.map((item, index) => (
+              <View key={index}>
+                <Text size="sm" color={Colors.successDark}>
+                  {item}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
       )}
@@ -122,30 +106,21 @@ export const ReturnPackageFooter = ({
             borderRadius: Spacing.sm,
             flexDirection: "row",
             gap: Spacing.sm,
-            alignItems: "flex-start", // Important: align to top, not center
+            alignItems: "flex-start",
           }}
         >
           <WarningIconOutline width={20} height={20} />
-
-          {/* Wrap text content in a flexible container */}
           <View style={{ flex: 1, flexShrink: 1 }}>
-            <Text
-              size="sm"
-              variant="warning"
-              style={{ fontWeight: "bold" }}
-              numberOfLines={undefined} // Allow unlimited lines
-            >
-              Package Guidelines
+            <Text size="sm" variant="warning" style={{ fontWeight: "bold" }}>
+              {t("packageGuidelines")}
             </Text>
-            {packageGuidelines.map((item, index) => {
-              return (
-                <View key={index}>
-                  <Text size="sm" variant="warning" numberOfLines={undefined}>
-                    {item}
-                  </Text>
-                </View>
-              );
-            })}
+            {packageGuidelines.map((item, index) => (
+              <View key={index}>
+                <Text size="sm" variant="warning">
+                  {item}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
       )}

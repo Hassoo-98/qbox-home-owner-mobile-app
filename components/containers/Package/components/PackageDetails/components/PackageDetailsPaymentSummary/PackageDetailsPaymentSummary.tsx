@@ -8,6 +8,12 @@ import { styles } from "./style";
 export const PackageDetailsPaymentSummary = ({
   paymentSummary,
 }: PackageDetailsPaymentSummaryProps) => {
+  const formatChargeLabel = (label: string) => {
+    return label
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   const total = useMemo(() => {
     if (typeof paymentSummary.charges === "number") {
       return paymentSummary.charges;
@@ -31,7 +37,7 @@ export const PackageDetailsPaymentSummary = ({
       {Array.isArray(paymentSummary.charges) ? (
         paymentSummary.charges.map((item: any, index: number) => (
           <View key={`charge-${index}`} style={styles.summaryRow}>
-            <Text>{item.key}</Text>
+            <Text>{formatChargeLabel(item.key)}</Text>
             <Text>{`${currency} ${item.value}`}</Text>
           </View>
         ))

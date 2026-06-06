@@ -1,4 +1,5 @@
 import { PhoneNumberInput, TextInput } from "@/components/ui";
+import { useLocale } from "@/hooks";
 import React from "react";
 import { View } from "react-native";
 import { RecipientInformationProps } from "./props";
@@ -9,6 +10,8 @@ export const RecipientInformation = ({
   isVerifyingQBox,
   isQBoxVerified,
 }: RecipientInformationProps) => {
+  const { t } = useLocale();
+
   return (
     <View>
       <TextInput
@@ -17,9 +20,9 @@ export const RecipientInformation = ({
         control={control}
         autoCapitalize="words"
         autoCorrect={false}
-        label="Full Name"
+        label={t("fullName")}
         autoComplete="name"
-        placeholder="Enter your full name"
+        placeholder={t("enterFullName")}
         editable={false}
       />
       <TextInput
@@ -28,15 +31,15 @@ export const RecipientInformation = ({
         control={control}
         autoCapitalize="none"
         autoComplete="email"
-        label="Email Address"
+        label={t("emailAddress")}
         keyboardType="email-address"
-        placeholder="Enter email address"
+        placeholder={t("enterEmailAddress")}
         editable={false}
       />
       <PhoneNumberInput
         name="phone"
         control={control}
-        label="Phone Number"
+        label={t("phoneNumber")}
         placeholder="+966 XX XXX XXXX"
         defaultCode="PK"
         disableCountryPicker
@@ -50,7 +53,7 @@ export const RecipientInformation = ({
         label="QBox ID"
         placeholder="XXXXXX"
         autoCapitalize="characters"
-        endButtonText={isQBoxVerified ? "Verified" : "Verify"}
+        endButtonText={isQBoxVerified ? t("verified") : t("verify")}
         onEndButtonClick={onVerifyQBox}
         endButtonProps={{
           size: "sm",

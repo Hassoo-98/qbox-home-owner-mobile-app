@@ -10,4 +10,7 @@ export interface QRSettingProps {
   boxId: string;
   address: string;
   image: string;
+  qrCodeImage: string;
+  qrCodeName: string;
+  onCopyQrCode: () => void;
 }

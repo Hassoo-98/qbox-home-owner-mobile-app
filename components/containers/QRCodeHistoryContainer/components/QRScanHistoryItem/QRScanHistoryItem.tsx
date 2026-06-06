@@ -1,6 +1,7 @@
 import { RecordingIcon } from "@/assets/icons";
 import { Button, Card, Chip, Text, VideoRecording } from "@/components";
 import { BorderRadius, Colors, Spacing } from "@/constants";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { format } from "date-fns";
 import { useVideoPlayer } from "expo-video";
@@ -9,6 +10,7 @@ import { Modal, StyleSheet, View } from "react-native";
 import { QRScanHistoryItemProps } from "./props";
 
 export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
+  const { t } = useLocale();
   const [modalVisible, setModalVisible] = useState(false);
 
   const videoSource = item.videoUrl;
@@ -17,14 +19,6 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
     player.loop = false;
     player.muted = false;
   });
-
-  const handleShare = () => {
-    console.log("Share recording");
-  };
-
-  const handleDownload = () => {
-    console.log("Download recording");
-  };
 
   const handleCloseModal = () => {
     if (player) {
@@ -55,11 +49,11 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
           }}
         >
           <Text style={{ fontWeight: "bold" }}>
-            {item?.qrCodeScanUser || "Unknown "}
+            {item?.qrCodeScanUser || t("unknown")}
           </Text>
           <Chip
             variant={item.status === "success" ? "success" : "error"}
-            label={item.status === "success" ? "Success" : "Failed"}
+            label={item.status === "success" ? t("success") : t("failed")}
             size="small"
           />
         </View>
@@ -74,7 +68,7 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
                 }}
               >
                 <Text size="md" variant="secondary">
-                  Locker Opened
+                  {t("lockerOpened")}
                 </Text>
                 <Text size="md" variant="secondary">
                   {format(item?.openedAt, "Pp")}
@@ -87,7 +81,7 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
                 }}
               >
                 <Text size="md" variant="secondary">
-                  Locker Closed
+                  {t("lockerClosed")}
                 </Text>
                 <Text size="md" variant="secondary">
                   {format(item?.closedAt, "Pp")}
@@ -97,7 +91,7 @@ export const QRScanHistoryItem = ({ item }: QRScanHistoryItemProps) => {
 
             {/* View Recording Button */}
             <Button
-              title="View Recording"
+              title={t("viewRecording")}
               textStyle={{ color: Colors.primary }}
               icon={<RecordingIcon width={24} height={24} />}
               style={{
