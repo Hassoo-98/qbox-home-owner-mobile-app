@@ -13,12 +13,14 @@ import {
   Spacing
 } from "@/constants";
 import { useQRCodeDetails, useQRScans } from "@/hooks/api/useQRQueries";
+import { useLocale } from "@/hooks";
 import { mvs } from "@/utils/metrices";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
 export const QRCodeDetails = () => {
+  const { t } = useLocale();
   const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
 
@@ -26,7 +28,9 @@ export const QRCodeDetails = () => {
   const qrCodeData = qrResponse?.data;
   const { data: qrScansData, isLoading: scansLoading } = useQRScans();
 
-  const qrCodeDescription = qrCodeData ? `Valid for ${qrCodeData.max_users} user${qrCodeData.max_users > 1 ? "s" : ""}, ${qrCodeData.valid_duration} ${qrCodeData.duration_type}` : "";
+  const qrCodeDescription = qrCodeData
+    ? `${t("validFor")} ${qrCodeData.max_users} ${t("users")}, ${qrCodeData.valid_duration} ${qrCodeData.duration_type}`
+    : "";
 
   useLayoutEffect(() => {
     if (qrCodeData) {
@@ -37,25 +41,25 @@ export const QRCodeDetails = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
+              flex: 1,
+              gap: mvs(Spacing.sm),
             }}
           >
             <AppHeaderLeft canGoBack />
-            <AppHeaderTitle
-              title={qrCodeData.name || `QR #${qrCodeData.id}`}
-              customStyle={{
-                width: "52%",
-                justifyContent: "flex-end",
-                alignItems: "flex-end",
-              }}
-            />
-            <View>
-              <Text> </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: mvs(Spacing.sm), flexShrink: 1 }}>
+              <AppHeaderTitle
+                title={qrCodeData.name || `QR #${qrCodeData.id}`}
+                customStyle={{
+                  flexShrink: 1,
+                  marginLeft: 0,
+                }}
+              />
+              <Chip
+                label={qrCodeData.status === "Active" ? t("active") : t("inactive")}
+                size="small"
+                variant={qrCodeData.status === "Active" ? "success" : "error"}
+              />
             </View>
-            <Chip
-              label={qrCodeData.status}
-              size="small"
-              variant={qrCodeData.status === "Active" ? "success" : "error"}
-            />
           </View>
         ),
         headerRight: () => {
@@ -68,7 +72,7 @@ export const QRCodeDetails = () => {
         },
       });
     }
-  }, [qrCodeData, navigation]);
+  }, [qrCodeData, navigation, t]);
 
   // If we have NO data and we are loading, show full skeleton
   if (detailsLoading && !qrCodeData) {
@@ -94,7 +98,7 @@ export const QRCodeDetails = () => {
   if (!qrCodeData) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>QR Code not found</Text>
+        <Text>{t("qrCodeNotFound")}</Text>
       </View>
     );
   }
@@ -133,7 +137,7 @@ export const QRCodeDetails = () => {
           </View>
         ) : (
           <Text style={{ textAlign: "center", marginTop: mvs(Spacing.xl), opacity: 0.5 }}>
-            No scan history found
+            {t("noScanHistoryFound")}
           </Text>
         )
       }
