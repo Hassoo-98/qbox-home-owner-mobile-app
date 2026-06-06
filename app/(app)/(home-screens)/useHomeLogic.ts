@@ -10,10 +10,26 @@ import { useForm } from "react-hook-form";
 
 import { useHomeOwner } from "@/hooks/useHomeOwner";
 
+const BACKEND_URL = "https://backend.qbox.sa";
+
+const resolveBackendUrl = (path?: string | null) => {
+    if (!path) {
+        return "";
+    }
+
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        return path;
+    }
+
+    return `${BACKEND_URL}${path}`;
+};
+
 export const useHomeLogic = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
+    const [qrCodeImage, setQrCodeImage] = useState("");
+    const [qrCodeName, setQrCodeName] = useState("");
 
     const { data: offersData, isLoading: offersLoading, error: offersError } = useOffers();
     const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
@@ -21,7 +37,7 @@ export const useHomeLogic = () => {
 
     const createQRMutation = useCreateQRCode();
     const queryClient = useQueryClient();
-    const { onShare } = useShare();
+    const { copyToClipboard } = useShare();
 
     const defaultFormValues: QRGenerationFormValues = {
         qrName: "",
@@ -38,7 +54,11 @@ export const useHomeLogic = () => {
     const handleGenerateQR = handleSubmit(
         async (data: QRGenerationFormValues) => {
             if (isQrCodeGenerated) {
-                return onShare("QR Code generated", "https://myqbox.com/status/123");
+                if (qrCodeImage) {
+                    return copyToClipboard(qrCodeImage, "QR code URL copied");
+                }
+
+                return;
             }
 
             setIsGenerating(true);
@@ -54,7 +74,9 @@ export const useHomeLogic = () => {
                     name: data.qrName || "qrcode",
                 };
 
-                await createQRMutation.mutateAsync(payload);
+                const response = await createQRMutation.mutateAsync(payload);
+                setQrCodeImage(resolveBackendUrl(response?.data?.qr_code_image));
+                setQrCodeName(response?.data?.name || data.qrName || "qrcode");
 
                 // Refresh home owner data to get the latest QR image
                 queryClient.invalidateQueries({ queryKey: ['homeOwner'] });
@@ -76,6 +98,8 @@ export const useHomeLogic = () => {
     const resetForm = () => {
         reset(defaultFormValues);
         setIsQrCodeGenerated(false);
+        setQrCodeImage("");
+        setQrCodeName("");
     };
 
     return {
@@ -85,6 +109,13 @@ export const useHomeLogic = () => {
         isGenerating,
         showSuccess,
         isQrCodeGenerated,
+        qrCodeImage,
+        qrCodeName,
+        onCopyQrCode: () => {
+            if (qrCodeImage) {
+                return copyToClipboard(qrCodeImage, "QR code URL copied");
+            }
+        },
         control,
         handleGenerateQR,
         resetForm,
