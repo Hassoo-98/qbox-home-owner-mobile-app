@@ -1,15 +1,14 @@
 import { Send } from "@/assets/icons";
 import { EmptyState, PackageItemSkeleton, PackageList, PackageTypeModal, SegmentedControl } from "@/components";
-import {
-  Colors,
-  PACKAGES_OPTIONS,
-} from "@/constants";
+import { Colors, PACKAGE_TYPE } from "@/constants";
+import { useLocale } from "@/hooks";
 import React from "react";
 import { FlatList, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 import { usePackageLogic } from "./usePackageLogic";
 
 export const Package = () => {
+  const { t } = useLocale();
   const {
     selectedPackageType,
     searchId,
@@ -25,7 +24,11 @@ export const Package = () => {
   return (
     <View style={styles.container}>
       <SegmentedControl
-        options={PACKAGES_OPTIONS}
+        options={[
+          { label: t("incoming"), value: PACKAGE_TYPE.INCOMING },
+          { label: t("outgoing"), value: PACKAGE_TYPE.OUTGOING },
+          { label: t("delivered"), value: PACKAGE_TYPE.DELIVERED },
+        ]}
         style={styles.segmentedControl}
         onChange={handlePackageTypeChange}
         value={selectedPackageType}
@@ -36,7 +39,7 @@ export const Package = () => {
         placeholderTextColor={Colors.secondaryText}
         value={searchId}
         onChangeText={setSearchId}
-        placeholder="Search by tracking ID"
+        placeholder={t("searchByTrackingId")}
       />
 
       {isLoading ? (
@@ -48,7 +51,7 @@ export const Package = () => {
         />
       ) : !filteredPackages || filteredPackages.length === 0 ? (
         <EmptyState
-          title="No Shipments Found"
+          title={t("noShipmentsFound")}
           description="Your shipments will appear here once they are processed."
           iconName="cube-outline"
         />
