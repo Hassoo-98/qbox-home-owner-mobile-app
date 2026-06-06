@@ -1,5 +1,6 @@
 import { BoxInfo, BoxInfoSkeleton, Offer, OfferSkeleton, QRSetting, QRSettingSkeleton, Text } from "@/components";
 import { Colors } from "@/constants";
+import { useLocale } from "@/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import {
@@ -14,13 +15,16 @@ import { styles } from "./styles";
 import { useHomeLogic } from "./useHomeLogic";
 
 export const Home = () => {
+  const { t } = useLocale();
   const {
     offersData,
-    offersLoading,
     offersError,
     isGenerating,
     showSuccess,
     isQrCodeGenerated,
+    qrCodeImage,
+    qrCodeName,
+    onCopyQrCode,
     control,
     handleGenerateQR,
     resetForm,
@@ -34,7 +38,7 @@ export const Home = () => {
   const offers = Array.isArray(offersData) ? offersData : [];
 
   // Render loading state
-  if (homeOwnerLoading || isGenerating) {
+  if (homeOwnerLoading) {
     return (
       <ScrollView
         style={styles.container}
@@ -79,7 +83,7 @@ export const Home = () => {
       >
         <BoxInfo
           boxId={homeOwner?.qboxes?.[0]?.qbox_id || "QB-10089912"}
-          address={homeOwner?.address?.short_address || "No Address"}
+          address={homeOwner?.address?.short_address || t("address")}
           packageCount={0} // Placeholder until package API is integrated
           status={homeOwner?.qboxes?.[0]?.status || "Offline"}
         />
@@ -95,13 +99,16 @@ export const Home = () => {
         }
         <QRSetting
           boxId={homeOwner?.qboxes?.[0]?.qbox_id || "QB-10089912"}
-          address={homeOwner?.address?.short_address || "No Address"}
+          address={homeOwner?.address?.short_address || t("address")}
           image={homeOwner?.installation?.qbox_image_url || ""}
           isGenerating={isGenerating}
           resetForm={resetForm}
           control={control}
           onGenerateQR={handleGenerateQR}
+          onCopyQrCode={onCopyQrCode}
           isQrCodeGenerated={isQrCodeGenerated}
+          qrCodeImage={qrCodeImage}
+          qrCodeName={qrCodeName}
         />
 
       </ScrollView>
@@ -118,7 +125,7 @@ export const Home = () => {
               size={25}
               color={Colors.success}
             />
-            <Text style={styles.successTitle}>QR Code generated!</Text>
+            <Text style={styles.successTitle}>QR code created!</Text>
           </View>
         </BlurView>
       </Modal>
