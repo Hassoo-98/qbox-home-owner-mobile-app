@@ -1,7 +1,10 @@
+import { useLocale } from "@/hooks";
 import { Colors } from "@/constants";
 import { Stack } from "expo-router";
 
 export default function HomeStack() {
+  const { t } = useLocale();
+
   return (
     <Stack
       screenOptions={{
@@ -15,11 +18,11 @@ export default function HomeStack() {
     >
       <Stack.Screen
         name="index"
-        options={{ title: "Home", headerShown: false }}
+        options={{ title: t("home"), headerShown: false }}
       />
       <Stack.Screen
         name="qrCodeHistory"
-        options={{ title: "QR Code History" }}
+        options={{ title: t("qrCodeHistory") }}
       />
       <Stack.Screen
         name="qrCodeDetails/[id]"
