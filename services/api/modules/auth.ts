@@ -26,6 +26,11 @@ export const loginUser = async (data: LoginPayload) => {
     return response.data;
 };
 
+export const logoutHomeOwner = async () => {
+    const response = await api.post('/home_owner/logout');
+    return response.data;
+};
+
 export const refreshToken = async (refresh: string) => {
     const response = await api.post('/auth/token/refresh', { refresh });
     return response.data;
