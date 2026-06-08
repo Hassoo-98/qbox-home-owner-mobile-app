@@ -29,6 +29,7 @@
         "BLUETOOTH_SCAN",
         "BLUETOOTH_CONNECT",
         "ACCESS_FINE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS",
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT"
@@ -60,6 +61,7 @@
         }
       ],
       "expo-video",
+      "expo-notifications",
       [
         "react-native-ble-plx",
         {
