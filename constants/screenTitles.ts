@@ -3,4 +3,5 @@ export const NESTED_SCREEN_TITLES: Record<string, string> = {
   "/qrCodeDetails/": "QR Code Details",
   '/basicInformation':'Basic Information',
   "/telemetry": "Telemetry",
+  "/notification": "Notifications",
 };
