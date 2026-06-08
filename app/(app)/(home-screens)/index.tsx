@@ -24,7 +24,7 @@ export const Home = () => {
     isQrCodeGenerated,
     qrCodeImage,
     qrCodeName,
-    onCopyQrCode,
+    onShareQrCard,
     control,
     handleGenerateQR,
     resetForm,
@@ -105,7 +105,7 @@ export const Home = () => {
           resetForm={resetForm}
           control={control}
           onGenerateQR={handleGenerateQR}
-          onCopyQrCode={onCopyQrCode}
+          onShareQrCard={onShareQrCard}
           isQrCodeGenerated={isQrCodeGenerated}
           qrCodeImage={qrCodeImage}
           qrCodeName={qrCodeName}
