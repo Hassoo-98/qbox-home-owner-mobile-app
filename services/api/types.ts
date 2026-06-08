@@ -845,12 +845,72 @@ export interface ChangePasswordPayload {
 }
 
 // Notifications
+export type NotificationCategory =
+    | "shipments"
+    | "qbox"
+    | "billing"
+    | "accounts";
+
 export interface Notification {
     id: string;
-    title: string;
-    body: string;
-    createdAt: string;
-    read: boolean;
+    title?: string;
+    body?: string;
+    message?: string;
+    createdAt?: string;
+    created_at?: string;
+    read?: boolean;
+    is_read?: boolean;
+    category?: NotificationCategory | string;
+    type?: string;
+    target?: string;
+    route?: string;
+    screen?: string;
+    data?: Record<string, unknown> | null;
+    payload?: Record<string, unknown> | null;
+    shipment_id?: string;
+    shipmentId?: string;
+    tracking_id?: string;
+    trackingId?: string;
+    package_id?: string;
+    packageId?: string;
+    qbox_id?: string;
+    qboxId?: string;
+    qr_code_id?: string;
+    qrCodeId?: string;
+    click_action?: string;
+    unread?: boolean;
+}
+
+export interface NotificationPageResponse {
+    count?: number;
+    next?: string | null;
+    previous?: string | null;
+    results?: Notification[];
+    items?: Notification[];
+    data?: Notification[] | {
+        count?: number;
+        next?: string | null;
+        previous?: string | null;
+        results?: Notification[];
+        items?: Notification[];
+    };
+    message?: string;
+    success?: boolean;
+    statusCode?: number;
+}
+
+export interface RegisterDeviceTokenPayload {
+    home_owner_id: string;
+    token: string;
+    platform: "android" | "ios";
+    device_name?: string | null;
+}
+
+export interface RegisterDeviceTokenResponse {
+    success?: boolean;
+    statusCode?: number;
+    message?: string;
+    data?: unknown;
 }
 
 export interface AlertPayload {
