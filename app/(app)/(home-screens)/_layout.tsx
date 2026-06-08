@@ -21,6 +21,10 @@ export default function HomeStack() {
         options={{ title: t("home"), headerShown: false }}
       />
       <Stack.Screen
+        name="notification"
+        options={{ title: "Notifications" }}
+      />
+      <Stack.Screen
         name="qrCodeHistory"
         options={{ title: t("qrCodeHistory") }}
       />
