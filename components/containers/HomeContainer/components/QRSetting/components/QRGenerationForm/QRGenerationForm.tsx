@@ -17,7 +17,7 @@ export const QRGenerationForm = ({
   validityDurationType,
   qrCodeImage,
   qrCodeName,
-  onCopyQrCode,
+  onShareQrCard,
 }: QRGenerationFormProps) => {
   const { t } = useLocale();
 
@@ -148,7 +148,7 @@ export const QRGenerationForm = ({
           ) : isGenerating ? (
             <ActivityIndicator size="large" color={Colors.primary} />
           ) : (
-            <Text size="sm" variant="secondary">
+        <Text size="sm" variant="secondary">
               {t("qrPreviewWillAppearHere")}
             </Text>
           )}
@@ -159,9 +159,9 @@ export const QRGenerationForm = ({
         variant="primary"
         icon={isQrCodeGenerated && <Ionicons name="share-social-outline" size={24} color="white" />}
         title={
-          isQrCodeGenerated ? t("shareUrl") : isGenerating ? t("generatingQrCode") : t("generateAccessQRCode")
+          isQrCodeGenerated ? "Share QR Code" : isGenerating ? t("generatingQrCode") : t("generateAccessQRCode")
         }
-        onPress={isQrCodeGenerated ? onCopyQrCode : onGenerateQR}
+        onPress={isQrCodeGenerated ? onShareQrCard : onGenerateQR}
         disabled={isGenerating}
       />
     </Card>
