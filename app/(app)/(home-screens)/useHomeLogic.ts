@@ -1,9 +1,9 @@
 import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 import { useOffers } from "@/hooks/api/useHomeQueries";
 import { useCreateQRCode } from "@/hooks/api/useQRQueries";
-import { useShare } from "@/hooks/useShare";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils/getValidationResolvers";
+import { shareQrCardImage } from "@/utils/qrShareCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,6 @@ export const useHomeLogic = () => {
 
     const createQRMutation = useCreateQRCode();
     const queryClient = useQueryClient();
-    const { copyToClipboard } = useShare();
 
     const defaultFormValues: QRGenerationFormValues = {
         qrName: "",
@@ -54,10 +53,6 @@ export const useHomeLogic = () => {
     const handleGenerateQR = handleSubmit(
         async (data: QRGenerationFormValues) => {
             if (isQrCodeGenerated) {
-                if (qrCodeImage) {
-                    return copyToClipboard(qrCodeImage, "QR code URL copied");
-                }
-
                 return;
             }
 
@@ -102,6 +97,23 @@ export const useHomeLogic = () => {
         setQrCodeName("");
     };
 
+    const handleShareQrCard = async () => {
+      if (!qrCodeImage) {
+        return;
+      }
+
+      try {
+        await shareQrCardImage({
+          qrImageUrl: qrCodeImage,
+          ownerName: homeOwner?.full_name || "Home Owner",
+          address: homeOwner?.address,
+          boxId: homeOwner?.qboxes?.[0]?.qbox_id || "QBox",
+        });
+      } catch (error) {
+        console.error("QR card sharing failed:", error);
+      }
+    };
+
     return {
         offersData,
         offersLoading,
@@ -111,11 +123,7 @@ export const useHomeLogic = () => {
         isQrCodeGenerated,
         qrCodeImage,
         qrCodeName,
-        onCopyQrCode: () => {
-            if (qrCodeImage) {
-                return copyToClipboard(qrCodeImage, "QR code URL copied");
-            }
-        },
+        onShareQrCard: handleShareQrCard,
         control,
         handleGenerateQR,
         resetForm,
