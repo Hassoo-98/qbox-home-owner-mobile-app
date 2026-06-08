@@ -1,4 +1,5 @@
 import { HomeOwner } from "@/services/api/homeOwner";
+import * as Auth from "@/services/api/modules/auth";
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useEffect, useState } from "react";
 
@@ -55,6 +56,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
+      try {
+        await Auth.logoutHomeOwner();
+      } catch (error) {
+        console.warn("Logout API request failed, continuing local sign-out:", error);
+      }
+
       await SecureStore.deleteItemAsync("token");
       await SecureStore.deleteItemAsync("refresh_token");
       await SecureStore.deleteItemAsync("user");
