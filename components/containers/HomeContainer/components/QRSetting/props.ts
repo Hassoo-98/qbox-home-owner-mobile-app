@@ -12,5 +12,5 @@ export interface QRSettingProps {
   image: string;
   qrCodeImage: string;
   qrCodeName: string;
-  onCopyQrCode: () => void;
+  onShareQrCard: () => void;
 }
