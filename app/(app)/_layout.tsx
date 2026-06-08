@@ -5,21 +5,20 @@ import {
   HapticTab,
 } from "@/components";
 import { BOTTOM_TABS, Colors, NESTED_SCREEN_TITLES } from "@/constants";
+import { queryClient } from "@/utils/queryClient";
 import { useLocale } from "@/hooks";
-import { useQueryClient } from "@tanstack/react-query";
 import { router, Tabs, usePathname } from "expo-router";
 
 export const AppTabLayout = () => {
   const { t } = useLocale();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
 
   const handleQRPress = () => {
     router.navigate("/qrCodeHistory");
   };
 
   const handleNotificationPress = () => {
-    // TODO: Implement notification navigation
+    router.push("/notification");
   };
 
   const handleRefreshPress = async () => {
