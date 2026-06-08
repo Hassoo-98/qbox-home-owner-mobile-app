@@ -9,10 +9,10 @@ export const AppHeaderRight = ({
   activeTab,
   handleQRPress,
   handleNotificationPress,
+  notificationCount = 0,
   handleRefreshPress,
   isRefreshLoading,
 }: AppHeaderRightProps) => {
-  const notificationCount = 3;
   return (
     <View style={styles.headerRight}>
       {activeTab === "(home-screens)" && (
