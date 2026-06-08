@@ -43,8 +43,23 @@ export const VideoRecording = ({
 }: VideoRecordingProps) => {
   useEffect(() => {
     if (autoPlay && player) {
-      const timer = setTimeout(() => player.play(), 200);
-      return () => clearTimeout(timer);
+      let active = true;
+      const timer = setTimeout(() => {
+        if (!active) {
+          return;
+        }
+
+        void Promise.resolve()
+          .then(() => player.play())
+          .catch((error) => {
+            console.warn("[video] autoplay failed", error);
+          });
+      }, 200);
+
+      return () => {
+        active = false;
+        clearTimeout(timer);
+      };
     }
   }, [player, autoPlay]);
 
