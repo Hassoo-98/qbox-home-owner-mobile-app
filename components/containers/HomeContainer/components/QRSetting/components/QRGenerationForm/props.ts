@@ -13,5 +13,5 @@ export interface QRGenerationFormProps {
   control: Control<QRGenerationFormValues, any, QRGenerationFormValues>;
   qrCodeImage: string;
   qrCodeName: string;
-  onCopyQrCode: () => void;
+  onShareQrCard: () => void;
 }
