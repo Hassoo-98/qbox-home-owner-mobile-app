@@ -5,10 +5,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { QRGenerationFormProps } from "./props";
+import { ShareQRCodeButton } from "../ShareQRCodeButton";
 
 export const QRGenerationForm = ({
   control,
   isGenerating,
+  isSharing,
   onGenerateQR,
   isQrCodeGenerated,
   resetForm,
@@ -155,15 +157,17 @@ export const QRGenerationForm = ({
         </View>
         <Text style={{ textAlign: "center" }}>{getDisplayText()}</Text>
       </Card>
-      <Button
-        variant="primary"
-        icon={isQrCodeGenerated && <Ionicons name="share-social-outline" size={24} color="white" />}
-        title={
-          isQrCodeGenerated ? "Share QR Code" : isGenerating ? t("generatingQrCode") : t("generateAccessQRCode")
-        }
-        onPress={isQrCodeGenerated ? onShareQrCard : onGenerateQR}
-        disabled={isGenerating}
-      />
+      {isQrCodeGenerated ? (
+        <ShareQRCodeButton loading={isSharing} disabled={isGenerating} onPress={onShareQrCard} />
+      ) : (
+        <Button
+          variant="primary"
+          title={isGenerating ? t("generatingQrCode") : t("generateAccessQRCode")}
+          onPress={onGenerateQR}
+          loading={isGenerating}
+          disabled={isGenerating}
+        />
+      )}
     </Card>
   );
 };
