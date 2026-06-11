@@ -11,6 +11,7 @@ const { width: screenWidth } = Dimensions.get("window");
 
 export const QRSetting = ({
   isGenerating,
+  isSharing,
   onGenerateQR,
   isQrCodeGenerated,
   control,
@@ -80,6 +81,7 @@ export const QRSetting = ({
       <QRGenerationForm
         control={control}
         isGenerating={isGenerating}
+        isSharing={isSharing}
         onGenerateQR={onGenerateQR}
         onShareQrCard={onShareQrCard}
         isQrCodeGenerated={isQrCodeGenerated}
