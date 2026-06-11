@@ -6,12 +6,10 @@ import { Notification as NotificationItem } from "@/services/api/types";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { NativeModules, Platform } from "react-native";
 
 const PUSH_TOKEN_STORE_KEY = "device_push_token";
 const PUSH_TOKEN_OWNER_KEY = "device_push_token_home_owner_id";
-
-type ExpoNotificationsModule = typeof import("expo-notifications");
 
 type PushNotificationLike = {
   request: {
@@ -27,7 +25,16 @@ type PushNotificationLike = {
 const getNotificationText = (value: unknown) =>
   typeof value === "string" ? value : "";
 
-const loadNotificationsModule = async (): Promise<ExpoNotificationsModule | null> => {
+const loadNotificationsModule = async () => {
+  const hasNativeNotifications =
+    Boolean(NativeModules.ExpoNotificationsEmitter) ||
+    Boolean(NativeModules.ExpoNotificationsHandlerModule) ||
+    Boolean(NativeModules.ExpoPushTokenManager);
+
+  if (!hasNativeNotifications) {
+    return null;
+  }
+
   try {
     return await import("expo-notifications");
   } catch (error) {
@@ -97,8 +104,16 @@ const persistDeviceToken = async (homeOwnerId: string, token: string) => {
 
 const registerDeviceToken = async (
   homeOwnerId: string,
-  Notifications: ExpoNotificationsModule
+  Notifications: {
+    getPermissionsAsync?: () => Promise<{ status: string }>;
+    requestPermissionsAsync?: () => Promise<{ status: string }>;
+    getDevicePushTokenAsync?: () => Promise<{ data: string }>;
+  } | null
 ) => {
+  if (!Notifications?.getDevicePushTokenAsync || !Notifications.getPermissionsAsync) {
+    return null;
+  }
+
   const existingToken = await getStoredDeviceToken(homeOwnerId);
   if (existingToken) {
     return existingToken;
@@ -108,6 +123,10 @@ const registerDeviceToken = async (
   let status = permissions.status;
 
   if (status !== "granted") {
+    if (!Notifications.requestPermissionsAsync) {
+      return null;
+    }
+
     const requested = await Notifications.requestPermissionsAsync();
     status = requested.status;
   }
@@ -167,13 +186,23 @@ export const NotificationBootstrap = () => {
         return;
       }
 
-      Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-          shouldShowAlert: true,
-          shouldPlaySound: true,
-          shouldSetBadge: false,
-        }),
-      });
+      if (cancelled) {
+        return;
+      }
+
+      try {
+        if (typeof Notifications.setNotificationHandler === "function") {
+          Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+              shouldShowAlert: true,
+              shouldPlaySound: true,
+              shouldSetBadge: false,
+            }),
+          });
+        }
+      } catch (error) {
+        console.warn("[notifications] setNotificationHandler failed", error);
+      }
 
       void registerDeviceToken(homeOwnerId, Notifications);
     })();
@@ -207,26 +236,30 @@ export const NotificationBootstrap = () => {
 
         if (route) {
           router.push(route);
-          return;
+        } else {
+          router.push("/notification");
         }
 
-        router.push("/notification");
+        void Notifications.clearLastNotificationResponseAsync?.().catch(() => undefined);
       };
 
-      receiveSubscription = Notifications.addNotificationReceivedListener(
-        (notification: PushNotificationLike) => {
-          const normalized = buildNotificationFromPush(notification);
-          prependNotificationToCache(queryClient, homeOwnerId, normalized);
-        }
-      );
+      if (typeof Notifications.addNotificationReceivedListener === "function") {
+        receiveSubscription = Notifications.addNotificationReceivedListener(
+          (notification: PushNotificationLike) => {
+            const normalized = buildNotificationFromPush(notification);
+            prependNotificationToCache(queryClient, homeOwnerId, normalized);
+          }
+        );
+      }
 
-      responseSubscription = Notifications.addNotificationResponseReceivedListener(
-        handleNotificationResponse
-      );
+      if (typeof Notifications.addNotificationResponseReceivedListener === "function") {
+        responseSubscription = Notifications.addNotificationResponseReceivedListener(
+          handleNotificationResponse
+        );
+      }
 
-      const lastResponse = await Notifications.getLastNotificationResponseAsync();
-      if (lastResponse && !cancelled) {
-        handleNotificationResponse(lastResponse as { notification: PushNotificationLike });
+      if (typeof Notifications.clearLastNotificationResponseAsync === "function") {
+        await Notifications.clearLastNotificationResponseAsync().catch(() => undefined);
       }
     })();
 
