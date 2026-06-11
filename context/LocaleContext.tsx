@@ -139,6 +139,7 @@ type TranslationKey =
   | "validDuration"
   | "generateAccessQRCode"
   | "generatingQrCode"
+  | "shareQrCode"
   | "shareUrl"
   | "qrPreviewWillAppearHere"
   | "validFor"
@@ -405,6 +406,7 @@ const translations: Record<AppLocale, Record<TranslationKey, string>> = {
     validDuration: "Valid Duration",
     generateAccessQRCode: "Generate Access QR Code",
     generatingQrCode: "Generating QR Code",
+    shareQrCode: "Share QR Code",
     shareUrl: "Share URL",
     qrPreviewWillAppearHere: "QR preview will appear here",
     validFor: "Valid for",
@@ -676,6 +678,7 @@ const translations: Record<AppLocale, Record<TranslationKey, string>> = {
     validDuration: "مدة الصلاحية",
     generateAccessQRCode: "إنشاء رمز QR للدخول",
     generatingQrCode: "جارٍ إنشاء رمز QR",
+    shareQrCode: "مشاركة رمز QR",
     shareUrl: "مشاركة الرابط",
     qrPreviewWillAppearHere: "سيظهر معاينة QR هنا",
     validFor: "صالح لـ",
