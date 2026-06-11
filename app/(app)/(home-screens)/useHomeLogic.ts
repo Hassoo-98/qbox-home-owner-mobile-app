@@ -1,9 +1,9 @@
 import { QR_VALIDITY_DURATION_TYPE } from "@/constants";
 import { useOffers } from "@/hooks/api/useHomeQueries";
 import { useCreateQRCode } from "@/hooks/api/useQRQueries";
+import { useAuth, useShareQRCode } from "@/hooks";
 import { QRGenerationFormValues } from "@/types";
 import { QRGenerationFormResolver } from "@/utils/getValidationResolvers";
-import { shareQrCardImage } from "@/utils/qrShareCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,8 +28,11 @@ export const useHomeLogic = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isQrCodeGenerated, setIsQrCodeGenerated] = useState(false);
+    const [qrCodeId, setQrCodeId] = useState("");
     const [qrCodeImage, setQrCodeImage] = useState("");
     const [qrCodeName, setQrCodeName] = useState("");
+    const { userToken } = useAuth();
+    const { shareQRCode, isSharing } = useShareQRCode();
 
     const { data: offersData, isLoading: offersLoading, error: offersError } = useOffers();
     const { data: homeOwnerResponse, isLoading: homeOwnerLoading } = useHomeOwner();
@@ -70,6 +73,7 @@ export const useHomeLogic = () => {
                 };
 
                 const response = await createQRMutation.mutateAsync(payload);
+                setQrCodeId(response?.data?.id || "");
                 setQrCodeImage(resolveBackendUrl(response?.data?.qr_code_image));
                 setQrCodeName(response?.data?.name || data.qrName || "qrcode");
 
@@ -93,21 +97,21 @@ export const useHomeLogic = () => {
     const resetForm = () => {
         reset(defaultFormValues);
         setIsQrCodeGenerated(false);
+        setQrCodeId("");
         setQrCodeImage("");
         setQrCodeName("");
     };
 
     const handleShareQrCard = async () => {
-      if (!qrCodeImage) {
+      if (!qrCodeId) {
+        console.warn("Share QR Code requested before a QR code was generated.");
         return;
       }
 
       try {
-        await shareQrCardImage({
-          qrImageUrl: qrCodeImage,
-          ownerName: homeOwner?.full_name || "Home Owner",
-          address: homeOwner?.address,
-          boxId: homeOwner?.qboxes?.[0]?.qbox_id || "QBox",
+        await shareQRCode({
+          qrCodeId,
+          token: userToken ?? undefined,
         });
       } catch (error) {
         console.error("QR card sharing failed:", error);
@@ -121,6 +125,8 @@ export const useHomeLogic = () => {
         isGenerating,
         showSuccess,
         isQrCodeGenerated,
+        isSharing,
+        qrCodeId,
         qrCodeImage,
         qrCodeName,
         onShareQrCard: handleShareQrCard,
