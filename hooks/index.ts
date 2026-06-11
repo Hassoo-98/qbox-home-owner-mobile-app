@@ -7,4 +7,5 @@ export * from "./useVerification";
 export * from "./useReturmPackage";
 export * from "./useSendPackage";
 export * from "./useShare";
+export * from "./useShareQRCode";
 export * from "./useSignup";
