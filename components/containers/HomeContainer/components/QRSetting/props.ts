@@ -3,6 +3,7 @@ import { Control } from "react-hook-form";
 
 export interface QRSettingProps {
   isGenerating: boolean;
+  isSharing: boolean;
   isQrCodeGenerated: boolean;
   onGenerateQR: () => void;
   resetForm: () => void;
