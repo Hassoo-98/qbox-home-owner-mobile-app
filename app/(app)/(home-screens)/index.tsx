@@ -20,6 +20,7 @@ export const Home = () => {
     offersData,
     offersError,
     isGenerating,
+    isSharing,
     showSuccess,
     isQrCodeGenerated,
     qrCodeImage,
@@ -102,6 +103,7 @@ export const Home = () => {
           address={homeOwner?.address?.short_address || t("address")}
           image={homeOwner?.installation?.qbox_image_url || ""}
           isGenerating={isGenerating}
+          isSharing={isSharing}
           resetForm={resetForm}
           control={control}
           onGenerateQR={handleGenerateQR}
